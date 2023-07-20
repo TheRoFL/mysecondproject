@@ -4,34 +4,11 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
-    <link rel="stylesheet" href="styles/Reset.css" />
-    <link rel="stylesheet" href="styles/header.css" />
-    <link rel="stylesheet" href="styles/index.css" />
+    <link rel="stylesheet" href="/static/styles/Reset.css" />
+    <link rel="stylesheet" href="/static/styles/header.css" />
+    <link rel="stylesheet" href="/static/styles/index.css" />
   </head>
   <body>
-    <header class="header">
-      <a href="index.html"
-        ><img class="header_logo" src="images/Logo.png" alt="logo"
-      /></a>
-      <ul class="header_menu">
-        <li class="header_menu_li"><a href="#">Меню</a></li>
-        <li class="header_menu_li"><a href="#">Акции</a></li>
-        <li class="header_menu_li"><a href="#">Доставка</a></li>
-        <li class="header_menu_li"><a href="#">Контакты</a></li>
-      </ul>
-      <div class="aboutYou">
-        <a href="#"
-          ><img src="images/Corzina.png" alt="korzina" class="aboutYou_korzina"
-        /></a>
-        <a href="#"
-          ><img
-            src="images/Polzovatel.png"
-            alt="profile"
-            class="aboutYou_profile"
-        /></a>
-      </div>
-    </header>
-    <main class="main"></main>
-    <footer class="footer"></footer>
+    {% include 'header.html' %}
   </body>
 </html>
