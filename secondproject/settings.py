@@ -62,6 +62,9 @@ INSTALLED_APPS = [
     'daphne',
 
     'main.apps.MainConfig',
+    'Menu.apps.MenuConfig',
+
+
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
