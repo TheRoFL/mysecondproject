@@ -4,4 +4,5 @@ from . import views
 
 urlpatterns = [
     path('', views.home),
+    path('<str:dish_name>/', views.home),
 ]

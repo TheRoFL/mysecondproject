@@ -16,7 +16,6 @@ DATE_INPUT_FORMATS = ['%d-%m-%Y']
 
 AUTHENTICATION_BACKENDS = [
  'django.contrib.auth.backends.ModelBackend',
- 'base.authentication.EmailAuthBackend',
 ]
 # SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = '768144623999-ctp30fbl3junt6genop5o84snn6ovmva.apps.googleusercontent.com' # Google Consumer Key
 # SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = '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' # Google Consumer Secret
