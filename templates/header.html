@@ -1,10 +1,11 @@
 <!DOCTYPE html>
 {%load static%}
 <body>
+  {% if request.user.is_authenticated %}
+  <h1>Добрый день, {{request.user}}!</h1>
+  {% endif %}
   <header class="header">
-    <a href="index.html"
-      ><img class="header_logo" src="/static/images/Logo.png" alt="logo"
-    /></a>
+    <a><img class="header_logo" src="/static/images/Logo.png" alt="logo" /></a>
     <ul class="header_menu">
       <li class="header_menu_li"><a href="/menu">Меню</a></li>
       <li class="header_menu_li"><a href="#">Акции</a></li>
@@ -18,12 +19,21 @@
           alt="korzina"
           class="aboutYou_korzina"
       /></a>
-      <a href="#"
+      {% if request.user.is_authenticated %}
+      <a href="/profile"
         ><img
           src="/static/images/Polzovatel.png"
           alt="profile"
           class="aboutYou_profile"
       /></a>
+      {%else%}
+      <a href="/login"
+        ><img
+          src="/static/images/Polzovatel.png"
+          alt="profile"
+          class="aboutYou_profile"
+      /></a>
+      {% endif %}
     </div>
   </header>
   <main class="main"></main>

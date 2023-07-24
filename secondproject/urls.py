@@ -8,6 +8,7 @@ urlpatterns = [
 
     path('', include('main.urls')),
     path('menu/', include('Menu.urls')),
+    path('profile/', include('Profile.urls')),
 ]
 
 if settings.DEBUG:

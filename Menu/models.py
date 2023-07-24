@@ -3,6 +3,7 @@ from django.db import models
 def upload_to(self, filename):
         return f"menu_images/{self.type}/{self.name}.png"
 
+    
 class Dish(models.Model):  
 
     name = models.CharField(max_length=20, blank=False, null=False, unique=True) #название блюда
