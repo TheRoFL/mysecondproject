@@ -1,9 +1,6 @@
 <!DOCTYPE html>
-{%load static%}
+{% load static %}
 <body>
-  {% if request.user.is_authenticated %}
-  <h1>Добрый день, {{request.user}}!</h1>
-  {% endif %}
   <header class="header">
     <a><img class="header_logo" src="/static/images/Logo.png" alt="logo" /></a>
     <ul class="header_menu">
@@ -12,6 +9,9 @@
       <li class="header_menu_li"><a href="#">Доставка</a></li>
       <li class="header_menu_li"><a href="#">Контакты</a></li>
     </ul>
+    {% if request.user.is_authenticated %}
+    <h1>Добрый день, {{request.user}}!</h1>
+    {% endif %}
     <div class="aboutYou">
       <a href="#"
         ><img

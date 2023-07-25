@@ -2,5 +2,8 @@
 <!DOCTYPE html>
 
 <h1>HOME PAGE</h1>
-
-{% endblock content %}
+{%if request.user.is_authenticated %}
+<h1><a href="/logout">Выйти</a></h1>
+{% else %}
+<h1><a href="/login">Войти</a></h1>
+{% endif %} {% endblock content %}

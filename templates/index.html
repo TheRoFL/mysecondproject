@@ -9,6 +9,8 @@
     <link rel="stylesheet" href="/static/styles/index.css" />
   </head>
   <body>
-    {% include 'header.html' %}
+    {% include 'header.html' %} {% block content %}
+    <!-- Просто чтобы было -->
+    {% endblock content %}
   </body>
 </html>
