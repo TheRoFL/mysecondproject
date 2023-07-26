@@ -1,5 +1,7 @@
 from django.db import models
 
+
+
 def upload_to(self, filename):
         return f"menu_images/{self.type}/{self.name}.png"
 

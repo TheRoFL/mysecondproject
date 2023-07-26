@@ -1,0 +1,7 @@
+{% extends 'index.html' %}
+<!-- prettier-ignore -->
+{% block content %} {% load static %}
+<h1>Мои заказы:</h1>
+{% for order in orders %}
+<h1>{{order}}</h1>
+{% endfor %} {% endblock content %}

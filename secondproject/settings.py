@@ -63,6 +63,7 @@ INSTALLED_APPS = [
     'main.apps.MainConfig',
     'Menu.apps.MenuConfig',
     'Profile.apps.ProfileConfig',
+    'Cart.apps.CartConfig',
 
     'django.contrib.admin',
     'django.contrib.auth',
