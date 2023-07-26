@@ -2,7 +2,17 @@
 {% load static %}
 <body>
   <header class="header">
-    <a><img class="header_logo" src="/static/images/Logo.png" alt="logo" /></a>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        color: white;
+        margin: 0;
+        padding: 0;
+      }
+    </style>
+    <a href="/"
+      ><img class="header_logo" src="/static/images/Logo.png" alt="logo"
+    /></a>
     <ul class="header_menu">
       <li class="header_menu_li"><a href="/menu">Меню</a></li>
       <li class="header_menu_li"><a href="#">Акции</a></li>
@@ -27,12 +37,7 @@
           class="aboutYou_profile"
       /></a>
       {%else%}
-      <a href="/login"
-        ><img
-          src="/static/images/Polzovatel.png"
-          alt="profile"
-          class="aboutYou_profile"
-      /></a>
+      <a href="/login">LOGIN</a>
       {% endif %}
     </div>
   </header>

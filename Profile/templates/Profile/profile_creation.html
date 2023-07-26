@@ -1,0 +1,44 @@
+{% extends 'index.html' %}
+<!-- prettier-ignore -->
+{% block content %} {% load static %}
+<div class="profile_creation-form">
+  <form enctype="multipart/form-data" method="POST" action="">
+    {%csrf_token%}
+    <p>
+      <label for="id_name">Имя:</label>
+      <input type="text" name="name" maxlength="20" required="" id="id_name" />
+    </p>
+    <p>
+      <label for="id_surname">Фамилия:</label>
+      <input
+        type="text"
+        name="surname"
+        maxlength="20"
+        required=""
+        id="id_surname"
+      />
+    </p>
+    <p>
+      <label for="id_sex">Пол:</label>
+      <select name="sex" required="" id="id_sex">
+        <option value="" selected="">---------</option>
+        <option value="m">М</option>
+        <option value="f">Ж</option>
+      </select>
+    </p>
+    <p>
+      <label for="id_birthdate">Дата рождения:</label>
+      <input type="text" name="birthdate" id="id_birthdate" />
+    </p>
+    <p>
+      <label for="id_city">Город:</label>
+      <input type="text" name="city" maxlength="50" id="id_city" />
+    </p>
+    <p>
+      <label for="id_address">Адрес:</label>
+      <input type="text" name="address" maxlength="50" id="id_address" />
+    </p>
+    <p><input type="submit" value="Создать профиль" /></p>
+  </form>
+</div>
+{% endblock content %}

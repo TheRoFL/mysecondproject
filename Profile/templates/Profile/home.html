@@ -1,8 +1,18 @@
-<h1>PROFILE</h1>
-<a href="/">ГЛАВНОЕ МЕНЮ</a>
-
-{% comment %} {% extends 'index.html' %} {% endcomment %}
+{% extends 'index.html' %}
 <!-- prettier-ignore -->
 {% block content %} {% load static %}
+<h1>PROFILE</h1>
 
-{% endblock content %}
+{% if currentprofile %}
+<h1>Вот ваш профиль</h1>
+<h1>{{currentprofile.name}}</h1>
+<h1>{{currentprofile.surname}}</h1>
+<h1>{{currentprofile.sex}}</h1>
+<h1>{{currentprofile.birthdate}}</h1>
+<h1>{{currentprofile.city}}</h1>
+<h1>{{currentprofile.address}}</h1>
+<h1>{{currentprofile.bonuses}} бонусов</h1>
+
+{% else %}
+<h1>У вас нету профиля</h1>
+{% endif %} {% endblock content %}
