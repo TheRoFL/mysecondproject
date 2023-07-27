@@ -5,7 +5,7 @@ from django.http import HttpResponse
 from channels.generic.websocket import AsyncWebsocketConsumer
 from asgiref.sync import async_to_sync
 from channels.generic.websocket import WebsocketConsumer
-
+from django.db.models import Q
 from .views import *
 from .models import *
 import uuid
@@ -38,20 +38,24 @@ class CartSocketConsumer(AsyncWebsocketConsumer):
         try:
             current_user_profiledata = await sync_to_async(get_object_or_404)(ProfileData, user_id=current_user_id)
         except ProfileData.DoesNotExist:
-            return HttpResponse(json.dumps({'status': 'error', 'message': 'Dish not found'}))
+            return HttpResponse(json.dumps({'status': 'error', 'message': 'ProfileData not found'}))
 
         try:
-            # Создаем новый объект DishOrder
-            new_dish_order = await sync_to_async(DishOrder.objects.create)(
-            product=dish_ordered,
-            quantity=1,
-            owner=current_user_profiledata
-            )
-        except:
-            pass
+            dish_order_exists = await DishOrder.objects.filter(Q(product=dish_ordered) & Q(owner=current_user_profiledata)).afirst()
+
+            if not dish_order_exists:
+                new_dish_order = await sync_to_async(DishOrder.objects.create)(
+                product=dish_ordered,
+                quantity=1,
+                owner=current_user_profiledata
+                )
+            else:
+                dish_order_exists.quantity += 1
+                await dish_order_exists.save_async()
+        except Exception as e:
+            print(e)
 
 
-        print(new_dish_order)
         await self.send_response(response)
 
     async def send_response(self, response):

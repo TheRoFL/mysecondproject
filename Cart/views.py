@@ -11,8 +11,14 @@ def home(request):
         pass
     orders = DishOrder.objects.filter(owner=current_user_profiledata)
 
+
+    total = 0
+    for order in orders:
+        total += order.product.price * order.quantity
+        order.sum = order.product.price * order.quantity
     contex = {
-        "orders":orders
+        "orders":orders,
+        "total":total
     }
 
     return render(request, 'Cart/home.html', contex)

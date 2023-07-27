@@ -2,15 +2,22 @@ from django.db import models
 
 from Menu.models import Dish
 from Profile.models import ProfileData
-
+from asgiref.sync import sync_to_async
 
 class DishOrder(models.Model):
     product = models.ForeignKey(Dish, on_delete=models.CASCADE)
     quantity = models.PositiveIntegerField()
     owner = models.ForeignKey(ProfileData, on_delete=models.CASCADE, default=None)
 
+    async def save_async(self, *args, **kwargs):
+        await sync_to_async(self.save)(*args, **kwargs)
+
     def __str__(self):
-        return f"Заказ {self.product.name} в количестве {self.quantity} штук"
+        if self.quantity == 1:
+            return f"Заказ {self.product.name} в количестве {self.quantity} единицы"
+        else:
+            return f"Заказ {self.product.name} в количестве {self.quantity} единиц"
+    
     
 class Order(models.Model):
     dishes = models.ManyToManyField(DishOrder)

@@ -52,7 +52,11 @@
           {{current_dish.price}} руб.
         </h3>
         <h2>
-          <button class="order-button" data-id="{{current_dish.id}}">
+          <button
+            class="order-button"
+            data-id="{{current_dish.id}}"
+            data-name="{{current_dish.tittle}}"
+          >
             Заказать
           </button>
         </h2>
@@ -96,12 +100,13 @@
         // Добавляем обработчик для каждой кнопки "Заказать"
         orderButtons.forEach((button) => {
           const dishId = button.dataset.id;
+          const dishTittle = button.dataset.name;
           button.addEventListener("click", function () {
             // Если WebSocket-соединение уже открыто, отправляем уведомление на сервер
             if (MySocket && MySocket.readyState === WebSocket.OPEN) {
               var current_user_id = "{{user.id}}";
               const notificationData = {
-                message: `Заказано блюдо с ID ${dishId}`,
+                message: `Заказ "${dishTittle}" принят.`,
                 id: dishId,
                 current_user_id: current_user_id,
               };
@@ -111,7 +116,7 @@
               initWebSocket();
               var current_user_id = "{{user.id}}";
               const notificationData = {
-                mmessage: `Заказано блюдо с ID ${dishId}`,
+                message: `Заказ "${dishTittle}" принят.`,
                 id: dishId,
                 current_user_id: current_user_id,
               };
