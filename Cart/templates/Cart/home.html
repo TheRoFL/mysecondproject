@@ -2,46 +2,7 @@
 
 <!-- prettier-ignore -->
 {% block content %} {% load static %}
-<style>
-  /* CSS styles for the container div */
-  .grid-container {
-    display: flex;
-    flex-wrap: wrap;
-    max-width: 960px;
-    margin: 20px auto;
-  }
-
-  /* CSS styles for each item div */
-  .grid-item {
-    width: 33.33%;
-    padding: 10px;
-    border: 1px solid #ccc; /* Add a border around each item */
-    box-sizing: border-box; /* Ensure the border is included in the item's width */
-  }
-
-  /* CSS styles for the images */
-  .grid-item img {
-    width: 100%; /* Make all images the same width */
-    display: block; /* Remove any spacing below images */
-  }
-
-  button {
-    border: none;
-    border-radius: 50%; /* Make the buttons circular */
-    width: 50px;
-    height: 50px;
-    background-color: black;
-    color: white;
-    font-size: 20px;
-    cursor: pointer;
-    outline: none;
-  }
-
-  /* Optional: Add some margin between the buttons */
-  button + button {
-    margin-left: 10px;
-  }
-</style>
+<link rel="stylesheet" href="/static/styles/order_grid.css" />
 <h1>Мои заказы:</h1>
 {% for order in orders %}
 <h1>
@@ -70,22 +31,5 @@
 </div>
 <h1>Сумма заказа: {{total}} рублей</h1>
 
-<script>
-  // Get the buttons by their IDs
-  const increaseBtn = document.getElementById("increase-btn");
-  const decreaseBtn = document.getElementById("decrease-btn");
-
-  // Click event handlers
-  increaseBtn.addEventListener("click", () => {
-    // Handle the increase button click event here
-    // For example, increment a counter or perform any other action
-    console.log("Increase button clicked!");
-  });
-
-  decreaseBtn.addEventListener("click", () => {
-    // Handle the decrease button click event here
-    // For example, decrement a counter or perform any other action
-    console.log("Decrease button clicked!");
-  });
-</script>
+<script src="/static/js/order.js"></script>
 {% endblock content %}
