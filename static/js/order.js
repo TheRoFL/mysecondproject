@@ -40,6 +40,7 @@ orderButtons.forEach((button) => {
     // Если WebSocket-соединение уже открыто, отправляем уведомление на сервер
     if (MySocket && MySocket.readyState === WebSocket.OPEN) {
       var current_user_id = "{{user.id}}";
+      console.log(current_user_id);
       const notificationData = {
         message: `Заказ "${dishTittle}" принят.`,
         id: dishId,
@@ -50,6 +51,7 @@ orderButtons.forEach((button) => {
       // Если WebSocket-соединение еще не открыто, создаем новое и отправляем уведомление
       initWebSocket();
       var current_user_id = "{{user.id}}";
+      console.log(current_user_id);
       const notificationData = {
         message: `Заказ "${dishTittle}" принят.`,
         id: dishId,

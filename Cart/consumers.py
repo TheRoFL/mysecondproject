@@ -5,11 +5,15 @@ from django.http import HttpResponse
 from channels.generic.websocket import AsyncWebsocketConsumer
 from asgiref.sync import async_to_sync
 from channels.generic.websocket import WebsocketConsumer
+from django.contrib.auth.models import User
 from django.db.models import Q
 from .views import *
 from .models import *
 import uuid
 
+
+async def async_print(message):
+    print(message)
 
 class CartSocketConsumer(AsyncWebsocketConsumer):
     async def connect(self):
@@ -61,6 +65,90 @@ class CartSocketConsumer(AsyncWebsocketConsumer):
     async def send_response(self, response):
         # Отправка ответа пользователю через WebSocket
         await self.send(text_data=json.dumps(response))
+
+
+class CartEditingSocketConsumer(WebsocketConsumer):
+    def connect(self):
+        self.accept()
+        # Генерируем уникальный идентификатор клиента
+        self.client_id = str(uuid.uuid4())
+        # Подписываем клиента на его уникальный канал
+        self.channel_layer.group_add(self.client_id, self.channel_name)
+
+    def disconnect(self, close_code):
+        # Отписываем клиента от его уникального канала при отключении
+        self.channel_layer.group_discard(self.client_id, self.channel_name)
+
+ 
+    def receive(self, text_data):
+        data = json.loads(text_data)
+        print(data)
+
+        action = data["action"]
+        dish_id = data["id"]
+
+        try:
+            dish_ordered = get_object_or_404(DishOrder, id=dish_id)
+        except DishOrder.DoesNotExist:
+            return HttpResponse(json.dumps({'status': 'error', 'message': 'DishOrder not found'}))
+        
+        current_user_id = data["username_id"]
+        try:
+            current_user = User.objects.get(id=current_user_id)
+            current_user_profiledata = ProfileData.objects.get(user=current_user)
+        except ProfileData.DoesNotExist:
+            pass
+        orders = DishOrder.objects.filter(owner=current_user_profiledata)
+        
+        total = 0
+        for order in orders:
+            total += order.product.price * order.quantity
+            order.sum = order.product.price * order.quantity
+
+        print(total)
+        total = int(total)
+        if action:
+            if action == "increase":
+                dish_ordered.quantity += 1
+                dish_ordered.save()
+                total += dish_ordered.product.price
+                total = int(total)
+                response = {"action": "increase", "id":dish_id, "total": total}
+                # response = {"action": "increase", "id":dish_id, "total": total}
+                self.send_response(response)
+            elif action == "decrease":
+                if dish_ordered.quantity == 1:
+                    total -= dish_ordered.product.price
+                    total = int(total)
+                    dish_ordered.delete()
+                    response = {"action": "delete", "id":dish_id}
+                    # response = {"action": "delete", "id":dish_id, "total": total, "order_sum":order.sum}
+                    self.send_response(response)
+                else:
+                    dish_ordered.quantity -= 1
+                    total -= dish_ordered.product.price
+                    total = int(total)
+                    response = {"action": "decrease", "id":dish_id}
+                    # response = {"action": "decrease", "id":dish_id, "total": total, "order_sum":order.sum}
+                    self.send_response(response)
+                    dish_ordered.save()
+            elif action == "delete":
+                dish_ordered.delete()
+                total -= dish_ordered.product.price * dish_ordered.quantity
+                total = int(total)
+                response = {"action": "delete", "id":dish_id}
+                # response = {"action": "delete", "id":dish_id, "total": total, "order_sum":order.sum}
+                self.send_response(response)
+
+            
+        else:
+            pass
+        
+
+
+    def send_response(self, response):
+        # Отправка ответа пользователю через WebSocket
+        self.send(text_data=json.dumps(response))
 
 class NotificationConsumer(WebsocketConsumer):
     def connect(self):

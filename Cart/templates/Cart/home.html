@@ -4,14 +4,18 @@
 {% block content %} {% load static %}
 <link rel="stylesheet" href="/static/styles/order_grid.css" />
 <h1>Мои заказы:</h1>
+<h1>{{current_user_id}}</h1>
 {% for order in orders %}
 <h1>
-  {{order}} <button id="increase-btn">+</button>
-  <button id="decrease-btn">-</button>
+  Заказ {{order.product.name}} в количестве
+  <span class="quantity" data-id="{{order.id}}">{{order.quantity}}</span> единиц
+  <button class="increase-btn" data-id="{{order.id}}">+</button>
+  <button class="decrease-btn" data-id="{{order.id}}">-</button>
+  <button class="delete-btn" data-id="{{order.id}}">Уд</button>
 </h1>
-
 {% endfor %}
-<h1>Сумма заказа: {{total}} рублей</h1>
+
+<span class="total">Сумма заказа: {{total}} рублей</span>
 <h1>
   --------------------------------------------------------------------------
 </h1>
@@ -31,5 +35,101 @@
 </div>
 <h1>Сумма заказа: {{total}} рублей</h1>
 
-<script src="/static/js/order.js"></script>
+{% comment %}
+<script src="/static/js/edit_order.js"></script>
+{% endcomment %}
+<script>
+  const socket = new ReconnectingWebSocket(
+    "ws://" + window.location.host + "/ws/CartEditingSocket/"
+  );
+
+  socket.onopen = function () {
+    console.log("CartEditingSocket соединение открыто.");
+  };
+
+  socket.onmessage = function (e) {
+    const notification = JSON.parse(e.data);
+    const text = notification["action"] + " " + notification["id"];
+  };
+
+  socket.onclose = function () {
+    console.log("CartEditingSocket соединение закрыто. Переподключение...");
+  };
+
+  // Отправляем данные на сервер при нажатии на кнопку "+" или "-"
+  const increaseButtons = document.querySelectorAll(".increase-btn");
+  const decreaseButtons = document.querySelectorAll(".decrease-btn");
+  const deleteButtons = document.querySelectorAll(".delete-btn");
+
+  increaseButtons.forEach((button) => {
+    button.addEventListener("click", () => {
+      const orderId = button.dataset.id;
+      var username_id = "{{user.id}}";
+      socket.send(
+        JSON.stringify({
+          action: "increase",
+          id: orderId,
+          username_id: username_id,
+        })
+      );
+    });
+  });
+  decreaseButtons.forEach((button) => {
+    button.addEventListener("click", () => {
+      const orderId = button.dataset.id;
+      var username_id = "{{user.id}}";
+      socket.send(
+        JSON.stringify({
+          action: "decrease",
+          id: orderId,
+          username_id: username_id,
+        })
+      );
+    });
+  });
+
+  deleteButtons.forEach((button) => {
+    button.addEventListener("click", () => {
+      const orderId = button.dataset.id;
+      var username_id = "{{user.id}}";
+      socket.send(
+        JSON.stringify({
+          action: "delete",
+          id: orderId,
+          username_id: username_id,
+        })
+      );
+    });
+  });
+
+  // Обработка сообщений от сервера
+  socket.addEventListener("message", function (event) {
+    const data = JSON.parse(event.data);
+    const { action, id } = data;
+
+    if (action === "increase") {
+      const quantitySpan = document.querySelector(`.quantity[data-id="${id}"]`);
+      const currentQuantity = parseInt(quantitySpan.textContent);
+      quantitySpan.textContent = currentQuantity + 1;
+      const total = document.querySelector(`.total`);
+      const currenttotal = parseInt(total.textContent);
+      total.textContent = "Сумма заказа: " + data["total"] + ".00 рублей";
+    } else if (action === "decrease") {
+      const quantitySpan = document.querySelector(`.quantity[data-id="${id}"]`);
+      const currentQuantity = parseInt(quantitySpan.textContent);
+      quantitySpan.textContent = currentQuantity - 1;
+      const total = document.querySelector(`.total`);
+      const currenttotal = parseInt(total.textContent);
+      total.textContent = "Сумма заказа: " + data["total"] + ".00 рублей";
+    } else if (action === "delete") {
+      const orderElement = document.querySelector(`[data-id="${id}"]`);
+      if (orderElement) {
+        orderElement.remove();
+        const total = document.querySelector(`.total`);
+        const currenttotal = parseInt(total.textContent);
+        total.textContent = "Сумма заказа: " + data["total"] + ".00 рублей";
+      }
+    }
+  });
+</script>
 {% endblock content %}

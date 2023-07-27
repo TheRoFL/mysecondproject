@@ -12,6 +12,17 @@ class DishOrder(models.Model):
     async def save_async(self, *args, **kwargs):
         await sync_to_async(self.save)(*args, **kwargs)
 
+
+    async def delete_dish_ordered_async(self):
+        try:
+            await self.delete()
+        except self.DoesNotExist:
+            raise Exception("DishOrdered not found")
+        except Exception as e:
+            raise Exception("Error occurred while deleting DishOrdered")
+
+
+
     def __str__(self):
         if self.quantity == 1:
             return f"Заказ {self.product.name} в количестве {self.quantity} единицы"

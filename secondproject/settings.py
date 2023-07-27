@@ -59,7 +59,6 @@ CHANNEL_LAYERS = {
 
 INSTALLED_APPS = [
     'daphne',
-
     'main.apps.MainConfig',
     'Menu.apps.MenuConfig',
     'Profile.apps.ProfileConfig',
