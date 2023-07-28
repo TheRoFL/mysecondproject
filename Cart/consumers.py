@@ -12,8 +12,6 @@ from .models import *
 import uuid
 
 
-async def async_print(message):
-    print(message)
 
 class CartSocketConsumer(AsyncWebsocketConsumer):
     async def connect(self):
@@ -101,46 +99,38 @@ class CartEditingSocketConsumer(WebsocketConsumer):
         orders = DishOrder.objects.filter(owner=current_user_profiledata)
         
         total = 0
+        sums = dict()
         for order in orders:
             total += order.product.price * order.quantity
             order.sum = order.product.price * order.quantity
+            sums[order.product.id] = int(order.sum)
 
-        print(total)
         total = int(total)
         if action:
             if action == "increase":
                 dish_ordered.quantity += 1
                 dish_ordered.save()
                 total += dish_ordered.product.price
-                total = int(total)
-                response = {"action": "increase", "id":dish_id, "total": total}
-                # response = {"action": "increase", "id":dish_id, "total": total}
-                self.send_response(response)
+
             elif action == "decrease":
                 if dish_ordered.quantity == 1:
+                    dish_ordered.quantity = 0
                     total -= dish_ordered.product.price
-                    total = int(total)
-                    dish_ordered.delete()
-                    response = {"action": "delete", "id":dish_id}
-                    # response = {"action": "delete", "id":dish_id, "total": total, "order_sum":order.sum}
-                    self.send_response(response)
                 else:
                     dish_ordered.quantity -= 1
                     total -= dish_ordered.product.price
-                    total = int(total)
-                    response = {"action": "decrease", "id":dish_id}
-                    # response = {"action": "decrease", "id":dish_id, "total": total, "order_sum":order.sum}
-                    self.send_response(response)
                     dish_ordered.save()
             elif action == "delete":
                 dish_ordered.delete()
                 total -= dish_ordered.product.price * dish_ordered.quantity
-                total = int(total)
-                response = {"action": "delete", "id":dish_id}
-                # response = {"action": "delete", "id":dish_id, "total": total, "order_sum":order.sum}
-                self.send_response(response)
 
-            
+     
+            for order in orders:
+                 order.sum = order.product.price * dish_ordered.quantity
+
+            total = int(total)
+            response = {"action": action, "id":dish_id, "total": total, "quantity":dish_ordered.quantity}
+            self.send_response(response)
         else:
             pass
         
