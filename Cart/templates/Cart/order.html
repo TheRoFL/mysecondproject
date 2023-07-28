@@ -1,0 +1,12 @@
+{% extends 'index.html' %}
+
+<!-- prettier-ignore -->
+{% block content %} {% load static %}
+<h1>{{current_order}}</h1>
+
+{% for dish_order in dish_orders %}
+<h1>{{dish_order}}</h1>
+{% endfor %}
+
+<!-- prettier-ignore -->
+{% endblock content %}

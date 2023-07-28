@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  </head>
+  <body>
+    <!-- prettier-ignore -->
+    {% block content %} {% if form.errors %} {% for field, error in form.errors.items %}
+    <li style="color: red">{{ error }}</li>
+    {% endfor %} {% endif %}
+
+    <form method="post" action="">
+      {% csrf_token %}
+      <table>
+        <tr>
+          <td>{{ form.username.label }}:</td>
+          <td>{{ form.username }}</td>
+        </tr>
+        <tr>
+          <td>{{ form.email.label }}:</td>
+          <td>{{ form.email }}</td>
+        </tr>
+        <tr>
+          <td>{{ form.password1.label }}:</td>
+          <td>{{ form.password1 }}</td>
+        </tr>
+        <tr>
+          <td>{{ form.password2.label }}:</td>
+          <td>{{ form.password2 }}</td>
+        </tr>
+      </table>
+
+      <input type="submit" value="Register" />
+    </form>
+    {% endblock %}
+  </body>
+</html>

@@ -4,6 +4,14 @@
 <html>
   <head>
     <link rel="stylesheet" href="/static/styles/menu-grid.css" />
+    <style>
+      img:hover {
+        border: 2px solid white;
+      }
+      button:hover {
+        border: 2px solid black;
+      }
+    </style>
   </head>
   <body>
     <h1>{{dish_type}}</h1>
@@ -25,6 +33,24 @@
           {{current_dish.price}} руб.
         </h3>
         <h2>
+          <style>
+            /* Styles for the "Заказать" button */
+            .order-button {
+              background-color: #e74c3c; /* Red background color */
+              color: #fff; /* White text color */
+              border: none;
+              padding: 10px 20px;
+              border-radius: 5px; /* Rounded corners */
+              cursor: pointer;
+              font-size: 16px;
+              transition: background-color 0.3s ease; /* Add a transition effect on hover */
+            }
+
+            /* Change button background color to a darker shade of red when hovered */
+            .order-button:hover {
+              background-color: #c0392b; /* Darker shade of red */
+            }
+          </style>
           <button
             class="order-button"
             data-id="{{current_dish.id}}"

@@ -10,6 +10,37 @@
         padding: 0;
       }
     </style>
+    <style>
+      /* Styles for the header menu */
+      .header_menu {
+        list-style: none;
+        padding: 0;
+        display: flex;
+      }
+
+      .header_menu_li {
+        margin-right: 20px;
+      }
+
+      /* Styles for the menu links */
+      .header_menu_li a {
+        text-decoration: none;
+        color: #Black;
+        position: relative;
+        transition: color 0.3s ease;
+      }
+
+      /* Add animation when the link is hovered */
+      .header_menu_li a:hover {
+        color: #e74c3c;
+      }
+
+      /* Add animation when the link is clicked */
+      .header_menu_li a:active {
+        color: #c0392b;
+        transform: scale(0.95);
+      }
+    </style>
     <a href="/"
       ><img class="header_logo" src="/static/images/Logo.png" alt="logo"
     /></a>

@@ -113,9 +113,10 @@ class CartEditingSocketConsumer(WebsocketConsumer):
                 total += dish_ordered.product.price
 
             elif action == "decrease":
-                if dish_ordered.quantity == 1:
-                    dish_ordered.quantity = 0
-                    total -= dish_ordered.product.price
+                if dish_ordered.quantity == 0:
+                    pass
+                elif dish_ordered.quantity == 1:
+                        pass
                 else:
                     dish_ordered.quantity -= 1
                     total -= dish_ordered.product.price

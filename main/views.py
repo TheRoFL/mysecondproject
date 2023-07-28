@@ -8,11 +8,15 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django.http import HttpResponseRedirect
 from .forms import LoginForm, UserRegistrationForm
+from django.shortcuts import render
+from .forms import UserRegistrationForm, UserRegistrationFormNew
+from django.urls import reverse
+from django_email_verification import send_email
 
 def home(request):
     return render(request, 'main/home.html')
 
-def user_login(request):
+def login_user(request):
     if request.method == 'POST':
         form = LoginForm(request.POST)
         if form.is_valid():
@@ -75,4 +79,29 @@ def register(request):
         user_form = UserRegistrationForm()
     return render(request,'main/register.html',{'user_form': user_form})
 
+
+
+# def register_user(request):
+#     form = UserRegistrationFormNew()
+
+#     if request.method == 'POST':
+#         form = UserRegistrationFormNew(request.POST)
+
+#         if form.is_valid():
+#             form.save(commit=False)
+#             user_email = form.cleaned_data['email']
+#             user_username = form.cleaned_data['username']
+#             user_password = form.cleaned_data['password1']
+
+#             # Create new user
+#             user = User.objects.create_user(username=user_username, email=user_email, password=user_password)
+
+#             # Make user unactive until they click link to token in email
+#             user.is_active = False 
+#             send_email(user)
+#             print("Mail is sent")
+
+#             return HttpResponseRedirect(reverse('login'))
+
+#     return render(request, 'registration/register.html', {'form':form})
 

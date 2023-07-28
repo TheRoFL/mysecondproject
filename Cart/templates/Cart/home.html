@@ -3,60 +3,113 @@
 <!-- prettier-ignore -->
 {% block content %} {% load static %}
 <link rel="stylesheet" href="/static/styles/order_grid.css" />
+<style>
+  /* Styles for the buttons */
+  .increase-btn,
+  .decrease-btn,
+  .delete-btn {
+    background-color: #e74c3c; /* Change background color to red */
+    color: #fff;
+    border: none;
+    padding: 5px 10px;
+    margin: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease; /* Add a transition effect */
+  }
 
-<h1>Мои заказы:</h1>
-{% for order in orders %}
-<div class="main-div" data-id="{{order.id}}">
-  <h1>
-    Заказ {{order.product.name}} в количестве
-    <span class="quantity" data-id="{{order.id}}">{{order.quantity}}</span>
-    единиц
-    <button class="increase-btn" data-id="{{order.id}}">+</button>
-    <button class="decrease-btn" data-id="{{order.id}}">-</button>
-    <button class="delete-btn" data-id="{{order.id}}">Уд</button>
-  </h1>
-</div>
+  /* Change button background color to a darker shade of red when hovered */
+  .increase-btn:hover,
+  .decrease-btn:hover,
+  .delete-btn:hover {
+    background-color: #c0392b; /* Darker shade of red */
+  }
+</style>
+<h1>Моя корзина</h1>
+<a href="/cart/order"><h1>Мои заказы:</h1></a>
 
-{% endfor %}
-
-<span class="total">Сумма заказа: {{total}} рублей</span>
-<h1>
-  --------------------------------------------------------------------------
-</h1>
-<h2>Подробнее:</h2>
-
-<div class="grid-container">
+{% if orders %}
+<div>
   {% for order in orders %}
-  <div class="grid-item" data-id="{{order.id}}">
-    <div class="main-div-detail" data-id="{{order.id}}">
-      <h1>
-        {{ order.product.name }} x
-        <span class="order-product-quantity" data-id="{{order.id}}"
-          >{{ order.quantity }}</span
-        >
-      </h1>
-      <h1>
-        <span class="order_price" data-id="{{order.id}}"
-          >{{ order.product.price }}</span
-        >
-        x
-        <span class="order_quantity" data-id="{{order.id}}"
-          >{{ order.quantity }}</span
-        >
-        =
-        <span class="order_sum" data-id="{{order.id}}">{{ order.sum }}</span>
-        рублей
-      </h1>
-      <a href="/menu/dishes/{{ order.product.name }}"
-        ><img src="http://localhost:8000/media/{{ order.product.image }}"
-      /></a>
-    </div>
+  <div class="main-div" data-id="{{order.id}}">
+    <h1>
+      Заказ {{order.product.name}} в количестве
+      <span class="quantity" data-id="{{order.id}}">{{order.quantity}}</span>
+      единиц
+      <button class="increase-btn" data-id="{{order.id}}">+</button>
+      <button class="decrease-btn" data-id="{{order.id}}">-</button>
+      <button class="delete-btn" data-id="{{order.id}}">Уд</button>
+    </h1>
   </div>
 
   {% endfor %}
+
+  <span class="total">Сумма заказа: {{total}} рублей</span>
+  <h1>
+    --------------------------------------------------------------------------
+  </h1>
+  <h2>Подробнее:</h2>
+  <style>
+    .main-div-detail img:hover {
+      border: 2px solid white;
+    }
+  </style>
+  <div class="grid-container">
+    {% for order in orders %}
+    <div class="grid-item" data-id="{{order.id}}">
+      <div class="main-div-detail" data-id="{{order.id}}">
+        <h1>
+          {{ order.product.name }} x
+          <span class="order-product-quantity" data-id="{{order.id}}"
+            >{{ order.quantity }}</span
+          >
+        </h1>
+        <h1>
+          <span class="order_price" data-id="{{order.id}}"
+            >{{ order.product.price }}</span
+          >
+          x
+          <span class="order_quantity" data-id="{{order.id}}"
+            >{{ order.quantity }}</span
+          >
+          =
+          <span class="order_sum" data-id="{{order.id}}">{{ order.sum }}</span>
+          рублей
+        </h1>
+        <a href="/menu/dishes/{{ order.product.name }}"
+          ><img src="http://localhost:8000/media/{{ order.product.image }}"
+        /></a>
+      </div>
+    </div>
+
+    {% endfor %}
+  </div>
+  <span class="total_total">Сумма заказа: {{total}} рублей</span>
+  <style>
+    /* Styles for the submit button */
+    input[type="submit"] {
+      background-color: #e74c3c; /* Red background color */
+      color: #fff;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 50px; /* Make it oval with a larger border-radius */
+      cursor: pointer;
+      transition: transform 0.1s ease; /* Add a transformation effect on press */
+    }
+
+    /* Add a scale-down effect when the button is pressed */
+    input[type="submit"]:active {
+      transform: scale(0.95);
+    }
+  </style>
+  {% if orders %}
+  <form method="POST">
+    {% csrf_token %}<input type="submit" value="Оформить заказ" />
+  </form>
+  {% endif %}
 </div>
-<span class="total_total">Сумма заказа: {{total}} рублей</span>
-{% comment %}
+{% else %}
+<h1>Ваша корзина пуста</h1>
+{% endif %} {% comment %}
 <script src="/static/js/edit_order.js"></script>
 {% endcomment %}
 
@@ -139,7 +192,7 @@
       const quantity = document.querySelector(
         `.order-product-quantity[data-id="${id}"]`
       );
-
+      quantity.textContent = data["quantity"];
       const order_quantity = document.querySelector(
         `.order_quantity[data-id="${id}"]`
       );
@@ -160,7 +213,7 @@
           `.quantity[data-id="${id}"]`
         );
         const currentQuantity = parseInt(quantitySpan.textContent);
-        quantitySpan.textContent = currentQuantity - 1;
+        quantitySpan.textContent = data["quantity"];
       } else if (action === "delete") {
         const gridItemElement = document.querySelector(
           `.main-div[data-id="${id}"]`
@@ -180,7 +233,7 @@
       console.log(int_order_price);
       console.log(sum);
       const order_sum = document.querySelector(`.order_sum[data-id="${id}"]`);
-      order_sum.textContent = sum;
+      order_sum.textContent = sum + ".00";
     }
   });
 </script>
