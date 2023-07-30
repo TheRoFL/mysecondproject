@@ -1,31 +1,19 @@
+{% extends "index.html" %}
+{% block title %}Добро пожаловать!{% endblock %}
+{% block content %}
 {% if page == 'login'%}
 <div>
   <form method="POST" action="">
-    {% csrf_token %}
-  
-    {{form.as_p}}
+    {% csrf_token %} {{form.as_p}}
     <input type="submit" value="Войти" />
     <div style="display: block; margin-top: 10px">
       <label>Have not an account yet?</label>
-      <a href="{% url "register" %}">Sign up</a>
+      <a href="/register">Sign up</a>
     </div>
   </form>
 </div>
 
 {%else%}
-
-{% comment %} <div>
-  <form method="POST" action="">
-    {% csrf_token %}
-    {{form.as_p}}
-    <input type="submit" value="Register" />
-    <div style="display: block; margin-top: 10px">
-      <label>Already have an account?</label>
-      <a href="{% url "login" %}">Sign in</a>
-    </div>
-  </form>
-</div> {% endcomment %}
-
 <div>
   <form method="POST" action="">
     {% csrf_token %}
@@ -37,8 +25,7 @@
 
   <p>
     <label for="id_email">Email:</label>
-    <input type="email" name="email" maxlength="30" autocapitalize="none" autocomplete="email" autofocus="" required="" id="id_email">
-    
+    <input type="email" name="email" maxlength="30" autocapitalize="none" autocomplete="email" autofocus="" required="" id="id_email">   
   </p> 
 
   <p>
@@ -46,7 +33,7 @@
     <input type="password" name="password1" autocomplete="new-password" required="" id="id_password1">
     
       <span class="helptext"></span></p><ul><li>Your password can’t be too similar to your other personal information.</li><li>Your password must contain at least 8 characters.</li><li>Your password can’t be a commonly used password.</li><li>Your password can’t be entirely numeric.</li></ul> 
-  <p></p>
+  </p>
   <p>
     <label for="id_password2">Password confirmation:</label>
     <input type="password" name="password2" autocomplete="new-password" required="" id="id_password2">
@@ -62,3 +49,5 @@
 </div>
 <!-- prettier-ignore -->
 {%endif%}
+
+{% endblock %}

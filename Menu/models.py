@@ -21,7 +21,7 @@ class Dish(models.Model):
     weight_test = models.JSONField(blank=True, null=True) #масса блюда в граммах если есть множественный выбор
 
 
-    
+    rating = models.PositiveIntegerField(default=None) #калорийность блюда
     
     image = models.ImageField(upload_to=upload_to) #изображение блюда
 

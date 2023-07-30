@@ -2,11 +2,79 @@
 
 <!-- prettier-ignore -->
 {% block content %} {% load static %}
-<h1>{{current_order}}</h1>
 
-{% for dish_order in dish_orders %}
-<h1>{{dish_order}}</h1>
-{% endfor %}
+<body>
+  <h1>{{current_order}}</h1>
 
+  {% for dish_order in dish_orders %}
+  <h1>{{dish_order}}</h1>
+  {% endfor %}
+  <form id="orderForm" method="POST" action="">
+    <!-- Delivery Address -->
+    <label for="delivery_address">Delivery Address:</label>
+    <input type="text" id="delivery_address" name="delivery_address" required />
+    <br />
+
+    <!-- Delivery Time -->
+    <label for="delivery_time">Delivery Time:</label>
+    <input type="time" id="delivery_time" name="delivery_time" required />
+    <br />
+
+    <!-- Order Comments -->
+    <label for="order_comments">Order Comments:</label>
+    <textarea
+      id="order_comments"
+      name="order_comments"
+      rows="4"
+      cols="50"
+    ></textarea>
+    <br />
+
+    <!-- Submit Button -->
+    <input type="submit" value="Place Order" />
+  </form>
+
+  <script>
+    document
+      .getElementById("orderForm")
+      .addEventListener("submit", function (event) {
+        event.preventDefault();
+
+        // Получение значения времени доставки из формы
+        var deliveryTimeInput = document.getElementById("delivery_time");
+        var deliveryTime = deliveryTimeInput.value;
+
+        // Получение текущего времени
+        var now = new Date();
+        now.setSeconds(0); // Сбрасываем секунды для точности сравнения
+
+        // Получение времени через 24 часа
+        var twentyFourHoursLater = new Date();
+        twentyFourHoursLater.setSeconds(0); // Сбрасываем секунды для точности сравнения
+        twentyFourHoursLater.setTime(
+          twentyFourHoursLater.getTime() + 12 * 60 * 60 * 1000
+        );
+
+        // Преобразование времени доставки в объект Date
+        var deliveryTimeParts = deliveryTime.split(":");
+        var deliveryDateTime = new Date(now);
+        deliveryDateTime.setHours(deliveryTimeParts[0]);
+        deliveryDateTime.setMinutes(deliveryTimeParts[1]);
+
+        // Выполнение проверки
+        if (
+          deliveryDateTime >= now &&
+          deliveryDateTime <= twentyFourHoursLater
+        ) {
+          // Время доставки в пределах допустимого диапазона
+          console.log("Время доставки допустимо.");
+          // Здесь можно выполнить отправку данных на сервер
+        } else {
+          // Время доставки не соответствует ограничениям
+          console.log("Недопустимое время доставки.");
+        }
+      });
+  </script>
+</body>
 <!-- prettier-ignore -->
 {% endblock content %}
