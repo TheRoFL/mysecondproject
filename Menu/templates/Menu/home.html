@@ -97,32 +97,43 @@
         }
 
         // Добавляем обработчик для каждой кнопки "Заказать"
-        orderButtons.forEach((button) => {
-          const dishId = button.dataset.id;
-          const dishTittle = button.dataset.name;
-          button.addEventListener("click", function () {
-            // Если WebSocket-соединение уже открыто, отправляем уведомление на сервер
-            if (MySocket && MySocket.readyState === WebSocket.OPEN) {
-              var current_user_id = "{{user.id}}";
-              const notificationData = {
-                message: `Заказ "${dishTittle}" принят.`,
-                id: dishId,
-                current_user_id: current_user_id,
-              };
-              SendNotification(notificationData);
-            } else {
-              // Если WebSocket-соединение еще не открыто, создаем новое и отправляем уведомление
-              initWebSocket();
-              var current_user_id = "{{user.id}}";
-              const notificationData = {
-                message: `Заказ "${dishTittle}" принят.`,
-                id: dishId,
-                current_user_id: current_user_id,
-              };
-              SendNotification(notificationData);
-            }
+        if ("{{user.id}}" !== "None") {
+          // Код, который выполняется, если {{user.id}} не равен "none"
+          orderButtons.forEach((button) => {
+            const dishId = button.dataset.id;
+            const dishTittle = button.dataset.name;
+            button.addEventListener("click", function () {
+              // Если WebSocket-соединение уже открыто, отправляем уведомление на сервер
+              if (MySocket && MySocket.readyState === WebSocket.OPEN) {
+                var current_user_id = "{{user.id}}";
+                const notificationData = {
+                  message: `Заказ "${dishTittle}" принят.`,
+                  id: dishId,
+                  current_user_id: current_user_id,
+                };
+                SendNotification(notificationData);
+              } else {
+                // Если WebSocket-соединение еще не открыто, создаем новое и отправляем уведомление
+                initWebSocket();
+                var current_user_id = "{{user.id}}";
+                const notificationData = {
+                  message: `Заказ "${dishTittle}" принят.`,
+                  id: dishId,
+                  current_user_id: current_user_id,
+                };
+                SendNotification(notificationData);
+              }
+            });
           });
-        });
+        } else {
+          // Код, который выполняется, если {{user.id}} равен "none"
+          orderButtons.forEach((button) => {
+            button.addEventListener("click", function () {
+              // Перенаправление пользователя на страницу "login"
+              window.location.href = "/login";
+            });
+          });
+        }
 
         // Инициализация WebSocket-соединения при загрузке страницы
         initWebSocket();

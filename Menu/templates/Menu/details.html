@@ -4,15 +4,21 @@
 {% block content %} {% load static %}
 
 <body>
-  <h1>details</h1>
   <h1>{{current_dish.tittle}}</h1>
-  <h1>{{current_dish.type}}</h1>
-  <h1>{{current_dish.brief_discription}}</h1>
   <h1>{{current_dish.discription}}</h1>
-  <h1>{{current_dish.ingredients}}</h1>
-  <h1>{{current_dish.price}} рублей</h1>
-  <h1>{{current_dish.calories}} калорий</h1>
-  <h1>{{current_dish.weight}} грамм</h1>
+  <h1>Состав: {{current_dish.ingredients}}</h1>
+  <h1>Цена {{current_dish.price}} рублей</h1>
+  <h1>Пищевая ценность: {{current_dish.calories}} калорий</h1>
+  <h1>Масса нетто: {{current_dish.weight}} грамм</h1>
+  <!-- prettier-ignore -->
+  <h2>Рейтинг {% load custom_filters %}
+
+    {% with repeat_count=current_dish.rating %}
+      {% for _ in repeat_count|repeat_times %}
+      ★
+      {% endfor %}
+    {% endwith %}</h2>
+  <!-- prettier-ignore -->
   <img
     src="http://localhost:8000/media/menu_images/{{current_dish.type}}/{{current_dish.name}}.png"
     style="width: 25%"

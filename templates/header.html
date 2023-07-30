@@ -41,6 +41,11 @@
         transform: scale(0.95);
       }
     </style>
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="/static/styles/animations.css"
+    />
     <a href="/"
       ><img class="header_logo" src="/static/images/Logo.png" alt="logo"
     /></a>
@@ -50,8 +55,28 @@
       <li class="header_menu_li"><a href="#">Доставка</a></li>
       <li class="header_menu_li"><a href="#">Контакты</a></li>
     </ul>
+    <li class="moving-element">Ты гей</li>
+    <li class="moving-element">Ты гей</li>
+    <li class="moving-element">Ты гей</li>
+    <li class="moving-element">Ты гей</li>
+    <li class="moving-element">Ты гей</li>
+    <li class="moving-element">Ты гей</li>
+    <li class="moving-element">Ты гей</li>
+    <li class="moving-element">Ты гей</li>
+    <li class="moving-element">Ты гей</li>
+    <li class="moving-element">Ты гей</li>
+    <li class="moving-element">Ты гей</li>
+    <li class="moving-element">Ты гей</li>
+    <li class="moving-element">Ты гей</li>
+    <li class="moving-element">Ты гей</li>
+    <li class="moving-element">Ты гей</li>
+    <li class="moving-element">Ты гей</li>
+    <li class="moving-element">Ты гей</li>
+    <li class="moving-element">Ты гей</li>
+    <li class="moving-element">Ты гей</li>
+    <li class="moving-element">Ты гей</li>
     {% if request.user.is_authenticated %}
-    <h1>Добрый день, {{request.user}}!</h1>
+    <h1><a href="/cart/order">Заказы {{request.user}}</a></h1>
     {% endif %}
     <div class="aboutYou">
       <a href="/cart"
@@ -73,5 +98,6 @@
     </div>
   </header>
   <main class="main"></main>
+  <script src="/static/js/animations.js"></script>
   <footer class="footer"></footer>
 </body>

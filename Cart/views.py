@@ -1,8 +1,10 @@
 from django.shortcuts import render, redirect
 from django.db.models import Q
+from django.contrib.auth.decorators import login_required
 from Menu.models import *
 from .models import *
-    
+
+@login_required(login_url='/login/')
 def home(request):
     try:
         current_user_profiledata = ProfileData.objects.get(user=request.user)
@@ -37,14 +39,13 @@ def home(request):
         for order in orders:
             current_order.dishes.add(order)
 
-
-        data_to_pass = {"current_order": current_order}
-        print(data_to_pass)
         return redirect('order')
     
-    return render(request, 'Cart/home.html', contex)                        
-
+    return render(request, 'Cart/home.html', contex)    
+                    
+@login_required(login_url='/login/')
 def order(request):
+        print(request)
         try:
             current_user_profiledata = ProfileData.objects.get(user=request.user)
         except ProfileData.DoesNotExist:
