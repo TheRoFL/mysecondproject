@@ -25,9 +25,9 @@ class DishOrder(models.Model):
 
     def __str__(self):
         if self.quantity == 1:
-            return f"Заказ {self.product.name} в количестве {self.quantity} единицы"
+            return f"{self.product.name} в количестве {self.quantity} единицы"
         else:
-            return f"Заказ {self.product.name} в количестве {self.quantity} единиц"
+            return f"{self.product.name} в количестве {self.quantity} единиц"
     
     
 class Order(models.Model):

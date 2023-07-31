@@ -1,28 +1,21 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
-from django.db.models import Q
-from django.contrib import messages
-from django.contrib.auth.decorators import login_required
-from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
-from django.http import HttpResponseRedirect
 
 from .models import ProfileData
 from .forms import ProfileForm
+from Cart.models import *
 
-def home(request):
+def home(request, user_name):
     try:
         try:
-            currentuser = User.objects.get(username=request.user)
+            currentuser = User.objects.get(username=user_name)
         except User.DoesNotExist:
             currentuser = None  
         currentprofile = ProfileData.objects.get(user=currentuser)
     except ProfileData.DoesNotExist:
         currentprofile = None
         return redirect("profile_creation/")
-
-
 
     context = {
             'currentprofile': currentprofile,
@@ -46,3 +39,12 @@ def profile_creation(request):
         else: return HttpResponse("Форма не валидна1")
 
     return render(request, 'Profile/profile_creation.html', contex)
+
+def orders(request, user_name):
+    currentprofile = ProfileData.objects.get(user=request.user)
+    all_orders = Order.objects.filter(owner=currentprofile)
+    context = {
+            'all_orders': all_orders,
+        }
+
+    return render(request, 'Profile/orders.html', context)

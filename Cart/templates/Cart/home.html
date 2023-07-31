@@ -25,7 +25,7 @@
   }
 </style>
 <h1>Моя корзина</h1>
-<a href="/cart/order"><h1>Мои заказы:</h1></a>
+<a href="/cart/ordering"><h1>Мои заказы:</h1></a>
 
 {% if orders %}
 <div>
@@ -109,9 +109,7 @@
 </div>
 {% else %}
 <h1>Ваша корзина пуста</h1>
-{% endif %} {% comment %}
-<script src="/static/js/edit_order.js"></script>
-{% endcomment %}
+{% endif %}
 
 <script>
   const socket = new ReconnectingWebSocket(
@@ -229,9 +227,6 @@
       const int_quantity = parseInt(quantitySpan.textContent);
       const int_order_price = parseInt(order_price.textContent);
       const sum = int_quantity * int_order_price;
-      console.log(int_quantity);
-      console.log(int_order_price);
-      console.log(sum);
       const order_sum = document.querySelector(`.order_sum[data-id="${id}"]`);
       order_sum.textContent = sum + ".00";
     }
