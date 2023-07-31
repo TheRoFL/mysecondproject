@@ -85,45 +85,54 @@ class CartEditingSocketConsumer(WebsocketConsumer):
         action = data["action"]
         dish_id = data["id"]
 
-        try:
-            dish_ordered = get_object_or_404(DishOrder, id=dish_id)
-        except DishOrder.DoesNotExist:
-            return HttpResponse(json.dumps({'status': 'error', 'message': 'DishOrder not found'}))
-        
-        current_user_id = data["username_id"]
-        try:
-            current_user = User.objects.get(id=current_user_id)
-            current_user_profiledata = ProfileData.objects.get(user=current_user)
-        except ProfileData.DoesNotExist:
-            pass
-        orders = DishOrder.objects.filter(owner=current_user_profiledata)
-        
-        total = 0
-        sums = dict()
-        for order in orders:
-            total += order.product.price * order.quantity
-            order.sum = order.product.price * order.quantity
-            sums[order.product.id] = int(order.sum)
+        if action == "canceled":
+            order_to_cancel_id = data["id"]
+            order_to_cancel = Order.objects.get(id=order_to_cancel_id)
+            order_to_cancel.delete()
+            response = {"canceled":"canceled"}
+            self.send_response(response)
 
-        total = int(total)
-        if action:
-            if action == "increase":
-                dish_ordered.quantity += 1
-                dish_ordered.save()
-                total += dish_ordered.product.price
+        else:
+            try:
+                dish_ordered = get_object_or_404(DishOrder, id=dish_id)
+            except DishOrder.DoesNotExist:
+                return HttpResponse(json.dumps({'status': 'error', 'message': 'DishOrder not found'}))
+            
+            current_user_id = data["username_id"]
+            try:
+                current_user = User.objects.get(id=current_user_id)
+                current_user_profiledata = ProfileData.objects.get(user=current_user)
+            except ProfileData.DoesNotExist:
+                pass
+            orders = DishOrder.objects.filter(owner=current_user_profiledata)
+            
+            total = 0
+            sums = dict()
+            for order in orders:
+                total += order.product.price * order.quantity
+                order.sum = order.product.price * order.quantity
+                sums[order.product.id] = int(order.sum)
 
-            elif action == "decrease":
-                if dish_ordered.quantity == 0:
-                    pass
-                elif dish_ordered.quantity == 1:
-                        pass
-                else:
-                    dish_ordered.quantity -= 1
-                    total -= dish_ordered.product.price
+            total = int(total)
+
+            if action:
+                if action == "increase":
+                    dish_ordered.quantity += 1
                     dish_ordered.save()
-            elif action == "delete":
-                dish_ordered.delete()
-                total -= dish_ordered.product.price * dish_ordered.quantity
+                    total += dish_ordered.product.price
+
+                elif action == "decrease":
+                    if dish_ordered.quantity == 0:
+                        pass
+                    elif dish_ordered.quantity == 1:
+                            pass
+                    else:
+                        dish_ordered.quantity -= 1
+                        total -= dish_ordered.product.price
+                        dish_ordered.save()
+                elif action == "delete":
+                    dish_ordered.delete()
+                    total -= dish_ordered.product.price * dish_ordered.quantity
 
      
             for order in orders:
@@ -132,11 +141,8 @@ class CartEditingSocketConsumer(WebsocketConsumer):
             total = int(total)
             response = {"action": action, "id":dish_id, "total": total, "quantity":dish_ordered.quantity}
             self.send_response(response)
-        else:
-            pass
+
         
-
-
     def send_response(self, response):
         # Отправка ответа пользователю через WebSocket
         self.send(text_data=json.dumps(response))

@@ -1,0 +1,194 @@
+{% extends 'index.html' %}
+
+<!-- prettier-ignore -->
+{% block content %} {% load static %}
+
+<body>
+  <style>
+    .submit-btn,
+    .cancel-btn {
+      background-color: #e74c3c;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background-color 0.3s, transform 0.1s;
+    }
+
+    /* Анимация при наведении на кнопку */
+    .submit-btn:hover,
+    .cancel-btn:hover {
+      background-color: #c0392b;
+      transform: scale(1.05);
+    }
+
+    /* Анимация при нажатии на кнопку */
+    .submit-btn:active,
+    .cancel-btn:active {
+      background-color: #962d22;
+      transform: scale(0.95);
+    }
+  </style>
+
+  {% if not ordered %}
+  <div id="divToRemove">
+    {% if current_order %}
+    <h1>{{current_order}}</h1>
+
+    {% for dish_order in dish_orders %}
+    <h1>{{dish_order}}</h1>
+    {% endfor %}
+    <form id="orderForm" method="POST" action="">
+      {% csrf_token %}
+      <!-- Delivery Address -->
+      <label for="delivery_address">Адрес доставки:</label>
+      <input type="text" id="delivery_address" name="delivery_address" />
+      <br />
+
+      <!-- Delivery Time -->
+      <label for="delivery_time">Время доставки:</label>
+      <input type="time" id="delivery_time" name="delivery_time" />
+      <br />
+
+      <!-- Delivery Date -->
+      <label for="delivery_date">Дата доставки:</label>
+      <input type="date" id="delivery_date" name="delivery_date" />
+      <br />
+
+      <!-- Order Comments -->
+      <label for="order_comments">Комментарий к заказу:</label>
+      <textarea
+        id="order_comments"
+        name="order_comments"
+        rows="4"
+        cols="50"
+      ></textarea>
+      <br />
+
+      <!-- Submit Button -->
+      <input type="submit" value="Оформить заказ" class="submit-btn" />
+      <input value="Отменить" class="cancel-btn" />
+    </form>
+
+    {% else %}
+
+    <h1>У вас нету заказов на оформление</h1>
+
+    {% endif %}
+  </div>
+
+  {% else %}
+
+  <h1>Ваш заказ оформлен!</h1>
+
+  {% endif %}
+
+  <script>
+    const socket = new ReconnectingWebSocket(
+      "ws://" + window.location.host + "/ws/CartEditingSocket/"
+    );
+
+    socket.onopen = function () {
+      console.log("CartEditingSocket соединение открыто.");
+    };
+
+    socket.onmessage = function (e) {
+      const data = JSON.parse(e.data);
+      if (data.canceled === "canceled") {
+        var divToRemove = document.getElementById("divToRemove");
+        if (divToRemove) {
+          divToRemove.remove();
+          var h1Element = document.createElement("h1");
+          h1Element.textContent = "Заказ удален";
+          document.body.appendChild(h1Element);
+
+          var messageElement = document.createElement("p");
+          messageElement.textContent =
+            "Вы будете перенаправлены на главную страницу через 3 секунды.";
+          document.body.appendChild(messageElement);
+
+          // Redirect to /menu after 3 seconds
+          setTimeout(function () {
+            window.location.href = "/menu";
+          }, 3000);
+        }
+      }
+    };
+
+    socket.onclose = function () {
+      console.log("CartEditingSocket соединение закрыто. Переподключение...");
+    };
+
+    const cancelButtons = document.querySelectorAll(".cancel-btn");
+
+    cancelButtons.forEach((cancel) => {
+      cancel.addEventListener("click", () => {
+        var username_id = "{{user.id}}";
+        socket.send(
+          JSON.stringify({
+            action: "canceled",
+            id: "{{current_order.id}}",
+            username_id: username_id,
+          })
+        );
+      });
+    });
+  </script>
+
+  <script>
+    const deliveryDateInput = document.getElementById("delivery_date");
+    const deliveryTimeInput = document.getElementById("delivery_time");
+    // Создаем объект для представления текущей даты и времени
+    const nowt = new Date();
+
+    // Устанавливаем дату на сегодня
+    const today = nowt.toISOString().split("T")[0];
+    deliveryDateInput.value = today;
+
+    // Устанавливаем время на +2 часа от текущего времени
+    nowt.setHours(nowt.getHours() + 2);
+    const twoHoursFromNow = nowt.toTimeString().substring(0, 5);
+    deliveryDateInput.min = today;
+    deliveryDateInput.valueAsDate = nowt;
+    deliveryTimeInput.value = twoHoursFromNow;
+
+    document.addEventListener("DOMContentLoaded", function () {
+      // Получаем ссылку на форму
+      const orderForm = document.getElementById("orderForm");
+
+      // Добавляем обработчик события submit к форме
+      orderForm.addEventListener("submit", function (event) {
+        // Отменяем отправку формы по умолчанию
+        event.preventDefault();
+
+        // Получаем значения из полей формы
+        const deliveryDate = new Date(
+          document.getElementById("delivery_date").value
+        );
+
+        const deliveryTime = document.getElementById("delivery_time").value;
+
+        // Создаем объект для представления текущей даты и времени
+        const now = new Date();
+
+        // Получаем дату и время через 24 часа от текущего времени
+        const minDateTime = new Date(now.getTime() + 24 * 60 * 60 * 1000);
+
+        // Проверяем, что выбранная дата не раньше текущей и не раньше чем за день
+        orderForm.submit();
+        if (deliveryDate < now || now + deliveryTime < minDateTime) {
+          alert(
+            "Неверная дата или время доставки. Пожалуйста, выберите другую дату и/или время."
+          );
+        } else {
+          // Если дата и время доставки верные, можно отправить форму
+          orderForm.submit();
+        }
+      });
+    });
+  </script>
+</body>
+<!-- prettier-ignore -->
+{% endblock content %}
