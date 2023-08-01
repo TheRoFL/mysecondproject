@@ -33,14 +33,21 @@
   <div class="main-div" data-id="{{order.id}}">
     <h1>
       Заказ {{order.product.name}} в количестве
-      <span class="quantity" data-id="{{order.id}}">{{order.quantity}}</span>
+      <input
+        class="quantity-input"
+        type="number"
+        max="50"
+        min="1"
+        value="{{order.quantity}}"
+        data-id="{{order.id}}"
+      />
       единиц
+
       <button class="increase-btn" data-id="{{order.id}}">+</button>
       <button class="decrease-btn" data-id="{{order.id}}">-</button>
       <button class="delete-btn" data-id="{{order.id}}">Уд</button>
     </h1>
   </div>
-
   {% endfor %}
 
   <span class="total">Сумма заказа: {{total}} рублей</span>
@@ -110,6 +117,61 @@
 {% else %}
 <h1>Ваша корзина пуста</h1>
 {% endif %}
+<!-- Include jQuery library -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<style>
+  /* Red color theme */
+
+  .quantity-input {
+    width: 50px;
+    height: 30px;
+    font-size: 16px;
+    border: 1px solid #ff0000;
+    border-radius: 5px;
+    text-align: center;
+    outline: none;
+    transition: border-color 0.2s ease-in-out;
+  }
+
+  .quantity-input:focus {
+    border-color: #d80000;
+  }
+
+  .quantity-input::-webkit-inner-spin-button,
+  .quantity-input::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  .quantity-input:focus::-webkit-inner-spin-button,
+  .quantity-input:focus::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  /* Button press animations */
+  button {
+    background-color: #ff0000;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    padding: 5px 10px;
+    cursor: pointer;
+    outline: none;
+    transition: background-color 0.2s ease-in-out, transform 0.1s ease-in-out;
+  }
+
+  button:hover {
+    background-color: #d80000;
+  }
+
+  button:active {
+    background-color: #b20000;
+    transform: scale(0.95);
+  }
+</style>
 
 <script>
   const socket = new ReconnectingWebSocket(
@@ -129,10 +191,34 @@
     console.log("CartEditingSocket соединение закрыто. Переподключение...");
   };
 
+  // Function to update the quantity display and send the quantity to the server
+  function updateQuantity(orderId, quantity) {
+    // Update the display
+    $(`.quantity[data-id="${orderId}"]`).text(quantity);
+
+    const data = { orderId, quantity };
+    socket.send(
+      JSON.stringify({
+        action: "quantity_update",
+        id: orderId,
+        username_id: "{{user.id}}",
+        quantity: quantity,
+      })
+    );
+  }
   // Отправляем данные на сервер при нажатии на кнопку "+" или "-"
   const increaseButtons = document.querySelectorAll(".increase-btn");
   const decreaseButtons = document.querySelectorAll(".decrease-btn");
   const deleteButtons = document.querySelectorAll(".delete-btn");
+
+  const dishes = document.querySelectorAll(".main-div");
+
+  // Quantity input change handler
+  $(".quantity-input").on("change", function () {
+    const orderId = $(this).data("id");
+    const newQuantity = Math.max(1, $(this).val()); // Ensure the quantity is not less than 1
+    updateQuantity(orderId, newQuantity);
+  });
 
   increaseButtons.forEach((button) => {
     button.addEventListener("click", () => {
@@ -180,6 +266,7 @@
     const data = JSON.parse(event.data);
     const { action, id } = data;
 
+    console.log(data);
     if (action) {
       const total = document.querySelector(`.total`);
       total.textContent = "Сумма заказа: " + data["total"] + ".00 рублей";
@@ -187,10 +274,16 @@
       const total_total = document.querySelector(`.total_total`);
       total_total.textContent = "Сумма заказа: " + data["total"] + ".00 рублей";
 
-      const quantity = document.querySelector(
+      const order_product_quantity = document.querySelector(
         `.order-product-quantity[data-id="${id}"]`
       );
-      quantity.textContent = data["quantity"];
+      order_product_quantity.textContent = data["quantity"];
+
+      const quantity_input = document.querySelector(
+        `.quantity-input[data-id="${id}"]`
+      );
+      quantity_input.textContent = data["quantity"];
+
       const order_quantity = document.querySelector(
         `.order_quantity[data-id="${id}"]`
       );
@@ -201,17 +294,15 @@
       );
 
       if (action === "increase") {
-        const quantitySpan = document.querySelector(
-          `.quantity[data-id="${id}"]`
+        const quantity_input = document.querySelector(
+          `.quantity-input[data-id="${id}"]`
         );
-        const currentQuantity = parseInt(quantitySpan.textContent);
-        quantitySpan.textContent = currentQuantity + 1;
+        quantity_input.value = data["quantity"];
       } else if (action === "decrease") {
-        const quantitySpan = document.querySelector(
-          `.quantity[data-id="${id}"]`
+        const quantity_input = document.querySelector(
+          `.quantity-input[data-id="${id}"]`
         );
-        const currentQuantity = parseInt(quantitySpan.textContent);
-        quantitySpan.textContent = data["quantity"];
+        quantity_input.value = data["quantity"];
       } else if (action === "delete") {
         const gridItemElement = document.querySelector(
           `.main-div[data-id="${id}"]`
@@ -224,7 +315,7 @@
       }
 
       const quantitySpan = document.querySelector(`.quantity[data-id="${id}"]`);
-      const int_quantity = parseInt(quantitySpan.textContent);
+      const int_quantity = quantity_input.value;
       const int_order_price = parseInt(order_price.textContent);
       const sum = int_quantity * int_order_price;
       const order_sum = document.querySelector(`.order_sum[data-id="${id}"]`);

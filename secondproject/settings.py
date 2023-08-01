@@ -90,6 +90,7 @@ INSTALLED_APPS = [
     'Menu.apps.MenuConfig',
     'Profile.apps.ProfileConfig',
     'Cart.apps.CartConfig',
+    'Banquet.apps.BanquetConfig',
 
     'django.contrib.admin',
     'django.contrib.auth',
