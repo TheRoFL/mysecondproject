@@ -42,7 +42,7 @@ def profile_creation(request):
 
 def orders(request, user_name):
     currentprofile = ProfileData.objects.get(user=request.user)
-    all_orders = Order.objects.filter(owner=currentprofile)
+    all_orders = Order.objects.filter(owner=currentprofile, is_ordered=True)
     context = {
             'all_orders': all_orders,
         }

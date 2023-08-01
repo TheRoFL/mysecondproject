@@ -116,6 +116,13 @@ class CartEditingSocketConsumer(WebsocketConsumer):
             total = int(total)
 
             if action:
+                if action == "quantity_update":
+                    total -= dish_ordered.quantity * dish_ordered.product.price
+                    dish_ordered.quantity = data["quantity"]
+                    dish_ordered.save()
+                    total += dish_ordered.quantity * dish_ordered.product.price
+                    
+
                 if action == "increase":
                     dish_ordered.quantity += 1
                     dish_ordered.save()
@@ -134,9 +141,6 @@ class CartEditingSocketConsumer(WebsocketConsumer):
                     dish_ordered.delete()
                     total -= dish_ordered.product.price * dish_ordered.quantity
 
-     
-            for order in orders:
-                 order.sum = order.product.price * dish_ordered.quantity
 
             total = int(total)
             response = {"action": action, "id":dish_id, "total": total, "quantity":dish_ordered.quantity}

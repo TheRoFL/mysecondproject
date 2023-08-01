@@ -5,6 +5,6 @@
 
 <h1>My orders</h1>
 {% for order in all_orders.all %}
-<h1>{{order}}</h1>
+<h1>{{order}}, статус заказа: {{order.status}}</h1>
 
 {% endfor %} {% endblock content %}
