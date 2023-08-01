@@ -1,0 +1,259 @@
+{% extends 'index.html' %}
+
+<!-- prettier-ignore -->
+{% block content %} {% load static %}
+<h1>Формирование банкета</h1>
+<body>
+  <style>
+    /* Простой стиль для красивого отображения формы */
+    body {
+      font-family: Arial, sans-serif;
+    }
+    form {
+      margin-top: 20px;
+      display: none; /* Форма будет скрыта по умолчанию */
+    }
+    label {
+      display: block;
+      margin-bottom: 10px;
+    }
+    input {
+      padding: 5px;
+      margin-bottom: 10px;
+      width: 300px;
+    }
+    button:hover {
+      border: 2px solid black;
+      background-color: #c0392b; /* Darker shade of red */
+    }
+    button {
+      background-color: #e74c3c; /* Change background color to red */
+      color: #fff;
+      border: none;
+      padding: 5px 10px;
+      margin: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s ease; /* Add a transition effect */
+    }
+  </style>
+  <style>
+    /* Styles for the submit button */
+    input[type="submit"] {
+      background-color: #e74c3c; /* Red background color */
+      color: #fff;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 50px; /* Make it oval with a larger border-radius */
+      cursor: pointer;
+      transition: transform 0.1s ease; /* Add a transformation effect on press */
+    }
+
+    /* Add a scale-down effect when the button is pressed */
+    input[type="submit"]:active {
+      transform: scale(0.95);
+    }
+
+    .quantity-input,
+    .name-input {
+      width: 50px;
+      height: 30px;
+      font-size: 16px;
+      border: 1px solid #ff0000;
+      border-radius: 5px;
+      text-align: center;
+      outline: none;
+      transition: border-color 0.2s ease-in-out;
+    }
+
+    .quantity-input:focus,
+    .name-input:focus {
+      border-color: #d80000;
+    }
+
+    .quantity-input::-webkit-inner-spin-button,
+    .quantity-input::-webkit-outer-spin-button,
+    .name-input::-webkit-inner-spin-button,
+    .name-input::-webkit-outer-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+
+    .quantity-input:focus::-webkit-inner-spin-button,
+    .quantity-input:focus::-webkit-outer-spin-button,
+    .name-input:focus::-webkit-inner-spin-button,
+    .name-input:focus::-webkit-outer-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+  </style>
+
+  <h1 style="margin-left: 10px">Создать клиента</h1>
+  <button id="showFormBtn" style="margin-left: 10px">Добавить клиента</button>
+
+  <form id="clientForm" style="margin-left: 10px">
+    <label for="clientName">Название клиента:</label>
+    <input type="text" id="clientName" required />
+
+    <label for="clientCount">Количество клиентов:</label>
+    <input type="number" id="clientCount" required />
+    <br />
+
+    <button type="submit">Сохранить</button>
+    <button type="button" id="cancelFormBtn">Отменить</button>
+  </form>
+  <h1>&nbsp</h1>
+  <hr style="width: 90%; height: 3px; background: #e74c3c" />
+  <h1>&nbsp</h1>
+  <div class="my_extra_clients">
+    {% for client in banquet.clients.all %}
+    <div class="my_client" data-id="{{client.id}}">
+      <input
+        class="name-input"
+        data-id="{{client.id}}"
+        value="{{ client.type }}"
+      />
+      в количестве
+      <input
+        class="quantity-input"
+        data-id="{{client.id}}"
+        value="{{ client.quantity }}"
+      />
+      человек
+      <button class="delete-client-btn" data-id="{{client.id}}">Удалить</button>
+    </div>
+    {% endfor %}
+  </div>
+  <h1>&nbsp</h1>
+  <hr style="width: 90%; height: 3px; background: #e74c3c" />
+  <h1>&nbsp</h1>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script>
+    function updateClientsList(data) {
+      type = data.type;
+      quantity = data.quantity;
+      client_id = data.client_id;
+      var clientsHtml = "";
+
+      clientsHtml +=
+        '<input class="name-input" data-id="' +
+        client_id +
+        '" value="' +
+        type +
+        '" /> в количестве <input class="quantity-input" data-id="' +
+        client_id +
+        '" value="' +
+        quantity +
+        '" />' +
+        " человек";
+
+      $(".my_extra_clients").append(clientsHtml);
+      location.reload();
+    }
+
+    const socket = new ReconnectingWebSocket(
+      "ws://" + window.location.host + "/ws/BanquetEditingSocket/"
+    );
+
+    socket.onopen = function () {
+      console.log("BanquetEditingSocket соединение открыто.");
+    };
+
+    socket.onmessage = function (e) {
+      const data = JSON.parse(e.data);
+      console.log(data);
+      action = data["action"];
+      if (action === "client_added") {
+        updateClientsList(data);
+      } else if (action === "client_deleted") {
+        var clientId = data["client_id"];
+        const clientElement = document.querySelector(
+          `.my_client[data-id="${clientId}"]`
+        );
+
+        if (clientElement) {
+          clientElement.remove();
+        }
+      }
+    };
+
+    socket.onclose = function () {
+      console.log("CartEditingSocket соединение закрыто. Переподключение...");
+    };
+
+    // JavaScript код для отображения/скрытия формы при нажатии на кнопку
+    const showFormButton = document.getElementById("showFormBtn");
+    const clientForm = document.getElementById("clientForm");
+    const cancelFormButton = document.getElementById("cancelFormBtn");
+
+    showFormButton.addEventListener("click", () => {
+      clientForm.style.display = "block";
+      showFormButton.style.display = "none";
+    });
+
+    cancelFormButton.addEventListener("click", () => {
+      clientForm.style.display = "none";
+      showFormButton.style.display = "block";
+
+      document.getElementById("clientName").value = null;
+      document.getElementById("clientCount").value = null;
+    });
+
+    clientForm.addEventListener("submit", (event) => {
+      event.preventDefault();
+      const clientName = document.getElementById("clientName").value;
+      const clientCount = document.getElementById("clientCount").value;
+
+      showFormButton.style.display = "block";
+      clientForm.style.display = "none";
+
+      document.getElementById("clientName").value = null;
+      document.getElementById("clientCount").value = null;
+      // Здесь можно добавить обработку данных формы, например, отправку на сервер или другую обработку.
+      // На данном этапе, форма останется открытой после отправки.
+      username_id = "{{user.id}}";
+      socket.send(
+        JSON.stringify({
+          action: "added_client",
+          clientName: clientName,
+          clientCount: clientCount,
+          username_id: username_id,
+        })
+      );
+    });
+
+    function updateQuantity(client_id, quantity) {
+      socket.send(
+        JSON.stringify({
+          action: "client_quantity_update",
+          client_id: client_id,
+          username_id: "{{user.id}}",
+          quantity: quantity,
+        })
+      );
+    }
+
+    $(".quantity-input").on("change", function () {
+      const client_id = $(this).data("id");
+      const quantity = Math.max(1, $(this).val()); // Ensure the quantity is not less than 1
+      updateQuantity(client_id, quantity);
+    });
+
+    function handleDeleteButtonClick(event) {
+      const client_id = event.target.dataset.id; // Получаем id клиента из атрибута data-id
+
+      socket.send(
+        JSON.stringify({
+          action: "client_delete",
+          client_id: client_id,
+          username_id: "{{user.id}}",
+        })
+      );
+    }
+
+    const deleteButtons = document.querySelectorAll(".delete-client-btn");
+    deleteButtons.forEach((button) => {
+      button.addEventListener("click", handleDeleteButtonClick);
+    });
+  </script>
+</body>
+{% endblock content %}
