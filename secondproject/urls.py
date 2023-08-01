@@ -11,8 +11,9 @@ urlpatterns = [
     path('menu/', include('Menu.urls')),
     path('profile/', include('Profile.urls')),
     path('cart/', include('Cart.urls')),
-
+    path('banquet/', include('Banquet.urls')),
     path('email/', include(email_urls), name='email-verification'),
+    
 ]
 
 if settings.DEBUG:
