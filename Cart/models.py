@@ -15,6 +15,9 @@ class DishOrder(models.Model):
             return f"{self.product.name} в количестве {self.quantity} единицы"
         else:
             return f"{self.product.name} в количестве {self.quantity} единиц"
+        
+    async def save_async(self):
+        await self.asave()
     
     
 class Order(models.Model):
