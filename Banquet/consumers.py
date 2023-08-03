@@ -23,7 +23,7 @@ class BanquetConsumer(WebsocketConsumer):
     def receive(self, text_data):
         data = json.loads(text_data)
         print(data)
-        action = data["action"] 
+        action = data["action"]
 
         if action == "added_client":
             clientName = data["clientName"] 
@@ -51,7 +51,7 @@ class BanquetConsumer(WebsocketConsumer):
         elif action == "client_quantity_update":
             quantity = data["quantity"] 
             current_user_id = data["username_id"]
-            client_id = data["client_id"]
+            current_client_id = data["client_id"]
 
             try:
                 current_user = User.objects.get(id=current_user_id)
@@ -59,7 +59,7 @@ class BanquetConsumer(WebsocketConsumer):
             except ProfileData.DoesNotExist:
                 pass
             
-            current_client= Client.objects.get(id=client_id)
+            current_client= Client.objects.get(id=current_client_id)
 
             current_client.quantity = quantity
             current_client.save()
@@ -83,7 +83,46 @@ class BanquetConsumer(WebsocketConsumer):
             response = {"action":"client_deleted", "client_id": current_client_id}
             self.send_response(response)
   
-        
+        elif action == "added_dish":
+            current_user_id = data["current_user_id"]
+            current_dish_id = data["current_dish_id"]
+            current_client_id = data["current_client_id"]
+            try:
+                current_user = User.objects.get(id=current_user_id)
+                current_user_profiledata = ProfileData.objects.get(user=current_user)
+            except ProfileData.DoesNotExist:
+                pass
+            
+            current_dish = get_object_or_404(Dish, id=current_dish_id)
+            current_client = get_object_or_404(Client, id=current_client_id)
+
+            current_dishorder = False
+            for current_client_dish_orders in current_client.dishes.all():
+                if current_client_dish_orders.product.id == current_dish.id:
+                    current_dishorder = DishOrder.objects.get(Q(product=current_dish) & Q(owner=current_user_profiledata))
+                    break
+                
+
+            try:
+                print(current_dishorder)
+                if not current_dishorder:
+                    current_dishorder = DishOrder.objects.create(
+                    product=current_dish,
+                    quantity=1,
+                    owner=current_user_profiledata
+                    )
+                else:
+                    current_dishorder.quantity += 1
+                    current_dishorder.save()
+            except Exception as e:
+                print(e)
+
+            current_banquet = Banquet.objects.get(owner=current_user_profiledata, is_ordered=False)
+            current_client.dishes.add(current_dishorder)
+            current_client.save()
+
+            response = {'action': 'dish_added', 'client_id': current_client_id, 'current_dish_id': current_dish_id}
+            self.send_response(response)
 
     def send_response(self, response):
         # Отправка ответа пользователю через WebSocket
