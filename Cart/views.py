@@ -7,7 +7,6 @@ from decimal import Decimal
 from Menu.models import *
 from .models import *
 
-@login_required(login_url='/login/')
 def home(request):
     try:
         current_user_profiledata = ProfileData.objects.get(user=request.user)
@@ -46,7 +45,6 @@ def home(request):
     
     return render(request, 'Cart/home.html', contex)    
                     
-@login_required(login_url='/login/')
 def order(request):
     try:
         current_user_profiledata = ProfileData.objects.get(user=request.user)

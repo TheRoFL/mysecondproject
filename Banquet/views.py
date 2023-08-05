@@ -7,8 +7,13 @@ from Menu.models import *
 from .models import *
 
 
-@login_required(login_url='/login/')
 def home(request, dish_type=None, clientId=None):
+    clientId = request.GET.get('editting-clientId')
+    if clientId == "null":
+        clientId=None
+    dish_type = request.GET.get('dish-filter')
+    if dish_type == "all":
+        dish_type = None
     try:
         current_user = User.objects.get(id=request.user.id)
         current_user_profiledata = ProfileData.objects.get(user=current_user)
@@ -50,8 +55,12 @@ def home(request, dish_type=None, clientId=None):
 
     
     if clientId:
-        current_client = Client.objects.get(id=clientId)
-        contex["current_client"] =  current_client
+        try:
+            current_client = Client.objects.get(id=clientId)
+            contex["current_client"] =  current_client
+        except Client.DoesNotExist:
+            pass
+
 
 
     menu_samples = ClientSample.objects.all()

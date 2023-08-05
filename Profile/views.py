@@ -1,11 +1,12 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.contrib.auth.models import User
-
+from django.contrib.auth.decorators import login_required
 from .models import ProfileData
 from .forms import ProfileForm
 from Cart.models import *
 
+@login_required(login_url='/login/')
 def home(request, user_name):
     try:
         try:
@@ -40,6 +41,7 @@ def profile_creation(request):
 
     return render(request, 'Profile/profile_creation.html', contex)
 
+@login_required(login_url='/login/')
 def orders(request, user_name):
     currentprofile = ProfileData.objects.get(user=request.user)
     all_orders = Order.objects.filter(owner=currentprofile, is_ordered=True)

@@ -95,7 +95,7 @@ class CartEditingSocketConsumer(WebsocketConsumer):
 
         else:
             try:
-                dish_ordered = get_object_or_404(DishOrder, id=dish_id)
+                dish_ordered = get_object_or_404(DishOrder, id=dish_id, is_for_banquet=False)
             except DishOrder.DoesNotExist:
                 return HttpResponse(json.dumps({'status': 'error', 'message': 'DishOrder not found'}))
             
@@ -105,7 +105,7 @@ class CartEditingSocketConsumer(WebsocketConsumer):
                 current_user_profiledata = ProfileData.objects.get(user=current_user)
             except ProfileData.DoesNotExist:
                 pass
-            orders = DishOrder.objects.filter(owner=current_user_profiledata)
+            orders = DishOrder.objects.filter(Q(owner=current_user_profiledata)&Q(is_for_banquet=False))
             
             total = 0
             sums = dict()

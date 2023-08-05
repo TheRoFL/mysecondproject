@@ -4,117 +4,22 @@
 {% block content %} {% load static %}
 <h1>Формирование банкета</h1>
 <head>
+  <script>
+    var username_id_added = "{{user.id}}";
+    var current_client_id_added = "{{current_client.id}}";
+    localStorage.setItem("username_id", username_id_added);
+    localStorage.setItem("current_client_id", current_client_id_added);
+    var username_id = localStorage.getItem("username_id");
+    var current_client_id = localStorage.getItem("current_client_id");
+  </script>
   <link rel="stylesheet" href="/static/styles/menu-grid.css" />
-  <style>
-    img:hover {
-      border: 2px solid white;
-    }
-    button:hover {
-      border: 2px solid black;
-    }
-  </style>
+  <link rel="stylesheet" href="/static/styles/banquet.css" />
 </head>
 <body>
-  <style>
-    /* Простой стиль для красивого отображения формы */
-    body {
-      font-family: Arial, sans-serif;
-    }
-    form {
-      margin-top: 20px;
-      display: none; /* Форма будет скрыта по умолчанию */
-    }
-    label {
-      display: block;
-      margin-bottom: 10px;
-    }
-    input {
-      padding: 5px;
-      margin-bottom: 10px;
-      width: 300px;
-    }
-    button:hover {
-      border: 2px solid black;
-      background-color: #c0392b; /* Darker shade of red */
-    }
-    button {
-      background-color: #e74c3c; /* Change background color to red */
-      color: #fff;
-      border: none;
-      padding: 5px 10px;
-      margin: 5px;
-      cursor: pointer;
-      transition: background-color 0.3s ease; /* Add a transition effect */
-    }
-  </style>
-  <style>
-    /* Styles for the submit button */
-    input[type="submit"] {
-      background-color: #e74c3c; /* Red background color */
-      color: #fff;
-      border: none;
-      padding: 10px 20px;
-      border-radius: 50px; /* Make it oval with a larger border-radius */
-      cursor: pointer;
-      transition: transform 0.1s ease; /* Add a transformation effect on press */
-    }
-
-    /* Add a scale-down effect when the button is pressed */
-    input[type="submit"]:active {
-      transform: scale(0.95);
-    }
-
-    .quantity-input,
-    .name-input {
-      width: 50px;
-      height: 30px;
-      font-size: 16px;
-      border: 1px solid #ff0000;
-      border-radius: 5px;
-      text-align: center;
-      outline: none;
-      transition: border-color 0.2s ease-in-out;
-    }
-
-    .quantity-input:focus,
-    .name-input:focus {
-      border-color: #d80000;
-    }
-
-    .quantity-input::-webkit-inner-spin-button,
-    .quantity-input::-webkit-outer-spin-button,
-    .name-input::-webkit-inner-spin-button,
-    .name-input::-webkit-outer-spin-button {
-      -webkit-appearance: none;
-      margin: 0;
-    }
-
-    .quantity-input:focus::-webkit-inner-spin-button,
-    .quantity-input:focus::-webkit-outer-spin-button,
-    .name-input:focus::-webkit-inner-spin-button,
-    .name-input:focus::-webkit-outer-spin-button {
-      -webkit-appearance: none;
-      margin: 0;
-    }
-  </style>
-  <style>
-    body {
-      padding-bottom: 2000px; /* Размер пространства внизу body (можно задать нужное значение) */
-    }
-  </style>
-
-  <style>
-    .main-grid-container {
-      display: grid;
-
-      padding: 10px;
-    }
-  </style>
-
   <h1 style="margin-left: 10px">Создать клиента</h1>
   <button id="showFormBtn" style="margin-left: 10px">Добавить клиента</button>
 
-  <div class="main-grid-container">
+  <div>
     <form id="clientForm" style="margin-left: 10px">
       <label for="clientName">Название клиента:</label>
       <input type="text" id="clientName" required />
@@ -129,6 +34,7 @@
     <h1>&nbsp</h1>
     <hr style="width: 90%; height: 3px; background: #e74c3c" />
     <h1>&nbsp</h1>
+    {% if banquet.clients.all %}
     <div class="my_extra_clients">
       {% for client in banquet.clients.all %}
       <div class="my_client" data-id="{{client.id}}">
@@ -147,12 +53,29 @@
         <button class="delete-client-btn" data-id="{{client.id}}">
           Удалить
         </button>
-        <button class="menu-client-btn" data-id="{{client.id}}">Меню</button>
+        <button class="menu-client-btn" data-id="{{client.id}}">
+          Выбрать для редактирования
+        </button>
       </div>
       {% endfor %}
     </div>
+    <h1>&nbsp</h1>
+    <hr style="width: 90%; height: 3px; background: #e74c3c" />
+    <h1>&nbsp</h1>
+    {% endif %}
 
     <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const savedPosition = sessionStorage.getItem("scrollPosition");
+
+        if (savedPosition) {
+          // Прокручиваем страницу к сохраненной позиции
+          window.scrollTo(0, savedPosition);
+
+          // Удаляем сохраненную позицию прокрутки из sessionStorage
+          sessionStorage.removeItem("scrollPosition");
+        }
+      });
       // Получаем все кнопки с классом "menu-client-btn"
       const menuButtons = document.querySelectorAll(".menu-client-btn");
 
@@ -163,42 +86,98 @@
 
         // Добавляем обработчик событий на нажатие кнопки
         button.addEventListener("click", () => {
-          // Перенаправляем пользователя по ссылке /banquet/menu-editting/{{client.id}}
-          window.location.href = `/banquet/menu-editting/${clientId}`;
+          const currentPosition = window.scrollY;
+          sessionStorage.setItem("scrollPosition", currentPosition);
+
+          window.location.href = `/banquet/?editting-clientId=${clientId}`;
+          window.scrollTo(0, scrollTop);
         });
 
         // Проверяем текущий URL и сравниваем с целевой ссылкой
         const currentUrl = window.location.pathname.replace(/\/$/, ""); // Удаляем последний слеш, если есть
-        const targetUrl = `/banquet/menu-editting/${clientId}`;
+        const targetUrl = `/banquet/?editting-clientId=${clientId}`;
 
-        if (currentUrl === targetUrl) {
+        function getURLParameter(name) {
+          const urlParams = new URLSearchParams(window.location.search);
+          return urlParams.get(name);
+        }
+        const NewclientId = getURLParameter("editting-clientId");
+
+        if (clientId === NewclientId) {
           // Если текущий URL совпадает с целевой ссылкой, подсвечиваем кнопку
           button.classList.add("active");
-          button.textContent = "Редактирование меню";
+          button.textContent = "Выбрано для редактирования";
         }
       });
     </script>
-
     <style>
       .menu-client-btn.active {
         background-color: #b71100; /* Здесь можно задать нужный вам стиль для подсветки */
         text-decoration: underline; /* Подчеркиваем текст кнопки */=
       }
     </style>
-    <h1>&nbsp</h1>
-    <hr style="width: 90%; height: 3px; background: #e74c3c" />
-    <h1>&nbsp</h1>
 
     {% if current_client %}
     <h1>Режим редактирования меню "{{current_client.type}}"</h1>
     {% endif %}
     <h1>{{dish_type}}</h1>
 
-    <a href="/banquet/">Все блюда</a>
-    <a href="/banquet/salads/">Салаты</a>
-    <a href="/banquet/hot_dishes/">Горячие блюда</a>
-    <a href="/banquet/drinks/">Напитки</a>
-    <a href="/banquet/desserts">Десерты</a>
+    <a
+      class="dish-filter"
+      href="/banquet/?dish-filter=all&editting-clientId={{clientId}}"
+      >Все блюда</a
+    >
+    <a
+      class="dish-filter"
+      href="/banquet/?dish-filter=salads&editting-clientId={{clientId}}"
+      >Салаты</a
+    >
+    <a
+      class="dish-filter"
+      data-id="hot_dishes"
+      href="/banquet/?dish-filter=hot_dishes&editting-clientId={{clientId}}"
+      >Горячие блюда</a
+    >
+    <a
+      class="dish-filter"
+      href="/banquet/?dish-filter=drinks&editting-clientId={{clientId}}"
+      >Напитки</a
+    >
+    <a
+      class="dish-filter"
+      href="/banquet/?dish-filter=desserts&editting-clientId={{clientId}}"
+      >Десерты</a
+    >
+
+    <script>
+      // Получаем ссылку на клиентов по классу
+      const clientLinks = document.querySelectorAll(".dish-filter");
+
+      function getQueryParamValue(url, param) {
+        const urlObject = new URL(url);
+        return urlObject.searchParams.get(param);
+      }
+      // Перебираем ссылки на клиентов и назначаем обработчик события на клик
+      clientLinks.forEach((link) => {
+        link.addEventListener("click", function () {
+          const url = window.location.href;
+
+          const currentPosition = window.scrollY;
+          sessionStorage.setItem("scrollPosition", currentPosition);
+          // Получаем clientid из data-id атрибута кнопки клиента
+          let clientId = null;
+          const urlObject = new URL(url);
+          clientId = urlObject.searchParams.get("editting-clientId");
+          this.href += clientId;
+
+          const urlParams = new URLSearchParams(window.location.search);
+          const editting_clientId = urlParams.get("editting-clientId");
+
+          const newURL = link.getAttribute("href");
+          const dataId = this.dataset.id;
+        });
+      });
+    </script>
     <div class="grid-container">
       {% for current_dish in current_dishes %}
       <div class="grid-item">
@@ -228,13 +207,18 @@
             .order-button:hover {
               background-color: #c0392b; /* Darker shade of red */
             }
+
+            .order-button[disabled] {
+              opacity: 0.65;
+            }
           </style>
           <button
             class="order-button"
             data-id="{{current_dish.id}}"
             data-name="{{current_dish.tittle}}"
           >
-            Добавить для "{{current_client.type}}"
+            {% if current_client %} Добавить для "{{current_client.type}}"
+            {%else%} Выберите клиента {% endif %}
           </button>
         </h2>
       </div>
@@ -246,22 +230,80 @@
     <h1>&nbsp</h1>
 
     <!-- prettier-ignore -->
+    {% comment %} Стили кнопок {% endcomment %}
+    <style>
+      /* Styles for the buttons */
+      .increase-btn,
+      .decrease-btn,
+      .delete-btn {
+        background-color: #e74c3c; /* Change background color to red */
+        color: #fff;
+        border: none;
+        padding: 5px 10px;
+        margin: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s ease; /* Add a transition effect */
+      }
+
+      /* Change button background color to a darker shade of red when hovered */
+      .increase-btn:hover,
+      .decrease-btn:hover,
+      .delete-btn:hover {
+        background-color: #c0392b; /* Darker shade of red */
+      }
+    </style>
     {% for client in banquet.clients.all %}
-    <h1>{{client}}</h1>
+    <h1>
+      Меню для клиента типа "{{client.type}}" в количестве
+      <span class="client-quantity" data-id="{{client.id}}"
+        >{{client.quantity}}</span
+      >
+      человек
+    </h1>
     {% for client_dishOrder in client.dishes.all %}
-    <h2 style="margin-left: 30px">
-      {{client_dishOrder.product.name}} x {{client_dishOrder.quantity}} =
-      {{client_dishOrder.price_count}}.00 руб.
-    </h2>
+    <h1>
+      <div class="client_dishOrder-button-element">
+        <div class="client_dishOrder-element" data-id="{{client_dishOrder.id}}">
+          <h2 style="margin-left: 30px">
+            {{client_dishOrder.product.name}} x {{client_dishOrder.quantity}}
+            шт. = {{client_dishOrder.price_count}}.00 руб.
+          </h2>
+        </div>
+        <button class="delete-btn" data-id="{{client_dishOrder.id}}">X</button>
+      </div>
+    </h1>
+
+    <style>
+      .delete-btn {
+        position: absolute;
+        /* Укажите здесь нужные значения для top, left, right или bottom */
+      }
+      .client_dishOrder-element {
+        display: inline-block;
+      }
+    </style>
+
     {% endfor %}
+
     <h2 style="margin-top: 50px margin-left: 20px">
-      Итого: {{client.price_count}}.00 руб. x {{client.quantity}} =
-      {{client.total_price_count}}.00 руб.
+      Итого: {{client.price_count}}.00 руб. x
+      <span class="client-quantity-2" data-id="{{client.id}}"
+        >{{client.quantity}}</span
+      >
+      человек =
+      <span class="total-price-count" data-id="{{client.id}}"
+        >{{client.total_price_count}}</span
+      >.00 руб.
     </h2>
     <h1>&nbsp</h1>
 
     {% endfor %}
-    <h1>Итог: {{banquet.total_price}}.00 руб.</h1>
+    <h1>
+      Сумма заказа:
+      <span class="banquet-total-price" data-id="{{banquet.id}}"
+        >{{banquet.total_price}}.00 руб.
+      </span>
+    </h1>
   </div>
 
   <h1>&nbsp</h1>
@@ -269,210 +311,13 @@
   <h1>&nbsp</h1>
 
   {% for menu_sample in menu_samples %} {{menu_sample}} {% endfor %}
-  <!-- prettier-ignore -->
+
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-  <script>
-    function updateClientsList(data) {
-      type = data.type;
-      quantity = data.quantity;
-      client_id = data.client_id;
-      var clientsHtml = "";
+  {% comment %} сокент на изменение данных {% endcomment %}
 
-      clientsHtml +=
-        '<input class="name-input" data-id="' +
-        client_id +
-        '" value="' +
-        type +
-        '" /> в количестве <input class="quantity-input" data-id="' +
-        client_id +
-        '" value="' +
-        quantity +
-        '" />' +
-        " человек";
+  <script src="/static/js/banquet_changing.js"></script>
 
-      $(".my_extra_clients").append(clientsHtml);
-      location.reload();
-    }
-
-    const socket = new ReconnectingWebSocket(
-      "ws://" + window.location.host + "/ws/BanquetEditingSocket/"
-    );
-
-    socket.onopen = function () {
-      console.log("BanquetEditingSocket соединение открыто.");
-    };
-
-    socket.onmessage = function (e) {
-      const data = JSON.parse(e.data);
-      console.log(data);
-      action = data["action"];
-      if (action === "client_added") {
-        updateClientsList(data);
-      } else if (action === "client_deleted") {
-        var clientId = data["client_id"];
-        const clientElement = document.querySelector(
-          `.my_client[data-id="${clientId}"]`
-        );
-
-        if (clientElement) {
-          clientElement.remove();
-        }
-      }
-    };
-
-    socket.onclose = function () {
-      console.log("CartEditingSocket соединение закрыто. Переподключение...");
-    };
-
-    // JavaScript код для отображения/скрытия формы при нажатии на кнопку
-    const showFormButton = document.getElementById("showFormBtn");
-    const clientForm = document.getElementById("clientForm");
-    const cancelFormButton = document.getElementById("cancelFormBtn");
-
-    showFormButton.addEventListener("click", () => {
-      clientForm.style.display = "block";
-      showFormButton.style.display = "none";
-    });
-
-    cancelFormButton.addEventListener("click", () => {
-      clientForm.style.display = "none";
-      showFormButton.style.display = "block";
-
-      document.getElementById("clientName").value = null;
-      document.getElementById("clientCount").value = null;
-    });
-
-    clientForm.addEventListener("submit", (event) => {
-      event.preventDefault();
-      const clientName = document.getElementById("clientName").value;
-      const clientCount = document.getElementById("clientCount").value;
-
-      showFormButton.style.display = "block";
-      clientForm.style.display = "none";
-
-      document.getElementById("clientName").value = null;
-      document.getElementById("clientCount").value = null;
-      // Здесь можно добавить обработку данных формы, например, отправку на сервер или другую обработку.
-      // На данном этапе, форма останется открытой после отправки.
-      username_id = "{{user.id}}";
-      socket.send(
-        JSON.stringify({
-          action: "added_client",
-          clientName: clientName,
-          clientCount: clientCount,
-          username_id: username_id,
-        })
-      );
-    });
-
-    function updateQuantity(client_id, quantity) {
-      socket.send(
-        JSON.stringify({
-          action: "client_quantity_update",
-          client_id: client_id,
-          username_id: "{{user.id}}",
-          quantity: quantity,
-        })
-      );
-    }
-
-    $(".quantity-input").on("change", function () {
-      const client_id = $(this).data("id");
-      const quantity = Math.max(1, $(this).val()); // Ensure the quantity is not less than 1
-      updateQuantity(client_id, quantity);
-    });
-
-    function handleDeleteButtonClick(event) {
-      const client_id = event.target.dataset.id; // Получаем id клиента из атрибута data-id
-
-      socket.send(
-        JSON.stringify({
-          action: "client_delete",
-          client_id: client_id,
-          username_id: "{{user.id}}",
-        })
-      );
-    }
-
-    const deleteButtons = document.querySelectorAll(".delete-client-btn");
-    deleteButtons.forEach((button) => {
-      button.addEventListener("click", handleDeleteButtonClick);
-    });
-  </script>
-  <script>
-    // Код JavaScript для обработки WebSocket-соединения и уведомлений
-    let MySocket;
-
-    function initWebSocket() {
-      MySocket = new ReconnectingWebSocket(
-        "ws://" + window.location.host + "/ws/BanquetEditingSocket/"
-      );
-
-      MySocket.onopen = function () {
-        console.log("WebSocket соединение открыто.");
-      };
-
-      MySocket.onmessage = function (e) {
-        const data = JSON.parse(e.data);
-        console.log(data);
-      };
-
-      MySocket.onclose = function () {
-        console.log("WebSocket соединение закрыто. Переподключение...");
-      };
-    }
-
-    function SendData(data) {
-      // Проверяем, что WebSocket-соединение открыто, прежде чем отправить уведомление
-      if (MySocket && MySocket.readyState === WebSocket.OPEN) {
-        MySocket.send(JSON.stringify(data));
-      }
-    }
-    const orderButtons = document.querySelectorAll(".order-button");
-    // Добавляем обработчик для каждой кнопки "Заказать"
-    if ("{{user.id}}" !== "None") {
-      // Код, который выполняется, если {{user.id}} не равен "none"
-      orderButtons.forEach((button) => {
-        const dishId = button.dataset.id;
-        const dishTittle = button.dataset.name;
-        button.addEventListener("click", function () {
-          // Если WebSocket-соединение уже открыто, отправляем уведомление на сервер
-          if (MySocket && MySocket.readyState === WebSocket.OPEN) {
-            var current_user_id = "{{user.id}}";
-            const data_to_send = {
-              action: "added_dish",
-              message: `Заказ "${dishTittle}" добавлен`,
-              current_dish_id: dishId,
-              current_user_id: current_user_id,
-              current_client_id: "{{current_client.id}}",
-            };
-            SendData(data_to_send);
-          } else {
-            // Если WebSocket-соединение еще не открыто, создаем новое и отправляем уведомление
-            initWebSocket();
-            var current_user_id = "{{user.id}}";
-            const data_to_send = {
-              action: "added_dish",
-              message: `Заказ "${dishTittle}" добавлен`,
-              current_dish_id: dishId,
-              current_client_id: "{{current_client.id}}",
-            };
-            SendData(data_to_send);
-          }
-        });
-      });
-    } else {
-      // Код, который выполняется, если {{user.id}} равен "none"
-      orderButtons.forEach((button) => {
-        button.addEventListener("click", function () {
-          // Перенаправление пользователя на страницу "login"
-          window.location.href = "/login";
-        });
-      });
-    }
-
-    // Инициализация WebSocket-соединения при загрузке страницы
-    initWebSocket();
-  </script>
+  {% comment %} Сокет на добавление заказа {% endcomment %}
+  <script src="/static/js/banquet_menu_ordering.js"></script>
 </body>
 {% endblock content %}
