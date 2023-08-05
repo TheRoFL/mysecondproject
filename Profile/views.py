@@ -23,7 +23,7 @@ def home(request, user_name):
 
     return render(request, 'Profile/home.html', context)
 
-def profile_creation(request):
+def profile_creation(request,user_name):
     Profile_form = ProfileForm()
     currentuserid = request.user.id
     if request.method == 'GET':
