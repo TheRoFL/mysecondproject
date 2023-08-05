@@ -96,15 +96,16 @@ class BanquetConsumer(WebsocketConsumer):
             current_dish = get_object_or_404(Dish, id=current_dish_id)
             current_client = get_object_or_404(Client, id=current_client_id)
 
-            current_dishorder = False
-            for current_client_dish_orders in current_client.dishes.all():
-                if current_client_dish_orders.product.id == current_dish.id:
-                    current_dishorder = DishOrder.objects.get(Q(product=current_dish) & Q(owner=current_user_profiledata))
+            current_dishorder = None
+            for current_client_dish_order in current_client.dishes.all():
+                print(current_dish)
+                print(current_client.dishes.all())
+
+                if current_client_dish_order.product.id == current_dish.id:
+                    current_dishorder = current_client_dish_order
                     break
-                
 
             try:
-                print(current_dishorder)
                 if not current_dishorder:
                     current_dishorder = DishOrder.objects.create(
                     product=current_dish,
