@@ -49,7 +49,8 @@ class CartSocketConsumer(AsyncWebsocketConsumer):
                 new_dish_order = await sync_to_async(DishOrder.objects.create)(
                 product=dish_ordered,
                 quantity=1,
-                owner=current_user_profiledata
+                owner=current_user_profiledata,
+                is_for_banquet=False
                 )
             else:
                 dish_order_exists.quantity += 1

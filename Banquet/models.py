@@ -11,6 +11,18 @@ class Client(models.Model):
 
     def __str__(self):
         return "Меню " + "''" + str(self.type) + "''" + " на " + str(self.quantity) + " человек"
+    
+    total = 0
+    def price_count(self):
+        for dish in self.dishes.all():
+            self.total += int(dish.price_count())
+        return self.total
+    
+    def total_price_count(self):
+        self.total = 0
+        self.price_count()
+        return self.total * self.quantity
+    
 
 class Banquet(models.Model):
     clients = models.ManyToManyField(Client)
@@ -19,11 +31,42 @@ class Banquet(models.Model):
 
     is_ordered = models.BooleanField(default=False)
 
-    __quantity = 0
+    quantity = 0
     def quantity_count(self):
+        self.quantity = 0
         for client in self.clients.all():
-            self.__quantity += client.quantity
+            self.quantity += client.quantity
+        return self.quantity
         
     def __str__(self):
         self.quantity_count()
-        return self.type + " на " + str(self.__quantity) + " человек"
+        return self.type + " на " + str(self.quantity) + " человек"
+    
+    total = 0
+    def total_price(self):
+        for client in self.clients.all():
+            self.total += client.total_price_count()
+        return self.total 
+    
+class ClientSample(models.Model):
+    dishes = models.ManyToManyField(DishOrder)
+    quantity = models.PositiveIntegerField()
+    type = models.CharField(max_length=50)
+
+    description = models.TextField()
+    rating = models.PositiveIntegerField()
+
+    def __str__(self):
+        return "Меню " + "''" + str(self.type) + "''" + " ... " + self.description
+    
+    total = 0
+    def price_count(self):
+        for dish in self.dishes.all():
+            self.total += int(dish.price_count())
+        return self.total
+    
+    def total_price_count(self):
+        self.total = 0
+        self.price_count()
+        return self.total * self.quantity
+    

@@ -7,8 +7,9 @@ from Profile.models import ProfileData
 class DishOrder(models.Model):
     product = models.ForeignKey(Dish, on_delete=models.CASCADE)
     quantity = models.PositiveIntegerField()
-    owner = models.ForeignKey(ProfileData, on_delete=models.CASCADE, default=None)
+    owner = models.ForeignKey(ProfileData, on_delete=models.CASCADE, default=None, null=True, blank=True)
 
+    is_for_banquet = models.BooleanField(default=True)
 
     def __str__(self):
         if self.quantity == 1:
@@ -18,6 +19,9 @@ class DishOrder(models.Model):
         
     async def save_async(self):
         await self.asave()
+
+    def price_count(self):
+        return int(self.product.price) * self.quantity
     
     
 class Order(models.Model):

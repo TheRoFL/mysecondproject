@@ -13,7 +13,7 @@ def home(request):
         current_user_profiledata = ProfileData.objects.get(user=request.user)
     except ProfileData.DoesNotExist:
         pass
-    dish_orders = DishOrder.objects.filter(owner=current_user_profiledata)
+    dish_orders = DishOrder.objects.filter(owner=current_user_profiledata, is_for_banquet=False)
 
     if request.method == 'GET':
         total = 0

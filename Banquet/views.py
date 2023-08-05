@@ -1,11 +1,13 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
 from django.db.models import Q
-
+from django.contrib.auth.decorators import login_required
 
 from Menu.models import *
 from .models import *
 
+
+@login_required(login_url='/login/')
 def home(request, dish_type=None, clientId=None):
     try:
         current_user = User.objects.get(id=request.user.id)
@@ -18,7 +20,7 @@ def home(request, dish_type=None, clientId=None):
     except Banquet.DoesNotExist:
          banquet = Banquet.objects.create(owner=current_user_profiledata, is_ordered=False)
 
-
+    
     if dish_type == None:
         try:
             current_dishes = Dish.objects.all()
@@ -51,5 +53,8 @@ def home(request, dish_type=None, clientId=None):
         current_client = Client.objects.get(id=clientId)
         contex["current_client"] =  current_client
 
+
+    menu_samples = ClientSample.objects.all()
+    contex["menu_samples"] = menu_samples
 
     return render(request, 'Banquet/home.html', contex)    

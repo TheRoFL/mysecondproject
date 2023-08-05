@@ -102,142 +102,173 @@
       padding-bottom: 2000px; /* Размер пространства внизу body (можно задать нужное значение) */
     }
   </style>
+
+  <style>
+    .main-grid-container {
+      display: grid;
+
+      padding: 10px;
+    }
+  </style>
+
   <h1 style="margin-left: 10px">Создать клиента</h1>
   <button id="showFormBtn" style="margin-left: 10px">Добавить клиента</button>
 
-  <form id="clientForm" style="margin-left: 10px">
-    <label for="clientName">Название клиента:</label>
-    <input type="text" id="clientName" required />
+  <div class="main-grid-container">
+    <form id="clientForm" style="margin-left: 10px">
+      <label for="clientName">Название клиента:</label>
+      <input type="text" id="clientName" required />
 
-    <label for="clientCount">Количество клиентов:</label>
-    <input type="number" id="clientCount" required />
-    <br />
+      <label for="clientCount">Количество клиентов:</label>
+      <input type="number" id="clientCount" required />
+      <br />
 
-    <button type="submit">Сохранить</button>
-    <button type="button" id="cancelFormBtn">Отменить</button>
-  </form>
-  <h1>&nbsp</h1>
-  <hr style="width: 90%; height: 3px; background: #e74c3c" />
-  <h1>&nbsp</h1>
-  <div class="my_extra_clients">
-    {% for client in banquet.clients.all %}
-    <div class="my_client" data-id="{{client.id}}">
-      <input
-        class="name-input"
-        data-id="{{client.id}}"
-        value="{{ client.type }}"
-      />
-      в количестве
-      <input
-        class="quantity-input"
-        data-id="{{client.id}}"
-        value="{{ client.quantity }}"
-      />
-      человек
-      <button class="delete-client-btn" data-id="{{client.id}}">Удалить</button>
-      <button class="menu-client-btn" data-id="{{client.id}}">Меню</button>
-    </div>
-    {% endfor %}
-  </div>
-
-  <script>
-    // Получаем все кнопки с классом "menu-client-btn"
-    const menuButtons = document.querySelectorAll(".menu-client-btn");
-
-    // Добавляем обработчик событий на каждую кнопку
-    menuButtons.forEach((button) => {
-      // Получаем значение атрибута data-id у каждой кнопки (client.id)
-      const clientId = button.getAttribute("data-id");
-
-      // Добавляем обработчик событий на нажатие кнопки
-      button.addEventListener("click", () => {
-        // Перенаправляем пользователя по ссылке /banquet/menu-editting/{{client.id}}
-        window.location.href = `/banquet/menu-editting/${clientId}`;
-      });
-
-      // Проверяем текущий URL и сравниваем с целевой ссылкой
-      const currentUrl = window.location.pathname.replace(/\/$/, ""); // Удаляем последний слеш, если есть
-      const targetUrl = `/banquet/menu-editting/${clientId}`;
-
-      if (currentUrl === targetUrl) {
-        // Если текущий URL совпадает с целевой ссылкой, подсвечиваем кнопку
-        button.classList.add("active");
-        button.textContent = "Редактирование меню";
-      }
-    });
-  </script>
-
-  <style>
-    .menu-client-btn.active {
-      background-color: #b71100; /* Здесь можно задать нужный вам стиль для подсветки */
-      text-decoration: underline; /* Подчеркиваем текст кнопки */=
-    }
-  </style>
-  <h1>&nbsp</h1>
-  <hr style="width: 90%; height: 3px; background: #e74c3c" />
-  <h1>&nbsp</h1>
-
-  {% if current_client %}
-  <h1>Режим редактирования меню "{{current_client.type}}"</h1>
-  {% endif %}
-  <h1>{{dish_type}}</h1>
-
-  <a href="/banquet/">Все блюда</a>
-  <a href="/banquet/salads/">Салаты</a>
-  <a href="/banquet/hot_dishes/">Горячие блюда</a>
-  <a href="/banquet/drinks/">Напитки</a>
-  <a href="/banquet/desserts">Десерты</a>
-  <div class="grid-container">
-    {% for current_dish in current_dishes %}
-    <div class="grid-item">
-      <a href="/menu/dishes/{{current_dish.tittle}}"
-        ><img
-          src="http://localhost:8000/media/menu_images/{{current_dish.type}}/{{current_dish.name}}.png"
-      /></a>
-      <h3>
-        {{current_dish.tittle}} / {{current_dish.weight}} гр. /
-        {{current_dish.price}} руб.
-      </h3>
-      <h2>
-        <style>
-          /* Styles for the "Заказать" button */
-          .order-button {
-            background-color: #e74c3c; /* Red background color */
-            color: #fff; /* White text color */
-            border: none;
-            padding: 10px 20px;
-            border-radius: 5px; /* Rounded corners */
-            cursor: pointer;
-            font-size: 16px;
-            transition: background-color 0.3s ease; /* Add a transition effect on hover */
-          }
-
-          /* Change button background color to a darker shade of red when hovered */
-          .order-button:hover {
-            background-color: #c0392b; /* Darker shade of red */
-          }
-        </style>
-        <button
-          class="order-button"
-          data-id="{{current_dish.id}}"
-          data-name="{{current_dish.tittle}}"
-        >
-          Добавить для "{{current_client.type}}"
+      <button type="submit">Сохранить</button>
+      <button type="button" id="cancelFormBtn">Отменить</button>
+    </form>
+    <h1>&nbsp</h1>
+    <hr style="width: 90%; height: 3px; background: #e74c3c" />
+    <h1>&nbsp</h1>
+    <div class="my_extra_clients">
+      {% for client in banquet.clients.all %}
+      <div class="my_client" data-id="{{client.id}}">
+        <input
+          class="name-input"
+          data-id="{{client.id}}"
+          value="{{ client.type }}"
+        />
+        в количестве
+        <input
+          class="quantity-input"
+          data-id="{{client.id}}"
+          value="{{ client.quantity }}"
+        />
+        человек
+        <button class="delete-client-btn" data-id="{{client.id}}">
+          Удалить
         </button>
-      </h2>
+        <button class="menu-client-btn" data-id="{{client.id}}">Меню</button>
+      </div>
+      {% endfor %}
     </div>
+
+    <script>
+      // Получаем все кнопки с классом "menu-client-btn"
+      const menuButtons = document.querySelectorAll(".menu-client-btn");
+
+      // Добавляем обработчик событий на каждую кнопку
+      menuButtons.forEach((button) => {
+        // Получаем значение атрибута data-id у каждой кнопки (client.id)
+        const clientId = button.getAttribute("data-id");
+
+        // Добавляем обработчик событий на нажатие кнопки
+        button.addEventListener("click", () => {
+          // Перенаправляем пользователя по ссылке /banquet/menu-editting/{{client.id}}
+          window.location.href = `/banquet/menu-editting/${clientId}`;
+        });
+
+        // Проверяем текущий URL и сравниваем с целевой ссылкой
+        const currentUrl = window.location.pathname.replace(/\/$/, ""); // Удаляем последний слеш, если есть
+        const targetUrl = `/banquet/menu-editting/${clientId}`;
+
+        if (currentUrl === targetUrl) {
+          // Если текущий URL совпадает с целевой ссылкой, подсвечиваем кнопку
+          button.classList.add("active");
+          button.textContent = "Редактирование меню";
+        }
+      });
+    </script>
+
+    <style>
+      .menu-client-btn.active {
+        background-color: #b71100; /* Здесь можно задать нужный вам стиль для подсветки */
+        text-decoration: underline; /* Подчеркиваем текст кнопки */=
+      }
+    </style>
+    <h1>&nbsp</h1>
+    <hr style="width: 90%; height: 3px; background: #e74c3c" />
+    <h1>&nbsp</h1>
+
+    {% if current_client %}
+    <h1>Режим редактирования меню "{{current_client.type}}"</h1>
+    {% endif %}
+    <h1>{{dish_type}}</h1>
+
+    <a href="/banquet/">Все блюда</a>
+    <a href="/banquet/salads/">Салаты</a>
+    <a href="/banquet/hot_dishes/">Горячие блюда</a>
+    <a href="/banquet/drinks/">Напитки</a>
+    <a href="/banquet/desserts">Десерты</a>
+    <div class="grid-container">
+      {% for current_dish in current_dishes %}
+      <div class="grid-item">
+        <a href="/menu/dishes/{{current_dish.tittle}}"
+          ><img
+            src="http://localhost:8000/media/menu_images/{{current_dish.type}}/{{current_dish.name}}.png"
+        /></a>
+        <h3>
+          {{current_dish.tittle}} / {{current_dish.weight}} гр. /
+          {{current_dish.price}} руб.
+        </h3>
+        <h2>
+          <style>
+            /* Styles for the "Заказать" button */
+            .order-button {
+              background-color: #e74c3c; /* Red background color */
+              color: #fff; /* White text color */
+              border: none;
+              padding: 10px 20px;
+              border-radius: 5px; /* Rounded corners */
+              cursor: pointer;
+              font-size: 16px;
+              transition: background-color 0.3s ease; /* Add a transition effect on hover */
+            }
+
+            /* Change button background color to a darker shade of red when hovered */
+            .order-button:hover {
+              background-color: #c0392b; /* Darker shade of red */
+            }
+          </style>
+          <button
+            class="order-button"
+            data-id="{{current_dish.id}}"
+            data-name="{{current_dish.tittle}}"
+          >
+            Добавить для "{{current_client.type}}"
+          </button>
+        </h2>
+      </div>
+      {% endfor %}
+    </div>
+
+    <h1>&nbsp</h1>
+    <hr style="width: 90%; height: 3px; background: #e74c3c" />
+    <h1>&nbsp</h1>
+
+    <!-- prettier-ignore -->
+    {% for client in banquet.clients.all %}
+    <h1>{{client}}</h1>
+    {% for client_dishOrder in client.dishes.all %}
+    <h2 style="margin-left: 30px">
+      {{client_dishOrder.product.name}} x {{client_dishOrder.quantity}} =
+      {{client_dishOrder.price_count}}.00 руб.
+    </h2>
     {% endfor %}
+    <h2 style="margin-top: 50px margin-left: 20px">
+      Итого: {{client.price_count}}.00 руб. x {{client.quantity}} =
+      {{client.total_price_count}}.00 руб.
+    </h2>
+    <h1>&nbsp</h1>
+
+    {% endfor %}
+    <h1>Итог: {{banquet.total_price}}.00 руб.</h1>
   </div>
 
   <h1>&nbsp</h1>
   <hr style="width: 90%; height: 3px; background: #e74c3c" />
   <h1>&nbsp</h1>
-  <!-- prettier-ignore -->
-  {% for client in banquet.clients.all %}
-  <h1>{{client}}</h1>
-  {% for client_dishOrder in client.dishes.all %}
-  <h2 style="margin-left: 30px">{{client_dishOrder}}</h2>
-  {% endfor %} {% endfor %}
+
+  {% for menu_sample in menu_samples %} {{menu_sample}} {% endfor %}
   <!-- prettier-ignore -->
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script>

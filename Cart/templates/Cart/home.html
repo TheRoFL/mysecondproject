@@ -79,7 +79,9 @@
             >{{ order.quantity }}</span
           >
           =
-          <span class="order_sum" data-id="{{order.id}}">{{ order.sum }}</span>
+          <span class="order_sum" data-id="{{order.id}}"
+            >{{ order.price_count }}</span
+          >
           рублей
         </h1>
         <a href="/menu/dishes/{{ order.product.name }}"
