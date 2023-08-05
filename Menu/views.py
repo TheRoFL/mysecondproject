@@ -2,6 +2,9 @@ from django.shortcuts import render, redirect
 from .models import Dish
 
 def home(request, dish_type=None):
+    dish_type = request.GET.get('dish_type')
+    if dish_type == "all":
+        dish_type = None
     if dish_type == None:
         try:
             current_dishes = Dish.objects.all()

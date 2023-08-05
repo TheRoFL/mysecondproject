@@ -24,11 +24,16 @@ class BanquetConsumer(WebsocketConsumer):
         data = json.loads(text_data)
         print(data)
         action = data["action"]
+        current_user_id = data["current_user_id"]
+        try:
+            current_user = User.objects.get(id=current_user_id)
+            current_user_profiledata = ProfileData.objects.get(user=current_user)
+        except ProfileData.DoesNotExist:
+            pass
 
         if action == "added_client":
             clientName = data["clientName"] 
             clientCount = data["clientCount"] 
-            current_user_id = data["username_id"]
 
             try:
                 current_user = User.objects.get(id=current_user_id)
@@ -50,7 +55,6 @@ class BanquetConsumer(WebsocketConsumer):
 
         elif action == "client_quantity_update":
             quantity = data["quantity"] 
-            current_user_id = data["username_id"]
             current_client_id = data["client_id"]
 
             try:
@@ -63,12 +67,15 @@ class BanquetConsumer(WebsocketConsumer):
 
             current_client.quantity = quantity
             current_client.save()
-
-            response = {"action":"client_quantity_changed", "new_quantity":current_client.quantity, "client_id": current_client.id}
+            total_price_count = current_client.total_price_count()
+            current_banquet = Banquet.objects.get(owner=current_user_profiledata, is_ordered=False)
+            total_banquet_price_count = current_banquet.total_price()
+            response = {"action":"client_quantity_changed", "new_quantity":current_client.quantity, "client_id": current_client.id,
+                        "banquet_id":current_banquet.id,
+                        "total_price_count":total_price_count, "total_banquet_price":total_banquet_price_count }
             self.send_response(response)
             
         elif action == "client_delete":
-            current_user_id = data["username_id"]
             client_id = data["client_id"]
 
             try:
@@ -84,16 +91,11 @@ class BanquetConsumer(WebsocketConsumer):
             self.send_response(response)
   
         elif action == "added_dish":
-            current_user_id = data["current_user_id"]
             current_dish_id = data["current_dish_id"]
             current_client_id = data["current_client_id"]
-            try:
-                current_user = User.objects.get(id=current_user_id)
-                current_user_profiledata = ProfileData.objects.get(user=current_user)
-            except ProfileData.DoesNotExist:
-                pass
             
             current_dish = get_object_or_404(Dish, id=current_dish_id)
+            print(current_client_id)
             current_client = get_object_or_404(Client, id=current_client_id)
 
             current_dishorder = None
@@ -123,6 +125,14 @@ class BanquetConsumer(WebsocketConsumer):
             current_client.save()
 
             response = {'action': 'dish_added', 'client_id': current_client_id, 'current_dish_id': current_dish_id}
+            self.send_response(response)
+
+        elif action == "dish_order_delete":
+            current_order_id = data["order_id"]
+            current_order = get_object_or_404(DishOrder, id=current_order_id)
+            current_order.delete()
+
+            response = {"action":"order_deleted", "order_id": current_order_id}
             self.send_response(response)
 
     def send_response(self, response):

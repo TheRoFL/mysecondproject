@@ -52,7 +52,11 @@
     <ul class="header_menu">
       <li class="header_menu_li"><a href="/menu">Меню</a></li>
       <li class="header_menu_li">
+        {% if request.user.is_authenticated %}
         <a href="/profile/{{user.username}}/orders">Мои заказы</a>
+        {%else%}
+        <a href="/profile/temp/orders">Мои заказы</a>
+        {%endif%}
       </li>
       <li class="header_menu_li"><a href="/banquet">Заказ мероприятий</a></li>
       <li class="header_menu_li"><a href="#">Контакты</a></li>

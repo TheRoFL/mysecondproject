@@ -16,11 +16,11 @@
   <body>
     <h1>{{dish_type}}</h1>
 
-    <a href="/menu/">Все блюда</a>
-    <a href="/menu/salads/">Салаты</a>
-    <a href="/menu/hot_dishes/">Горячие блюда</a>
-    <a href="/menu/drinks/">Напитки</a>
-    <a href="/menu/desserts">Десерты</a>
+    <a href="/menu/?dish_type=all">Все блюда</a>
+    <a href="/menu/?dish_type=salads">Салаты</a>
+    <a href="/menu/?dish_type=hot_dishes">Горячие блюда</a>
+    <a href="/menu/?dish_type=drinks">Напитки</a>
+    <a href="/menu/?dish_type=desserts">Десерты</a>
     <div class="grid-container">
       {% for current_dish in current_dishes %}
       <div class="grid-item">
