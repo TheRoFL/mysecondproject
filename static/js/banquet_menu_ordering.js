@@ -28,15 +28,16 @@ function SendData(data) {
 const orderButtons = document.querySelectorAll(".order-button");
 // Добавляем обработчик для каждой кнопки "Заказать"
 var clientId = localStorage.getItem("current_client_id");
-console.log(clientId);
-if (clientId !== "") {
-  // Код, который выполняется, если {{user.id}} не равен "none"
-  orderButtons.forEach((button) => {
-    if (button.innerText === "Выберите клиента") {
-      button.disabled = true;
-    }
-    const dishId = button.dataset.id;
-    const dishTittle = button.dataset.name;
+
+// Код, который выполняется, если {{user.id}} не равен "none"
+
+orderButtons.forEach((button) => {
+  if (button.innerText === "Выберите клиента") {
+    button.disabled = true;
+  }
+  const dishId = button.dataset.id;
+  const dishTittle = button.dataset.name;
+  if (clientId != "") {
     button.addEventListener("click", function () {
       // Если WebSocket-соединение уже открыто, отправляем уведомление на сервер
       if (MySocket && MySocket.readyState === WebSocket.OPEN) {
@@ -67,8 +68,8 @@ if (clientId !== "") {
       }
       location.reload();
     });
-  });
-}
+  }
+});
 
 // Инициализация WebSocket-соединения при загрузке страницы
 initWebSocket();

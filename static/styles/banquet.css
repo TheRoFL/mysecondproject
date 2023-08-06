@@ -90,3 +90,7 @@ input[type="submit"]:active {
   -webkit-appearance: none;
   margin: 0;
 }
+
+.order-button[disabled] {
+  opacity: 0.5;
+}
