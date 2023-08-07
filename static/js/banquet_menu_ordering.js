@@ -7,11 +7,88 @@ function initWebSocket() {
   );
 
   MySocket.onopen = function () {
-    console.log("WebSocket соединение открыто.");
+    console.log("Сокет для редактирования при нажатии на Заказать");
   };
 
   MySocket.onmessage = function (e) {
     const data = JSON.parse(e.data);
+    console.log(data);
+    if (data.action == "new_dish_added") {
+      var newDiv = document.createElement("div");
+
+      div_name = "client-orders-" + data.current_dish_order_id;
+      newDiv.classList.add(div_name);
+
+      // Формируем содержимое для нового div
+      var client_dishOrderElement = document.createElement("div");
+      var client_dishOrder_product_name = data.current_dish_order_name;
+      var client_dishOrder_quantity = data.client_dishOrder_quantity;
+      var client_dishOrder_price_count = data.client_dishOrder_price_count;
+      client_dishOrderElement.classList.add("client_dishOrder-element");
+      client_dishOrderElement.dataset.id = data.current_dish_order_id;
+      client_dishOrderElement.innerHTML = `
+      <h2 style="margin-left: 30px">
+      ${client_dishOrder_product_name} x <span class="client_order_quantity" data-id="${data.client_id}" 
+      id="${data.current_dish_order_id}">
+      ${client_dishOrder_quantity} шт.</span> =
+       <span class="client_order_price" data-id="${data.client_id}" id="${data.current_dish_order_id}">
+        ${client_dishOrder_price_count}.00 руб.</span>
+      </h2>
+    `;
+
+      // Создаем кнопку для удаления
+      var deleteButton = document.createElement("button");
+      deleteButton.classList.add("delete-btn");
+      deleteButton.dataset.id = data.current_dish_order_id;
+      deleteButton.innerText = "X";
+
+      // Добавляем кнопку удаления в div
+
+      newDiv.appendChild(client_dishOrderElement);
+      newDiv.appendChild(deleteButton);
+      var current_client = data.client_id;
+      var div_name = "client-container-" + current_client;
+      document.getElementById(div_name).appendChild(newDiv);
+
+      var OrderdeleteButtons = document.querySelectorAll(".delete-btn");
+      OrderdeleteButtons.forEach(function (button) {
+        button.addEventListener("click", handleDeleteDishButtonClick);
+      });
+    } else if (data.action == "dish_added") {
+      var dataId = data.current_dish_order_id;
+      var newQuantity = data.client_dishOrder_quantity;
+      var client_dishOrder_price_count = data.client_dishOrder_price_count;
+      var current_dish_order_id = data.current_dish_order_id;
+
+      var clientContainer = document.getElementById(data.client_id);
+      if (clientContainer) {
+        const clientOrderPriceElement = document.querySelector(
+          `span.client_order_price[id="${current_dish_order_id}"]`
+        );
+
+        clientOrderPriceElement.textContent = data.client_dishOrder_price_count;
+
+        const clientOrderQuantity = document.querySelector(
+          `span.client_order_quantity[id="${current_dish_order_id}"]`
+        );
+
+        clientOrderQuantity.textContent = newQuantity;
+      }
+    }
+
+    if (data.action == "dish_added" || data.action == "new_dish_added") {
+      const OrderTotalPrice = document.querySelector(
+        `span.order-price-count[data-id="${data.client_id}"]`
+      );
+
+      OrderTotalPrice.textContent = data.order_total_price;
+
+      const client_total_price = document.querySelector(
+        `span.client-price-count[data-id="${data.client_id}"]`
+      );
+
+      client_total_price.textContent = data.client_total_price;
+    }
   };
 
   MySocket.onclose = function () {
@@ -19,17 +96,9 @@ function initWebSocket() {
   };
 }
 
-function SendData(data) {
-  // Проверяем, что WebSocket-соединение открыто, прежде чем отправить уведомление
-  if (MySocket && MySocket.readyState === WebSocket.OPEN) {
-    MySocket.send(JSON.stringify(data));
-  }
-}
+//обработчики нажатия кнопок 'заказать'
 const orderButtons = document.querySelectorAll(".order-button");
-// Добавляем обработчик для каждой кнопки "Заказать"
 var clientId = localStorage.getItem("current_client_id");
-
-// Код, который выполняется, если {{user.id}} не равен "none"
 
 orderButtons.forEach((button) => {
   if (button.innerText === "Выберите клиента") {
@@ -39,37 +108,47 @@ orderButtons.forEach((button) => {
   const dishTittle = button.dataset.name;
   if (clientId != "") {
     button.addEventListener("click", function () {
-      // Если WebSocket-соединение уже открыто, отправляем уведомление на сервер
-      if (MySocket && MySocket.readyState === WebSocket.OPEN) {
-        var username_id = localStorage.getItem("username_id");
-        var clientId = localStorage.getItem("current_client_id");
-        const data_to_send = {
-          action: "added_dish",
-          message: `Заказ "${dishTittle}" добавлен`,
-          current_dish_id: dishId,
-          current_user_id: username_id,
-          current_client_id: clientId,
-        };
-        SendData(data_to_send);
-        location.reload();
-      } else {
-        // Если WebSocket-соединение еще не открыто, создаем новое и отправляем уведомление
-        initWebSocket();
-        var username_id = localStorage.getItem("username_id");
-        var clientId = localStorage.getItem("current_client_id");
-        const data_to_send = {
-          action: "added_dish",
-          message: `Заказ "${dishTittle}" добавлен`,
-          current_dish_id: dishId,
-          current_client_id: clientId,
-        };
-        SendData(data_to_send);
-        location.reload();
-      }
-      location.reload();
+      var username_id = localStorage.getItem("username_id");
+      var clientId = localStorage.getItem("current_client_id");
+      const data_to_send = {
+        action: "added_dish",
+        message: `Заказ "${dishTittle}" добавлен`,
+        current_dish_id: dishId,
+        current_user_id: username_id,
+        current_client_id: clientId,
+      };
+      MySocket.send(JSON.stringify(data_to_send));
+      // location.reload();
     });
   }
 });
 
-// Инициализация WebSocket-соединения при загрузке страницы
+function handleDeleteDishButtonClick(event) {
+  const mybutton = event.target; // Получаем элемент, на котором произошло событие (в данном случае, кнопка)
+  const order_id = mybutton.dataset.id; // Получаем значение data-id из атрибута data-id
+  var username_id = localStorage.getItem("username_id");
+  var current_client_id = localStorage.getItem("current_client_id");
+  socket.send(
+    JSON.stringify({
+      action: "dish_order_delete",
+      order_id: order_id,
+      current_user_id: username_id,
+      clientId: current_client_id,
+    })
+  );
+  var orderElement = document.querySelector(
+    `div.client-orders[data-id="${order_id}"]`
+  );
+
+  // Если элемент найден, удаляем его
+  if (orderElement) {
+    orderElement.remove();
+    mybutton.remove();
+  }
+}
+var OrderdeleteButtons = document.querySelectorAll(".delete-btn");
+OrderdeleteButtons.forEach(function (button) {
+  button.addEventListener("click", handleDeleteDishButtonClick);
+});
+
 initWebSocket();

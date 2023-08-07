@@ -178,6 +178,7 @@
         });
       });
     </script>
+
     <div class="grid-container">
       {% for current_dish in current_dishes %}
       <div class="grid-item">
@@ -190,28 +191,6 @@
           {{current_dish.price}} руб.
         </h3>
         <h2>
-          <style>
-            /* Styles for the "Заказать" button */
-            .order-button {
-              background-color: #e74c3c; /* Red background color */
-              color: #fff; /* White text color */
-              border: none;
-              padding: 10px 20px;
-              border-radius: 5px; /* Rounded corners */
-              cursor: pointer;
-              font-size: 16px;
-              transition: background-color 0.3s ease; /* Add a transition effect on hover */
-            }
-
-            /* Change button background color to a darker shade of red when hovered */
-            .order-button:hover {
-              background-color: #c0392b; /* Darker shade of red */
-            }
-
-            .order-button[disabled] {
-              opacity: 0.65;
-            }
-          </style>
           <button
             class="order-button"
             data-id="{{current_dish.id}}"
@@ -228,51 +207,6 @@
     <h1>&nbsp</h1>
     <hr style="width: 90%; height: 3px; background: #e74c3c" />
     <h1>&nbsp</h1>
-
-    <!-- prettier-ignore -->
-    {% comment %} Стили кнопок {% endcomment %}
-    <style>
-      /* Styles for the buttons */
-      .increase-btn,
-      .decrease-btn,
-      .delete-btn {
-        background-color: #e74c3c; /* Change background color to red */
-        color: #fff;
-        border: none;
-        padding: 5px 10px;
-        margin: 5px;
-        cursor: pointer;
-        transition: background-color 0.3s ease; /* Add a transition effect */
-      }
-
-      /* Change button background color to a darker shade of red when hovered */
-      .increase-btn:hover,
-      .decrease-btn:hover,
-      .delete-btn:hover {
-        background-color: #c0392b; /* Darker shade of red */
-      }
-    </style>
-    {% for client in banquet.clients.all %}
-    <h1>
-      Меню для клиента типа "{{client.type}}" в количестве
-      <span class="client-quantity" data-id="{{client.id}}"
-        >{{client.quantity}}</span
-      >
-      человек
-    </h1>
-    {% for client_dishOrder in client.dishes.all %}
-    <h1>
-      <div class="client_dishOrder-button-element">
-        <div class="client_dishOrder-element" data-id="{{client_dishOrder.id}}">
-          <h2 style="margin-left: 30px">
-            {{client_dishOrder.product.name}} x {{client_dishOrder.quantity}}
-            шт. = {{client_dishOrder.price_count}}.00 руб.
-          </h2>
-        </div>
-        <button class="delete-btn" data-id="{{client_dishOrder.id}}">X</button>
-      </div>
-    </h1>
-
     <style>
       .delete-btn {
         position: absolute;
@@ -283,18 +217,78 @@
       }
     </style>
 
-    {% endfor %}
-
-    <h2 style="margin-top: 50px margin-left: 20px">
-      Итого: {{client.price_count}}.00 руб. x
-      <span class="client-quantity-2" data-id="{{client.id}}"
-        >{{client.quantity}}</span
+    <!-- prettier-ignore -->
+    {% for client in banquet.clients.all %}
+    <div class="client-info">
+      <h1>
+        Меню для клиента типа "{{client.type}}" в количестве
+        <span class="client-quantity" data-id="{{client.id}}"
+          >{{client.quantity}}</span
+        >
+        человек
+      </h1>
+      <div
+        class="client-container-{{client.id}}"
+        id="client-container-{{client.id}}"
       >
-      человек =
-      <span class="total-price-count" data-id="{{client.id}}"
-        >{{client.total_price_count}}</span
-      >.00 руб.
-    </h2>
+        {% for client_dishOrder in client.dishes.all %}
+
+        <div
+          class="client-orders-{{client_dishOrder.id}}"
+          id="client-orders-{{client_dishOrder.id}}"
+        >
+          <h1>
+            <div
+              class="client_dishOrder-element"
+              data-id="{{client_dishOrder.id}}"
+            >
+              <!-- prettier-ignore -->
+              <h2 style="margin-left: 30px">
+                {{client_dishOrder.product.name}} x 
+                <span
+                  class="client_order_quantity"
+                  data-id="{{client.id}}"
+                  id="{{client_dishOrder.id}}"
+                  >{{client_dishOrder.quantity}} 
+                </span> шт. =
+               
+                <span
+                  class="client_order_price"
+                  data-id="{{client.id}}"
+                  id="{{client_dishOrder.id}}"
+                  >{{client_dishOrder.price_count}}</span
+                >.00 руб.
+              </h2>
+            </div>
+            <button class="delete-btn" data-id="{{client_dishOrder.id}}">
+              X
+            </button>
+          </h1>
+        </div>
+        {% endfor %}
+      </div>
+
+      <h2 style="margin-top: 50px margin-left: 20px">
+        Итого:
+        <span
+          class="order-price-count"
+          data-id="{{client.id}}"
+          id="{{client.id}}"
+          >{{client.price_count}}</span
+        >.00 руб. x
+        <span class="client-quantity-2" data-id="{{client.id}}"
+          >{{client.quantity}}</span
+        >
+        человек =
+        <span
+          class="client-price-count"
+          data-id="{{client.id}}"
+          id="{{client.id}}"
+          >{{client.total_price_count}}</span
+        >.00 руб.
+      </h2>
+    </div>
+
     <h1>&nbsp</h1>
 
     {% endfor %}
@@ -319,5 +313,7 @@
 
   {% comment %} Сокет на добавление заказа {% endcomment %}
   <script src="/static/js/banquet_menu_ordering.js"></script>
+
+  <script></script>
 </body>
 {% endblock content %}
