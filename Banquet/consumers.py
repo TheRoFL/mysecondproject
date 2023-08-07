@@ -21,6 +21,7 @@ class BanquetConsumer(WebsocketConsumer):
 
     # Receive message from WebSocket
     def receive(self, text_data):
+        additional_response = {}
         data = json.loads(text_data)
         print(data)
         action = data["action"]
@@ -72,7 +73,7 @@ class BanquetConsumer(WebsocketConsumer):
             total_banquet_price_count = current_banquet.total_price()
             response = {"action":"client_quantity_changed", "new_quantity":current_client.quantity, "client_id": current_client.id,
                         "banquet_id":current_banquet.id,
-                        "total_price_count":total_price_count, "total_banquet_price":total_banquet_price_count }
+                        "client_price_count":total_price_count, "total_banquet_price":total_banquet_price_count }
             self.send_response(response)
             
         elif action == "client_delete":
@@ -95,14 +96,10 @@ class BanquetConsumer(WebsocketConsumer):
             current_client_id = data["current_client_id"]
             
             current_dish = get_object_or_404(Dish, id=current_dish_id)
-            print(current_client_id)
             current_client = get_object_or_404(Client, id=current_client_id)
 
             current_dishorder = None
             for current_client_dish_order in current_client.dishes.all():
-                print(current_dish)
-                print(current_client.dishes.all())
-
                 if current_client_dish_order.product.id == current_dish.id:
                     current_dishorder = current_client_dish_order
                     break
@@ -114,9 +111,11 @@ class BanquetConsumer(WebsocketConsumer):
                     quantity=1,
                     owner=current_user_profiledata
                     )
+                    additional_response['action'] = "new_dish_added"
                 else:
                     current_dishorder.quantity += 1
                     current_dishorder.save()
+                    additional_response['action'] = "dish_added"
             except Exception as e:
                 print(e)
 
@@ -124,15 +123,38 @@ class BanquetConsumer(WebsocketConsumer):
             current_client.dishes.add(current_dishorder)
             current_client.save()
 
-            response = {'action': 'dish_added', 'client_id': current_client_id, 'current_dish_id': current_dish_id}
+            response = {'client_id': current_client_id,
+                        'current_dish_id': current_dish_id,
+                        'current_dish_order_id': current_dishorder.id,
+                        'current_dish_order_name': current_dishorder.product.name,
+                        'client_dishOrder_quantity': current_dishorder.quantity,
+                        'client_dishOrder_price_count':current_dishorder.price_count(),
+                        'order_total_price': current_client.price_count(),
+                        'client_total_price': current_client.total_price_count()}
+            
+            response.update(additional_response)
+            
             self.send_response(response)
 
         elif action == "dish_order_delete":
+            print(data)
             current_order_id = data["order_id"]
             current_order = get_object_or_404(DishOrder, id=current_order_id)
+            my_current_client_id = data["clientId"]
+            new_current_client = get_object_or_404(Client, id=my_current_client_id)
+            current_banquet = Banquet.objects.get(owner=current_user_profiledata, is_ordered=False)
+            
             current_order.delete()
 
-            response = {"action":"order_deleted", "order_id": current_order_id}
+            response = {"action":"order_deleted", 
+                        "order_id": current_order_id,
+                        'order_total_price': new_current_client.price_count(),
+                        'client_total_price': new_current_client.total_price_count(),
+                        'clientId':my_current_client_id,
+                        'banqet_id':current_banquet.id,
+                        'total_banquet_price':current_banquet.total_price()
+                        }
+            
             self.send_response(response)
 
     def send_response(self, response):

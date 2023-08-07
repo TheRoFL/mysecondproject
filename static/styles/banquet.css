@@ -91,6 +91,47 @@ input[type="submit"]:active {
   margin: 0;
 }
 
+/* Styles for the "Заказать" button */
+.order-button {
+  background-color: #e74c3c; /* Red background color */
+  color: #fff; /* White text color */
+  border: none;
+  padding: 10px 20px;
+  cursor: pointer;
+  font-size: 20px;
+  transition: background-color 0.3s ease; /* Add a transition effect on hover */
+}
+
+/* Change button background color to a darker shade of red when hovered */
+.order-button:hover {
+  background-color: #c0392b; /* Darker shade of red */
+}
+
 .order-button[disabled] {
-  opacity: 0.5;
+  opacity: 0.55;
+}
+
+/* Styles for the buttons */
+.increase-btn,
+.decrease-btn,
+.delete-btn {
+  background-color: #e74c3c; /* Change background color to red */
+  color: #fff;
+  border: none;
+  padding: 5px 10px;
+  margin: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease; /* Add a transition effect */
+}
+
+/* Change button background color to a darker shade of red when hovered */
+.increase-btn:hover,
+.decrease-btn:hover,
+.delete-btn:hover {
+  background-color: #c0392b; /* Darker shade of red */
+}
+
+.menu-client-btn.active {
+  background-color: #b71100; /* Здесь можно задать нужный вам стиль для подсветки */
+  text-decoration: underline; /* Подчеркиваем текст кнопки */
 }
