@@ -1,3 +1,40 @@
 body {
   background-color: #5c2125;
 }
+
+.dishes {
+  margin: 15px;
+  width: 200px;
+  height: 50px;
+  background-color: orange;
+  display: inline-block;
+}
+
+.modWind {
+  color: black;
+  background-color: #fff;
+  display: inline-block;
+  position: fixed; /* фиксированное положение */
+  top: 50%;
+  left: 50%;
+  z-index: 10;
+  width: 500px;
+  height: 500px;
+  margin: -250px 0 0 -250px;
+  border-radius: 30px;
+  padding: 15px;
+}
+
+.overflow {
+  position: fixed; /* фиксированное положение */
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background: rgba(0, 0, 0, 0.5); /* цвет фона */
+  z-index: 5;
+}
+
+.hidden {
+  display: none;
+}

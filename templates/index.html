@@ -2,23 +2,6 @@
 {% load static %}
 <html lang="en">
   <head>
-    <script src="{% static 'js/reconnecting-websocket.js' %}"></script>
-    <script>
-      const NotificationSocket = new WebSocket(
-        "ws://" + window.location.host + "/ws/notification/"
-      );
-
-      NotificationSocket.onopen = function (e) {
-        console.log("Вы подключились к NotificationSocket");
-      };
-
-      NotificationSocket.onmessage = function (e) {};
-
-      NotificationSocket.onclose = function (e) {
-        console.error("Потеряно соединение с сервером");
-      };
-    </script>
-
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
@@ -36,9 +19,27 @@
         padding: 0;
       }
     </style>
+    <div class="dishes">Мороженка</div>
     {% include 'header.html' %} {% block content %}
     <!-- Просто чтобы было -->
 
     {% endblock content %}
+    <script src="{% static 'js/reconnecting-websocket.js' %}"></script>
+    <script>
+      const NotificationSocket = new WebSocket(
+        "ws://" + window.location.host + "/ws/notification/"
+      );
+
+      NotificationSocket.onopen = function (e) {
+        console.log("Вы подключились к NotificationSocket");
+      };
+
+      NotificationSocket.onmessage = function (e) {};
+
+      NotificationSocket.onclose = function (e) {
+        console.error("Потеряно соединение с сервером");
+      };
+    </script>
+    <script src="../static/js/test.js"></script>
   </body>
 </html>
