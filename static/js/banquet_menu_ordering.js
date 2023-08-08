@@ -15,7 +15,6 @@ function initWebSocket() {
     console.log(data);
     if (data.action == "new_dish_added") {
       var newDiv = document.createElement("div");
-
       div_name = "client-orders-" + data.current_dish_order_id;
       newDiv.classList.add(div_name);
 
@@ -30,20 +29,19 @@ function initWebSocket() {
       <h2 style="margin-left: 30px">
       ${client_dishOrder_product_name} x <span class="client_order_quantity" data-id="${data.client_id}" 
       id="${data.current_dish_order_id}">
-      ${client_dishOrder_quantity} шт.</span> =
+      ${client_dishOrder_quantity}</span> шт. =
        <span class="client_order_price" data-id="${data.client_id}" id="${data.current_dish_order_id}">
-        ${client_dishOrder_price_count}.00 руб.</span>
+        ${client_dishOrder_price_count}</span>.00 руб.
       </h2>
     `;
-
       // Создаем кнопку для удаления
       var deleteButton = document.createElement("button");
       deleteButton.classList.add("delete-btn");
       deleteButton.dataset.id = data.current_dish_order_id;
+      deleteButton.dataset.clientid = data.client_id;
       deleteButton.innerText = "X";
 
       // Добавляем кнопку удаления в div
-
       newDiv.appendChild(client_dishOrderElement);
       newDiv.appendChild(deleteButton);
       var current_client = data.client_id;
@@ -88,6 +86,12 @@ function initWebSocket() {
       );
 
       client_total_price.textContent = data.client_total_price;
+
+      const total_banquet_price = document.querySelector(
+        `.banquet-total-price[data-id="${data.current_banquet_id}"]`
+      );
+      total_banquet_price.textContent =
+        data["total_banquet_price"] + ".00 руб.";
     }
   };
 
@@ -126,8 +130,9 @@ orderButtons.forEach((button) => {
 function handleDeleteDishButtonClick(event) {
   const mybutton = event.target; // Получаем элемент, на котором произошло событие (в данном случае, кнопка)
   const order_id = mybutton.dataset.id; // Получаем значение data-id из атрибута data-id
+  current_client_id = mybutton.dataset.clientid;
   var username_id = localStorage.getItem("username_id");
-  var current_client_id = localStorage.getItem("current_client_id");
+
   socket.send(
     JSON.stringify({
       action: "dish_order_delete",

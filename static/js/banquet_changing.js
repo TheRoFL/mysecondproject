@@ -77,7 +77,7 @@ socket.onmessage = function (e) {
     new_client_total_price.textContent = data.client_total_price;
 
     const total_banquet_price = document.querySelector(
-      `.span.banquet-total-price[data-id="${data.banquet_id}"]`
+      `.banquet-total-price[data-id="${data.banqet_id}"]`
     );
     total_banquet_price.textContent = data["total_banquet_price"] + ".00 руб.";
   } else if (action === "client_quantity_changed") {
@@ -89,18 +89,17 @@ socket.onmessage = function (e) {
     const client_quantity_two = document.querySelector(
       `.client-quantity-2[data-id="${clientId}"]`
     );
-    const client_price_count = document.querySelector(
-      `.client-price-count[data-id="${data.client_price_count}"]`
+
+    const client_price = document.querySelector(
+      `.client-price-count[data-id="${data.client_id}"]`
     );
-    console.log(client_price_count);
     const total_banquet_price = document.querySelector(
-      `.span.banquet-total-price[data-id="${data.banquet_id}"]`
+      `.banquet-total-price[data-id="${data.banquet_id}"]`
     );
 
-    // total_price_count.textContent = data["order_total_price"];
     client_quantity.textContent = data["new_quantity"];
     client_quantity_two.textContent = data["new_quantity"];
-    client_price_count.textContent = data["client_price_count"];
+    client_price.textContent = data["client_total_price"];
     total_banquet_price.textContent = data["total_banquet_price"] + ".00 руб.";
   }
 };
