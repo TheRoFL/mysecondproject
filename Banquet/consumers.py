@@ -68,12 +68,17 @@ class BanquetConsumer(WebsocketConsumer):
 
             current_client.quantity = quantity
             current_client.save()
-            total_price_count = current_client.total_price_count()
             current_banquet = Banquet.objects.get(owner=current_user_profiledata, is_ordered=False)
-            total_banquet_price_count = current_banquet.total_price()
-            response = {"action":"client_quantity_changed", "new_quantity":current_client.quantity, "client_id": current_client.id,
+            
+            response = {"action":"client_quantity_changed",
+                        "new_quantity":current_client.quantity, 
+                        "client_id": current_client.id,
                         "banquet_id":current_banquet.id,
-                        "client_price_count":total_price_count, "total_banquet_price":total_banquet_price_count }
+                        "client_total_price":current_client.total_price_count(),
+                        "client_order_price":current_client.price_count(),
+                        "total_banquet_price":current_banquet.total_price() 
+                        }
+            
             self.send_response(response)
             
         elif action == "client_delete":
@@ -127,10 +132,12 @@ class BanquetConsumer(WebsocketConsumer):
                         'current_dish_id': current_dish_id,
                         'current_dish_order_id': current_dishorder.id,
                         'current_dish_order_name': current_dishorder.product.name,
+                        'current_banquet_id': current_banquet.id,
                         'client_dishOrder_quantity': current_dishorder.quantity,
                         'client_dishOrder_price_count':current_dishorder.price_count(),
                         'order_total_price': current_client.price_count(),
-                        'client_total_price': current_client.total_price_count()}
+                        'client_total_price': current_client.total_price_count(),
+                        'total_banquet_price': current_banquet.total_price()}
             
             response.update(additional_response)
             
