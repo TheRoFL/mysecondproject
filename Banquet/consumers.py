@@ -164,6 +164,30 @@ class BanquetConsumer(WebsocketConsumer):
             
             self.send_response(response)
 
+        elif action == "client_name_update":
+            type = data["name"] 
+            current_user_id = data["current_user_id"]
+            current_client_id = data["client_id"]
+
+            try:
+                current_user = User.objects.get(id=current_user_id)
+                current_user_profiledata = ProfileData.objects.get(user=current_user)
+            except ProfileData.DoesNotExist:
+                pass
+            
+            current_client= Client.objects.get(id=current_client_id)
+
+            current_client.type = type
+            current_client.save()
+
+            response = {"action":"client_name_changed",
+                        "new_name":current_client.type, 
+                        "client_id": current_client.id,
+                    }
+            
+            self.send_response(response)
+
+
     def send_response(self, response):
         # Отправка ответа пользователю через WebSocket
         self.send(text_data=json.dumps(response))
