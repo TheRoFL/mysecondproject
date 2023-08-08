@@ -67,3 +67,23 @@ def home(request, dish_type=None, clientId=None):
     contex["menu_samples"] = menu_samples
 
     return render(request, 'Banquet/home.html', contex)    
+
+
+def ordering(request):
+    try:
+        current_user = User.objects.get(id=request.user.id)
+        current_user_profiledata = ProfileData.objects.get(user=current_user)
+    except ProfileData.DoesNotExist:
+        pass
+
+
+    try:
+        current_banquet = Banquet.objects.get(owner=current_user_profiledata, is_ordered=False)
+    except Banquet.DoesNotExist:
+         pass
+    
+    contex = {
+        'current_banquet':current_banquet
+    }
+
+    return render(request, 'Banquet/ordering.html', contex)    

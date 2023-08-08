@@ -1,0 +1,16 @@
+{% extends 'index.html' %}
+
+<!-- prettier-ignore -->
+{% block content %} {% load static %}
+<h1>Заказ банкета</h1>
+<h2>
+  Мероприятие {{current_banquet}}
+  <!-- prettier-ignore -->
+  {% for client in current_banquet.clients.all %}
+  <h3 style="margin-left: 25px">{{client}}</h3>
+  {% for dishorder in client.dishes.all %}
+  <h5 style="margin-left: 50px">{{dishorder}}</h5>
+
+  {% endfor %} {% endfor %}
+</h2>
+{% endblock content %}
