@@ -213,23 +213,23 @@ function handleDeleteClientButtonClick(event) {
     })
   );
 }
-// function handleDeleteDishButtonClick(event) {
-//   const mybutton = event.target; // Получаем элемент, на котором произошло событие (в данном случае, кнопка)
-//   const order_id = mybutton.dataset.id; // Получаем значение data-id из атрибута data-id
-//   var username_id = localStorage.getItem("username_id");
-//   var current_client_id = localStorage.getItem("current_client_id");
-//   socket.send(
-//     JSON.stringify({
-//       action: "dish_order_delete",
-//       order_id: order_id,
-//       current_user_id: username_id,
-//       clientId: current_client_id,
-//     })
-//   );
-// }
+function handleDeleteDishButtonClick(event) {
+  const mybutton = event.target; // Получаем элемент, на котором произошло событие (в данном случае, кнопка)
+  const order_id = mybutton.dataset.id; // Получаем значение data-id из атрибута data-id
+  var username_id = localStorage.getItem("username_id");
+  var current_client_id = localStorage.getItem("current_client_id");
+  socket.send(
+    JSON.stringify({
+      action: "dish_order_delete",
+      order_id: order_id,
+      current_user_id: username_id,
+      clientId: current_client_id,
+    })
+  );
+}
 
-// const deleteButtons = document.querySelectorAll(".delete-client-btn");
+const deleteButtons = document.querySelectorAll(".delete-client-btn");
 
-// deleteButtons.forEach((button) => {
-//   button.addEventListener("click", handleDeleteClientButtonClick);
-// });
+deleteButtons.forEach((button) => {
+  button.addEventListener("click", handleDeleteClientButtonClick);
+});
