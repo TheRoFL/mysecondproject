@@ -113,7 +113,7 @@
     <style>
       .menu-client-btn.active {
         background-color: #b71100; /* Здесь можно задать нужный вам стиль для подсветки */
-        text-decoration: underline; /* Подчеркиваем текст кнопки */=
+        text-decoration: underline; /* Подчеркиваем текст кнопки */
       }
     </style>
 
@@ -202,11 +202,17 @@
     {% if dish_type != 'samples' %}
     <div class="grid-container">
       {% for current_dish in current_dishes %}
-      <div class="grid-item">
-        <a href="/menu/dishes/{{current_dish.tittle}}"
-          ><img
-            src="http://localhost:8000/media/menu_images/{{current_dish.type}}/{{current_dish.name}}.png"
-        /></a>
+      <div
+        class="grid-item dishes"
+        data-name="{{current_dish.tittle}}"
+        data-weight="{{current_dish.weight}}"
+        data-price="{{current_dish.price}}"
+        data-sostav="{{current_dish.ingredients}}"
+        data-type="{{current_dish.type}}"
+      >
+        <img
+          src="http://localhost:8000/media/menu_images/{{current_dish.type}}/{{current_dish.name}}.png"
+        />
         <h3>
           {{current_dish.tittle}} / {{current_dish.weight}} гр. /
           {{current_dish.price}} руб.
@@ -341,7 +347,7 @@
         {% endfor %}
       </div>
 
-      <h2 style="margin-top: 50px margin-left: 20px">
+      <h2 style="margin-top: 50px; margin-left: 20px">
         Итого:
         <span
           class="order-price-count"
