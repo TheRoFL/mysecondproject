@@ -31,6 +31,9 @@ class Dish(models.Model):
     
     tittle = ""
     def create_tittle(self):
-        self.tittle = self.name.replace(" ", "_")
+        self.tittle = self.name.replace("_", " ")
         return self.tittle
     
+    def create_tittle2(self):
+        self.tittle = self.name.replace(" ", "_")
+        return self.tittle

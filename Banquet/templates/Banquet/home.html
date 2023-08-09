@@ -202,21 +202,24 @@
     {% if dish_type != 'samples' %}
     <div class="grid-container">
       {% for current_dish in current_dishes %}
-      <div
-        class="grid-item dishes"
-        data-name="{{current_dish.tittle}}"
-        data-weight="{{current_dish.weight}}"
-        data-price="{{current_dish.price}}"
-        data-sostav="{{current_dish.ingredients}}"
-        data-type="{{current_dish.type}}"
-      >
-        <img
-          src="http://localhost:8000/media/menu_images/{{current_dish.type}}/{{current_dish.name}}.png"
-        />
-        <h3>
-          {{current_dish.tittle}} / {{current_dish.weight}} гр. /
-          {{current_dish.price}} руб.
-        </h3>
+      <div class="grid-item">
+        <div
+          class="dishes"
+          data-name="{{current_dish.create_tittle}}"
+          data-tittle="{{current_dish.name}}"
+          data-weight="{{current_dish.weight}}"
+          data-price="{{current_dish.price}}"
+          data-sostav="{{current_dish.ingredients}}"
+          data-type="{{current_dish.type}}"
+        >
+          <img
+            src="http://localhost:8000/media/menu_images/{{current_dish.type}}/{{current_dish.name}}.png"
+          />
+          <h3>
+            {{current_dish.tittle}} / {{current_dish.weight}} гр. /
+            {{current_dish.price}} руб.
+          </h3>
+        </div>
         <h2>
           <button
             class="order-button"
@@ -231,6 +234,7 @@
           </button>
         </h2>
       </div>
+
       {% endfor %}
     </div>
 
@@ -253,13 +257,18 @@
         </button>
       </h2>
        {% for dish in menu_sample.dishes.all %}
-        <div class="grid-item">
-          <a href="/menu/dishes/{{dish.product.name}}"
-          ><img
-            src="http://localhost:8000/media/menu_images/{{dish.product.type}}/{{dish.product.create_tittle}}.png"
-        /></a>
+        <div class="grid-item dishes"    
+          data-tittle="{{dish.product.create_tittle2}}"
+          data-name="{{dish.product.name}}"
+          data-weight="{{dish.product.weight}}"
+          data-price="{{dish.product.price}}"
+          data-sostav="{{dish.product.ingredients}}"
+          data-type="{{dish.product.type}}"
+        >
+          <img
+            src="http://localhost:8000/media/menu_images/{{dish.product.type}}/{{dish.product.create_tittle2}}.png"
+        />
           <h3>{{dish.product.name}} / {{dish.product.weight}} гр. / {{dish.product.price}} руб.</h3>
-          
         </div>
       {% endfor %}
       <h1>--------------------------------------------------------------------------------</h1>
