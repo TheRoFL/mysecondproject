@@ -25,6 +25,12 @@ class Dish(models.Model):
     
     image = models.ImageField(upload_to=upload_to) #изображение блюда
 
+
     def __str__(self):
         return self.name
+    
+    tittle = ""
+    def create_tittle(self):
+        self.tittle = self.name.replace(" ", "_")
+        return self.tittle
     

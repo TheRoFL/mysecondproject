@@ -138,6 +138,11 @@
       }
     </style>
     <a
+      class="dish-filter {% if dish_type == 'samples' %}active{% endif %}"
+      href="/banquet/?dish-filter=samples&editting-clientId={{clientId}}"
+      >Готовые меню</a
+    >
+    <a
       class="dish-filter {% if not dish_type %}active{% endif %}"
       href="/banquet/?dish-filter=all&editting-clientId={{clientId}}"
       >Все блюда</a
@@ -194,6 +199,7 @@
       });
     </script>
 
+    {% if dish_type != 'samples' %}
     <div class="grid-container">
       {% for current_dish in current_dishes %}
       <div class="grid-item">
@@ -221,6 +227,41 @@
       </div>
       {% endfor %}
     </div>
+
+    {% else %}
+    <!-- prettier-ignore -->
+    <div class="grid-container">
+      {% for menu_sample in current_dishes %}
+      <h1>{{menu_sample}}</h1>
+      <h2>
+        <button
+          class="order-button"
+          data-id="{{dish.id}}"
+          data-name="{{dish.tittle}}"
+        >
+          {% if current_client %} Добавить для "<span
+            class="client-name-2"
+            data-id="{{client.id}}"
+            >{{current_client.type}}</span
+          >" {%else%} Выберите клиента {% endif %}
+        </button>
+      </h2>
+       {% for dish in menu_sample.dishes.all %}
+        <div class="grid-item">
+          <a href="/menu/dishes/{{dish.product.name}}"
+          ><img
+            src="http://localhost:8000/media/menu_images/{{dish.product.type}}/{{dish.product.create_tittle}}.png"
+        /></a>
+          <h3>{{dish.product.name}} / {{dish.product.weight}} гр. / {{dish.product.price}} руб.</h3>
+          
+        </div>
+      {% endfor %}
+      <h1>--------------------------------------------------------------------------------</h1>
+      
+      {% endfor %}
+    </div>
+
+    {% endif %}
 
     <h1>&nbsp</h1>
     <hr style="width: 90%; height: 3px; background: #e74c3c" />
@@ -346,7 +387,5 @@
 
   {% comment %} Сокет на добавление заказа {% endcomment %}
   <script src="/static/js/banquet_menu_ordering.js"></script>
-
-  <script></script>
 </body>
 {% endblock content %}
