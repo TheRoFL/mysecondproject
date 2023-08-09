@@ -2,14 +2,6 @@ body {
   background-color: #5c2125;
 }
 
-.dishes {
-  margin: 15px;
-  width: 200px;
-  height: 50px;
-  background-color: orange;
-  display: inline-block;
-}
-
 .modWind {
   color: black;
   background-color: #fff;
