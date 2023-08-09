@@ -23,8 +23,6 @@ for (let i = 0; i < ws.length; i++) {
 const x = document.querySelector(".modWind");
 const y = document.querySelector(".overflow");
 
-const button = document.querySelector(".dishes");
-
 document.addEventListener("keydown", (e) => {
   if (e.code == "Escape") {
     x.classList.add("hidden");
