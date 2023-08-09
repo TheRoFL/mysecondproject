@@ -31,3 +31,8 @@ document.addEventListener("keydown", (e) => {
     y.classList.add("hidden");
   }
 });
+
+document.querySelector(".overflow").addEventListener("click", () => {
+  x.classList.add("hidden");
+  y.classList.add("hidden");
+});
