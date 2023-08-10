@@ -57,7 +57,7 @@ class ClientSample(models.Model):
     rating = models.PositiveIntegerField()
 
     def __str__(self):
-        return "Меню " + "''" + str(self.type) + "''" + " ... " + self.description
+        return "Меню " + "''" + str(self.type) + "''" 
     
     total = 0
     def price_count(self):
