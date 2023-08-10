@@ -142,7 +142,7 @@ WSGI_APPLICATION = 'secondproject.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql', 
-        'NAME': 'myseconddb',
+        'NAME': 'my_second_db',
         'USER': 'root',
         'PASSWORD': 'admin',
         'HOST': 'localhost',

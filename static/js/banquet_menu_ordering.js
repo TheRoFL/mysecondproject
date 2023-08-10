@@ -121,8 +121,25 @@ orderButtons.forEach((button) => {
         current_user_id: username_id,
         current_client_id: clientId,
       };
-      MySocket.send(JSON.stringify(data_to_send));
-      // location.reload();
+      var currentUrl = window.location.href;
+      const urlObject = new URL(currentUrl);
+      dish_filter = urlObject.searchParams.get("dish-filter");
+      var is_menu = false;
+      if (dish_filter == "samples") {
+        is_menu = true;
+      }
+      if (is_menu) {
+        const new_data_to_send = {
+          action: "menu_add",
+          message: `Заказ "${button.dataset.name}" добавлен`,
+          current_menu_id: button.dataset.id,
+          current_user_id: username_id,
+          current_client_id: clientId,
+        };
+        MySocket.send(JSON.stringify(new_data_to_send));
+      } else {
+        MySocket.send(JSON.stringify(data_to_send));
+      }
     });
   }
 });
