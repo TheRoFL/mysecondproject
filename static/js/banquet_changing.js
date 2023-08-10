@@ -120,6 +120,20 @@ socket.onmessage = function (e) {
         element.textContent = new_name;
       });
     }
+  } else if (action === "menu_added") {
+  } else if (action === "client_menu_deleted") {
+    client_id = data["client_id"];
+    menu_id = data["menu_id"];
+    var targetDataId = menu_id;
+
+    var MenuDivToRemove = document.querySelectorAll(
+      'div[data-id="' + client_id + "-" + menu_id + '"]'
+    );
+
+    // Перебираем найденные элементы и удаляем каждый из них
+    MenuDivToRemove.forEach(function (element) {
+      element.parentNode.removeChild(element);
+    });
   }
 };
 
@@ -228,8 +242,29 @@ function handleDeleteDishButtonClick(event) {
   );
 }
 
+function handleDeleteMenuButtonClick(event) {
+  const mybutton = event.target; // Получаем элемент, на котором произошло событие (в данном случае, кнопка)
+  const menu_id = mybutton.dataset.id; // Получаем значение data-id из атрибута data-id
+  var username_id = localStorage.getItem("username_id");
+  var current_client_id = mybutton.dataset.clientid;
+  socket.send(
+    JSON.stringify({
+      action: "client_menu_delete",
+      menu_id: menu_id,
+      current_user_id: username_id,
+      client_id: current_client_id,
+    })
+  );
+}
+
 const deleteButtons = document.querySelectorAll(".delete-client-btn");
 
 deleteButtons.forEach((button) => {
   button.addEventListener("click", handleDeleteClientButtonClick);
+});
+
+const deleteMenuButtons = document.querySelectorAll(".delete-menu-btn");
+
+deleteMenuButtons.forEach((button) => {
+  button.addEventListener("click", handleDeleteMenuButtonClick);
 });

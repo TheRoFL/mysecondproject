@@ -27,7 +27,6 @@ def home(request, dish_type=None, clientId=None):
          banquet = Banquet.objects.create(owner=current_user_profiledata, is_ordered=False)
 
     
-    print(dish_type)
     if dish_type == None:
         try:
             current_dishes = Dish.objects.all()
@@ -41,7 +40,7 @@ def home(request, dish_type=None, clientId=None):
         contex = {"current_dishes":current_dishes, "banquet":banquet}
 
     elif dish_type == 'samples':
-        menu_samples = ClientSample.objects.all()
+        menu_samples = MenuSample.objects.all()
 
         
         for menu in menu_samples:
