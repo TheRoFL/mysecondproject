@@ -132,6 +132,21 @@ socket.onmessage = function (e) {
     MenuDivToRemove.forEach(function (element) {
       element.parentNode.removeChild(element);
     });
+
+    const OrderTotalPrice = document.querySelector(
+      `span.order-price-count[data-id="${data.client_id}"]`
+    );
+    OrderTotalPrice.textContent = data.order_total_price;
+
+    const client_total_price = document.querySelector(
+      `span.client-price-count[data-id="${data.client_id}"]`
+    );
+    client_total_price.textContent = data.client_total_price;
+
+    const total_banquet_price = document.querySelector(
+      `.banquet-total-price[data-id="${data.current_banquet_id}"]`
+    );
+    total_banquet_price.textContent = data["total_banquet_price"] + ".00 руб.";
   } else if (action === "menu_added") {
     client_id = data["client_id"];
     previous_menu_id = data["previous_menu_id"];
@@ -247,14 +262,29 @@ socket.onmessage = function (e) {
 
     // Находим элемент <span> с соответствующим data-id
     var client_menu_total_price = document.querySelector(
-      'span.client-menu-total-price[data-id="' + client_id + '"]'
+      'span.order-price-count[data-id="' + data.client_id + '"]'
     );
     client_menu_total_price.textContent = totalCost;
 
     var client_price_count = document.querySelector(
-      'span.client-price-count[data-id="' + client_id + '"]'
+      'span.client-price-count[data-id="' + data.client_id + '"]'
     );
     client_price_count.textContent = data.client_total_price;
+
+    const OrderTotalPrice = document.querySelector(
+      `span.order-price-count[data-id="${data.client_id}"]`
+    );
+    OrderTotalPrice.textContent = data.order_total_price;
+
+    const client_total_price = document.querySelector(
+      `span.client-price-count[data-id="${data.client_id}"]`
+    );
+    client_total_price.textContent = data.client_total_price;
+
+    const total_banquet_price = document.querySelector(
+      `.banquet-total-price[data-id="${data.current_banquet_id}"]`
+    );
+    total_banquet_price.textContent = data["total_banquet_price"] + ".00 руб.";
   } else if (action == "new_dish_added") {
     var newDiv = document.createElement("div");
     div_name = "client-orders-" + data.current_dish_order_id;

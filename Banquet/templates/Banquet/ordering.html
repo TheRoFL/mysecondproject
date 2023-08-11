@@ -13,4 +13,23 @@
 
   {% endfor %} {% endfor %}
 </h2>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+  console.log($);
+  $.ajax({
+    url: "http://127.0.0.1:8000/ordering/",
+    type: "GET",
+    dataType: "json",
+    success: function (data) {
+      // Обработка успешного ответа
+      console.log(data);
+    },
+    error: function (jqXHR, textStatus, errorThrown) {
+      console.error("Произошла ошибка:", textStatus, errorThrown);
+    },
+  });
+</script>
+
 {% endblock content %}

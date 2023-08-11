@@ -98,7 +98,7 @@
       >Готовые меню</a
     >
     <a
-      class="dish-filter {% if not dish_type %}active{% endif %}"
+      class="dish-filter {% if not dish_type or dish_type == 'null' %}active{% endif %}"
       href="/banquet/?dish-filter=all&editting-clientId={{clientId}}"
       >Все блюда</a
     >
@@ -420,10 +420,8 @@
           data-id="{{client.id}}"
           id="{{client.id}}"
         >
-          (<span class="client-menu-total-price" data-id="{{client.id}}"
-            >{{client.menu.all_dishes_price}}</span
-          >.00 + {{client.price_count}}.00)</span
-        >руб. x
+          {{client.total_client_price}}</span
+        >.00 руб. x
         <span class="client-quantity-2" data-id="{{client.id}}"
           >{{client.quantity}}</span
         >
