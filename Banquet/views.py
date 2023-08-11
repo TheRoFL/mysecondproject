@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from django.db.models import Q
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
+from django.core.serializers import serialize
 
 from Menu.models import *
 from .models import *
@@ -13,7 +14,7 @@ def home(request, dish_type=None, clientId=None):
     if clientId == "null":
         clientId=None
     dish_type = request.GET.get('dish-filter')
-    if dish_type == "all":
+    if dish_type == "all" or dish_type == "null":
         dish_type = None
     try:
         current_user = User.objects.get(id=request.user.id)
@@ -121,7 +122,11 @@ def ordering(request):
         'param2': param2
     }
     
+    current_banquet = Dish.objects.all()
+    serialized_data = serialize('json', current_banquet)
+    
+    print(serialized_data)
     if request.META.get('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest':
-        return JsonResponse(response_data)
+        return JsonResponse(serialized_data, safe=False)
     else:
         return render(request, 'Banquet/ordering.html', contex)       

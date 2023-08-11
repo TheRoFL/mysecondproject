@@ -58,11 +58,19 @@ class Client(models.Model):
             self.total += int(dish.price_count())
         return self.total
     
+    #цена для 1 клиента c меню
+    def total_client_price(self):
+        if self.menu:
+            return self.price_count() + self.menu.all_dishes_price()
+        else:
+            return self.price_count()
+    
     #цена для всех клиентов без меню
     def total_price_count(self):
         self.total = 0
         self.price_count()
         return self.total * self.quantity
+    
     
     #цена для всех клиентов с меню
     def menu_and_orders_price_count(self):
