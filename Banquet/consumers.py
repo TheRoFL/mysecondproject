@@ -63,7 +63,7 @@ class BanquetConsumer(WebsocketConsumer):
                         "new_quantity":current_client.quantity, 
                         "client_id": current_client.id,
                         "banquet_id":current_banquet.id,
-                        "client_total_price":current_client.total_price_count(),
+                        "client_total_price":current_client.menu_and_orders_price_count(),
                         "client_order_price":current_client.price_count(),
                         "total_banquet_price":current_banquet.total_price() 
                         }
@@ -130,8 +130,9 @@ class BanquetConsumer(WebsocketConsumer):
                         'client_dishOrder_quantity': current_dishorder.quantity,
                         'client_dishOrder_price_count':current_dishorder.price_count(),
                         'order_total_price': current_client.price_count(),
-                        'client_total_price': current_client.total_price_count(),
-                        'total_banquet_price': current_banquet.total_price()}
+                        'client_total_price': current_client.menu_and_orders_price_count(), #считает сумму клиента без меню
+                        'total_banquet_price': current_banquet.total_price()
+                    }
             
             response.update(additional_response)
             
@@ -144,6 +145,14 @@ class BanquetConsumer(WebsocketConsumer):
             current_menu = get_object_or_404(MenuSample, id=current_menu_id)
             current_client = get_object_or_404(Client, id=current_client_id)
 
+            previous_menu_id = None
+            try:
+                previous_menu_id = current_client.menu.id
+            except Exception as e:
+                previous_menu_id = None
+                print(e)
+
+                
             for current_client_dish_order in current_menu.dishes.all():
                 new_DishOrder = DishOrder.objects.create(
                     product=current_client_dish_order.product,
@@ -157,13 +166,22 @@ class BanquetConsumer(WebsocketConsumer):
 
             current_banquet = Banquet.objects.get(owner=current_user_profiledata, is_ordered=False)
             
+            current_menu_name = current_menu.type
+            current_menu_dishes = []
+            for dish in current_menu.dishes.all():
+                current_menu_dishes.append(dish.print_order())
 
             response = {
                         'action': "menu_added",
                         'client_id': current_client_id,
                         'current_banquet_id': current_banquet.id,
+                        'current_menu_dishes': current_menu_dishes,
+                        'current_menu_name': current_menu_name,
+                        'previous_menu_id': previous_menu_id,
+                        'current_menu_id': current_menu.id,
+                        'menu_total_price_count':current_menu.all_dishes_price(),
                         'order_total_price': current_client.price_count(),
-                        'client_total_price': current_client.total_price_count(),
+                        'client_total_price': current_client.menu_and_orders_price_count(),
                         'total_banquet_price': current_banquet.total_price()
                     }
             
@@ -183,7 +201,7 @@ class BanquetConsumer(WebsocketConsumer):
             response = {"action":"order_deleted", 
                         "order_id": current_order_id,
                         'order_total_price': new_current_client.price_count(),
-                        'client_total_price': new_current_client.total_price_count(),
+                        'client_total_price': new_current_client.menu_and_orders_price_count(),
                         'clientId':my_current_client_id,
                         'banqet_id':current_banquet.id,
                         'total_banquet_price':current_banquet.total_price()

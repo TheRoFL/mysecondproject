@@ -251,6 +251,7 @@
     <!-- prettier-ignore -->
     <div class="grid-container">
       {% for menu_sample in current_dishes %}
+
       <h1>{{menu_sample}} текст чтобы  </h1>
       <h2>
         <button
@@ -310,16 +311,20 @@
     </style>
     <!-- prettier-ignore -->
     {% for client in banquet.clients.all %}
-    <div class="client-info">
-      <h1>
-        Меню для клиента типа "<span class="client-name" data-id="{{client.id}}"
-          >{{client.type}}</span
-        >" в количестве
-        <span class="client-quantity" data-id="{{client.id}}"
-          >{{client.quantity}}</span
-        >
-        человек
-      </h1>
+    <div class="client-header">
+      <div class="client-info">
+        <h1 class="client-info-h1" data-id="{{client.id}}">
+          Меню для клиента типа "<span
+            class="client-name"
+            data-id="{{client.id}}"
+            >{{client.type}}</span
+          >" в количестве
+          <span class="client-quantity" data-id="{{client.id}}"
+            >{{client.quantity}}</span
+          >
+          человек
+        </h1>
+      </div>
       <div
         class="client-container-{{client.id}}"
         id="client-container-{{client.id}}"
@@ -348,7 +353,10 @@
           </div>
           {% endfor %}
           <h1 style="margin-left: 15px">
-            Итого: {{client.menu.total_price_count}}.00 руб. с человека
+            Итого:
+            <span class="menu-total" data-id="{{client.menu.id}}"
+              >{{client.menu.all_dishes_price}}</span
+            >.00 руб. с человека
           </h1>
           <h1>--------------------------------------------------------</h1>
         </div>
@@ -400,15 +408,22 @@
         {% endfor %}
       </div>
 
-      <h2 style="margin-top: 50px; margin-left: 20px">
-        Итого:
+      <h2
+        class="client-total-price"
+        style="margin-top: 50px; margin-left: 20px"
+      >
+        <!-- prettier-ignore -->
+        {% if client.menu %} 
+        Итого за всех клиентов:
         <span
           class="order-price-count"
           data-id="{{client.id}}"
           id="{{client.id}}"
-          >({{client.menu.total_price_count}}.00 руб +
-          {{client.price_count}}</span
-        >.00 руб.) x
+        >
+          (<span class="client-menu-total-price" data-id="{{client.id}}"
+            >{{client.menu.all_dishes_price}}</span
+          >.00 + {{client.price_count}}.00)</span
+        >руб. x
         <span class="client-quantity-2" data-id="{{client.id}}"
           >{{client.quantity}}</span
         >
@@ -419,6 +434,25 @@
           id="{{client.id}}"
           >{{client.menu_and_orders_price_count}}</span
         >.00 руб.
+        <!-- prettier-ignore -->
+        {%else %} Итого за всех клиентов:
+        <span
+          class="order-price-count"
+          data-id="{{client.id}}"
+          id="{{client.id}}"
+        >
+          {{client.price_count}}</span
+        >.00 руб. x
+        <span class="client-quantity-2" data-id="{{client.id}}"
+          >{{client.quantity}}</span
+        >
+        человек =
+        <span
+          class="client-price-count"
+          data-id="{{client.id}}"
+          id="{{client.id}}"
+          >{{client.menu_and_orders_price_count}}</span
+        >.00 руб. {%endif%}
       </h2>
     </div>
 
@@ -441,11 +475,6 @@
   {% for menu_sample in menu_samples %} {{menu_sample}} {% endfor %}
 
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-  {% comment %} сокент на изменение данных {% endcomment %}
-
   <script src="/static/js/banquet_changing.js"></script>
-
-  {% comment %} Сокет на добавление заказа {% endcomment %}
-  <script src="/static/js/banquet_menu_ordering.js"></script>
 </body>
 {% endblock content %}
