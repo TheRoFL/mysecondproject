@@ -2,27 +2,138 @@ function updateClientsList(data) {
   type = data.type;
   quantity = data.quantity;
   client_id = data.client_id;
-  var clientsHtml = "";
+  client_name = data.client_name;
+  var newDiv = $("<div>", { class: "my_client", "data-id": client_id });
 
-  clientsHtml +=
-    '<input class="name-input" data-id="' +
-    client_id +
-    '" value="' +
-    type +
-    '" /> в количестве <input class="quantity-input" data-id="' +
-    client_id +
-    '" value="' +
-    quantity +
-    '" />' +
-    " человек";
+  var nameInput = $("<input>", {
+    class: "name-input",
+    "data-id": client_id,
+    value: type,
+  });
+  var quantityInput = $("<input>", {
+    class: "quantity-input",
+    "data-id": client_id,
+    value: quantity,
+  });
 
-  $(".my_extra_clients").append(clientsHtml);
+  var quantityLabel = $("<span>", { text: " человек " });
+
+  var deleteBtn = $("<button>", {
+    class: "delete-client-btn",
+    "data-id": client_id,
+    text: " Удалить ",
+  });
+  var menuBtn = $("<button>", {
+    class: "menu-client-btn",
+    "data-id": client_id,
+    text: " Выбрать для редактирования ",
+  });
+
+  // Добавляем элементы внутрь созданного div
+  newDiv.append(
+    nameInput,
+    " в количестве ",
+    quantityInput,
+    quantityLabel,
+    deleteBtn,
+    menuBtn
+  );
+
+  console.log(newDiv);
+  // Добавляем созданный div внутрь <div class="my_extra_clients">
+  $(".my_extra_clients").append(newDiv);
+
+  const deleteButtons = document.querySelectorAll(".delete-client-btn");
+
+  deleteButtons.forEach((button) => {
+    button.addEventListener("click", handleDeleteClientButtonClick);
+  });
+
+  const menuButtons = document.querySelectorAll(".menu-client-btn");
+
+  // Добавляем обработчик событий на каждую кнопку
+  menuButtons.forEach((button) => {
+    // Получаем значение атрибута data-id у каждой кнопки (client.id)
+    const clientId = button.getAttribute("data-id");
+
+    // Добавляем обработчик событий на нажатие кнопки
+    button.addEventListener("click", () => {
+      const currentPosition = window.scrollY;
+      sessionStorage.setItem("scrollPosition", currentPosition);
+      var currentUrl = window.location.href;
+
+      // Парсируем параметры текущего URL
+      const urlObject = new URL(currentUrl);
+      dish_filter = urlObject.searchParams.get("dish-filter");
+
+      window.location.href =
+        `/banquet/?editting-clientId=${clientId}` +
+        "&dish-filter=" +
+        dish_filter;
+      window.scrollTo(0, scrollTop);
+    });
+
+    // Проверяем текущий URL и сравниваем с целевой ссылкой
+    const currentUrl = window.location.pathname.replace(/\/$/, ""); // Удаляем последний слеш, если есть
+    const targetUrl = `/banquet/?editting-clientId=${clientId}`;
+
+    function getURLParameter(name) {
+      const urlParams = new URLSearchParams(window.location.search);
+      return urlParams.get(name);
+    }
+    const NewclientId = getURLParameter("editting-clientId");
+
+    if (clientId === NewclientId) {
+      // Если текущий URL совпадает с целевой ссылкой, подсвечиваем кнопку
+      button.classList.add("active");
+      button.textContent = "Выбрано для редактирования";
+    }
+  });
+
+  // Создаем элементы
+  var clientHeader = $("<div>", { class: "client-header" });
+
+  var clientInfo = $("<div>", { class: "client-info" });
+  var clientInfoH1 = $("<h1>", {
+    class: "client-info-h1",
+    "data-id": clientId,
+  });
+  clientInfoH1.html(
+    `Меню для клиента типа "<span class='client-name' data-id='${clientId}'>${client_name}</span>" 
+    в количестве <span class='client-quantity' data-id='${clientId}'>${quantity}</span> человек`
+  );
+  clientInfo.append(clientInfoH1);
+
+  var clientContainer = $("<div>", {
+    class: `client-container-${clientId}`,
+    id: `client-container-${clientId}`,
+  });
+
+  var clientTotalPrice = $("<h2>", {
+    class: "client-total-price",
+    style: "margin-top: 50px; margin-left: 20px",
+  });
+  clientTotalPrice.html(
+    `Итого за всех клиентов: <span class='order-price-count' data-id='${clientId}' 
+    id='${clientId}'>0</span>.00 руб. x <span class='client-quantity-2'
+     data-id='${clientId}'>${quantity}</span> человек = <span class='client-price-count' 
+     data-id='${clientId}' id='${clientId}'>0</span>.00 руб.`
+  );
+
+  // Добавляем элементы на страницу
+  clientHeader.append(clientInfo, clientContainer, clientTotalPrice);
+  var allClientsDiv = $(".all_clients");
+  allClientsDiv.append(clientHeader);
+
+  // Добавляем элемент <h1>&nbsp;</h1> как указано в вашем коде
+  allClientsDiv.append("<h1>&nbsp;</h1>");
+
   const scrollTop =
     window.pageYOffset ||
     document.documentElement.scrollTop ||
     document.body.scrollTop ||
     0;
-  location.reload();
+
   window.scrollTo(0, scrollTop);
 }
 

@@ -45,7 +45,11 @@ class BanquetConsumer(WebsocketConsumer):
 
             new_client = Client.objects.create(type=clientName, quantity=clientCount)
             current_banquet.clients.add(new_client)
-            response = {"action":"client_added", "type":new_client.type, "quantity":new_client.quantity, "client_id": new_client.id}
+            response = {"action":"client_added",
+                         "type":new_client.type, 
+                         'client_name': new_client.type,
+                         "quantity":new_client.quantity, 
+                         "client_id": new_client.id}
             self.send_response(response)
 
         elif action == "client_quantity_update":
