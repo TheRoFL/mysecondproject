@@ -14,6 +14,7 @@ def home(request, dish_type=None, clientId=None):
     if clientId == "null":
         clientId=None
     dish_type = request.GET.get('dish-filter')
+    print(dish_type)
     if dish_type == "all" or dish_type == "null":
         dish_type = None
     try:
@@ -25,7 +26,7 @@ def home(request, dish_type=None, clientId=None):
     try:
         banquet = Banquet.objects.get(owner=current_user_profiledata, is_ordered=False)
     except Banquet.DoesNotExist:
-         banquet = Banquet.objects.create(owner=current_user_profiledata, is_ordered=False)
+        banquet = Banquet.objects.create(owner=current_user_profiledata, is_ordered=False)
 
     
     if dish_type == None:
@@ -43,7 +44,7 @@ def home(request, dish_type=None, clientId=None):
     elif dish_type == 'samples':
         menu_samples = MenuSample.objects.all()
 
-        
+        current_dishes = None
         for menu in menu_samples:
             for current_dish in menu.dishes.all():
                 current_dish.product.tittle = current_dish.product.name
@@ -55,12 +56,7 @@ def home(request, dish_type=None, clientId=None):
             "current_dishes": menu_samples,
             "banquet":banquet
         }
-
-        for menu in menu_samples:
-            for current_dish in menu.dishes.all():
-                print(current_dish.product.name)
-        
-
+      
     else:
         try:
             current_dishes = Dish.objects.filter(type=dish_type)
@@ -78,18 +74,24 @@ def home(request, dish_type=None, clientId=None):
         }
 
     
+    client_name = None
     if clientId:
         try:
             current_client = Client.objects.get(id=clientId)
             contex["current_client"] =  current_client
+            client_name = current_client.type
         except Client.DoesNotExist:
             pass
 
-
-
+    if not current_dishes:
+        current_dishes = menu_samples
     
 
-    return render(request, 'Banquet/home.html', contex)    
+    if "application/json" in request.META.get("HTTP_ACCEPT", ""):
+        serialized_data = serialize('json', current_dishes)
+        return JsonResponse(serialized_data, client_name, safe=False)
+    else:
+        return render(request, 'Banquet/home.html', contex)    
 
 
 def ordering(request):
@@ -105,10 +107,7 @@ def ordering(request):
     except Banquet.DoesNotExist:
          pass
     
-    contex = {
-        'current_banquet':current_banquet
-    }
-
+    
 
     param1 = request.GET.get('param1')
     param2 = request.GET.get('param2')
@@ -122,11 +121,15 @@ def ordering(request):
         'param2': param2
     }
     
-    current_banquet = Dish.objects.all()
-    serialized_data = serialize('json', current_banquet)
     
-    print(serialized_data)
-    if request.META.get('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest':
+    current_banquet = Banquet.objects.filter(owner=current_user_profiledata, is_ordered=False)
+    
+    contex = {
+        'current_banquet':current_banquet
+        }
+    
+    if "application/json" in request.META.get("HTTP_ACCEPT", ""):
+        serialized_data = serialize('json', current_banquet)
         return JsonResponse(serialized_data, safe=False)
     else:
         return render(request, 'Banquet/ordering.html', contex)       

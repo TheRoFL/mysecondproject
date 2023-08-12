@@ -7,9 +7,11 @@
   <script>
     var username_id_added = "{{user.id}}";
     var current_client_id_added = "{{current_client.id}}";
+    var current_client_name = "{{current_client.type}}";
     localStorage.setItem("username_id", username_id_added);
     localStorage.setItem("current_client_id", current_client_id_added);
     localStorage.setItem("dishFilter", current_client_id_added);
+    localStorage.setItem("current_client_name", current_client_name);
     var username_id = localStorage.getItem("username_id");
     var current_client_id = localStorage.getItem("current_client_id");
   </script>
@@ -35,8 +37,9 @@
     <h1>&nbsp</h1>
     <hr style="width: 90%; height: 3px; background: #e74c3c" />
     <h1>&nbsp</h1>
-    {% if banquet.clients.all %}
     <div class="my_extra_clients">
+      <!-- prettier-ignore -->
+      {% if banquet.clients.all %} 
       {% for client in banquet.clients.all %}
       <div class="my_client" data-id="{{client.id}}">
         <input
@@ -58,13 +61,11 @@
           Выбрать для редактирования
         </button>
       </div>
-      {% endfor %}
+      {% endfor %} {% endif %}
     </div>
     <h1>&nbsp</h1>
     <hr style="width: 90%; height: 3px; background: #e74c3c" />
     <h1>&nbsp</h1>
-    {% endif %}
-
     <style>
       .menu-client-btn.active {
         background-color: #b71100; /* Здесь можно задать нужный вам стиль для подсветки */
@@ -92,122 +93,53 @@
         text-decoration: underline;
       }
     </style>
+    <button
+      class="dish-filter {% if dish_type == 'samples' %}active{% endif %}"
+      data-filter="samples"
+      id="requestButton"
+    >
+      Готовые меню
+    </button>
+    <button
+      class="dish-filter {% if dish_type == 'samples' %}active{% endif %}"
+      data-filter="all"
+      id="requestButton"
+    >
+      Все блюда
+    </button>
+    <button
+      class="dish-filter {% if dish_type == 'salads' %}active{% endif %}"
+      data-filter="salads"
+      id="requestButton"
+    >
+      Салаты
+    </button>
+    <button
+      class="dish-filter {% if dish_type == 'hot_dishes' %}active{% endif %}"
+      data-filter="hot_dishes"
+      id="requestButton"
+    >
+      Горячие блюда
+    </button>
+    <button
+      class="dish-filter {% if dish_type == 'drinks' %}active{% endif %}"
+      data-filter="drinks"
+      id="requestButton"
+    >
+      Напитки
+    </button>
+    <button
+      class="dish-filter {% if dish_type == 'desserts' %}active{% endif %}"
+      data-filter="desserts"
+      id="requestButton"
+    >
+      Десерты
+    </button>
     <a
       class="dish-filter {% if dish_type == 'samples' %}active{% endif %}"
       href="/banquet/?dish-filter=samples&editting-clientId={{clientId}}"
       >Готовые меню</a
     >
-    <a
-      class="dish-filter {% if not dish_type or dish_type == 'null' %}active{% endif %}"
-      href="/banquet/?dish-filter=all&editting-clientId={{clientId}}"
-      >Все блюда</a
-    >
-    <a
-      class="dish-filter {% if dish_type == 'salads' %}active{% endif %}"
-      href="/banquet/?dish-filter=salads&editting-clientId={{clientId}}"
-      >Салаты</a
-    >
-    <a
-      class="dish-filter {% if dish_type == 'hot_dishes' %}active{% endif %}"
-      data-id="hot_dishes"
-      href="/banquet/?dish-filter=hot_dishes&editting-clientId={{clientId}}"
-      >Горячие блюда</a
-    >
-    <a
-      class="dish-filter {% if dish_type == 'drinks' %}active{% endif %}"
-      href="/banquet/?dish-filter=drinks&editting-clientId={{clientId}}"
-      >Напитки</a
-    >
-    <a
-      class="dish-filter {% if dish_type == 'desserts' %}active{% endif %}"
-      href="/banquet/?dish-filter=desserts&editting-clientId={{clientId}}"
-      >Десерты</a
-    >
-
-    <script>
-      // Получаем ссылку на клиентов по классу
-      const clientLinks = document.querySelectorAll(".dish-filter");
-
-      function getQueryParamValue(url, param) {
-        const urlObject = new URL(url);
-        return urlObject.searchParams.get(param);
-      }
-      // Перебираем ссылки на клиентов и назначаем обработчик события на клик
-      clientLinks.forEach((link) => {
-        link.addEventListener("click", function () {
-          const url = window.location.href;
-
-          const currentPosition = window.scrollY;
-          sessionStorage.setItem("scrollPosition", currentPosition);
-          // Получаем clientid из data-id атрибута кнопки клиента
-          let clientId = null;
-          const urlObject = new URL(url);
-          clientId = urlObject.searchParams.get("editting-clientId");
-          this.href += clientId;
-
-          const urlParams = new URLSearchParams(window.location.search);
-          const editting_clientId = urlParams.get("editting-clientId");
-
-          const newURL = link.getAttribute("href");
-          const dataId = this.dataset.id;
-        });
-      });
-    </script>
-
-    <script>
-      document.addEventListener("DOMContentLoaded", () => {
-        const savedPosition = sessionStorage.getItem("scrollPosition");
-
-        if (savedPosition) {
-          // Прокручиваем страницу к сохраненной позиции
-          window.scrollTo(0, savedPosition);
-
-          // Удаляем сохраненную позицию прокрутки из sessionStorage
-          sessionStorage.removeItem("scrollPosition");
-        }
-      });
-      // Получаем все кнопки с классом "menu-client-btn"
-      const menuButtons = document.querySelectorAll(".menu-client-btn");
-
-      // Добавляем обработчик событий на каждую кнопку
-      menuButtons.forEach((button) => {
-        // Получаем значение атрибута data-id у каждой кнопки (client.id)
-        const clientId = button.getAttribute("data-id");
-
-        // Добавляем обработчик событий на нажатие кнопки
-        button.addEventListener("click", () => {
-          const currentPosition = window.scrollY;
-          sessionStorage.setItem("scrollPosition", currentPosition);
-          var currentUrl = window.location.href;
-
-          // Парсируем параметры текущего URL
-          const urlObject = new URL(currentUrl);
-          dish_filter = urlObject.searchParams.get("dish-filter");
-
-          window.location.href =
-            `/banquet/?editting-clientId=${clientId}` +
-            "&dish-filter=" +
-            dish_filter;
-          window.scrollTo(0, scrollTop);
-        });
-
-        // Проверяем текущий URL и сравниваем с целевой ссылкой
-        const currentUrl = window.location.pathname.replace(/\/$/, ""); // Удаляем последний слеш, если есть
-        const targetUrl = `/banquet/?editting-clientId=${clientId}`;
-
-        function getURLParameter(name) {
-          const urlParams = new URLSearchParams(window.location.search);
-          return urlParams.get(name);
-        }
-        const NewclientId = getURLParameter("editting-clientId");
-
-        if (clientId === NewclientId) {
-          // Если текущий URL совпадает с целевой ссылкой, подсвечиваем кнопку
-          button.classList.add("active");
-          button.textContent = "Выбрано для редактирования";
-        }
-      });
-    </script>
     {% if dish_type != 'samples' %}
     <div class="grid-container">
       {% for current_dish in current_dishes %}
@@ -310,6 +242,7 @@
       }
     </style>
     <!-- prettier-ignore -->
+    <div class="all_clients">
     {% for client in banquet.clients.all %}
     <div class="client-header">
       <div class="client-info">
@@ -457,6 +390,7 @@
     <h1>&nbsp</h1>
 
     {% endfor %}
+    </div>
     <h1>
       Сумма заказа:
       <span class="banquet-total-price" data-id="{{banquet.id}}"
@@ -474,5 +408,130 @@
 
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="/static/js/banquet_changing.js"></script>
+  <script src="/static/js/banquet_edit_links.js"></script>
+
+  <button id="requestButton">Запросить данные</button>
+  <div id="result"></div>
+
+  <script>
+    $("button.dish-filter").on("click", function () {
+      var filter = $(this).data("filter"); // Получаем значение data-filter
+
+      var requestParams = {
+        "dish-filter": filter, // Используем полученное значение для параметра запроса
+      };
+
+      $.ajax({
+        url: "http://127.0.0.1:8000/banquet/",
+        method: "GET",
+        data: requestParams,
+        dataType: "json",
+        success: function (data, client_name) {
+          // Обработка успешного ответа
+          $("#result").text(data); // Эта строка остается без изменений
+          data = JSON.parse(data);
+
+          $(document).ready(function () {
+            $(".grid-container").empty();
+            var jsonData = data;
+
+            const grid_container = document.querySelector(".delete-client-btn");
+            jsonData.forEach(function (item, index) {
+              var gridItem = $("<div>");
+              var gridContainer = $("<div>", { class: "grid-item" });
+              var dishDiv = $("<div>", {
+                class: "dishes",
+                "data-name": item.fields.name,
+                "data-tittle": item.fields.name,
+                "data-weight": item.fields.weight,
+                "data-price": item.fields.price,
+                "data-sostav": item.fields.ingredients,
+                "data-type": item.fields.type,
+              });
+
+              var img = $("<img>", {
+                src: "http://localhost:8000/media/" + item.fields.image,
+              });
+
+              var h3 = $("<h3>").html(
+                `${item.fields.name} / ${item.fields.weight} гр. / ${item.fields.price} руб.`
+              );
+
+              var clientId = localStorage.getItem("current_client_id");
+              var current_client_name = localStorage.getItem(
+                "current_client_name"
+              );
+              if (clientId) {
+                var orderButton = $("<button>", {
+                  class: "order-button",
+                  "data-id": item.pk,
+                  "data-name": item.fields.name,
+                }).text(`Добавить для "${current_client_name}"`);
+              } else {
+                var orderButton = $("<button>", {
+                  class: "order-button",
+                  "data-id": index + 1,
+                  "data-name": item.fields.name,
+                }).text("Выберите клиента");
+              }
+
+              dishDiv.append(img, h3);
+              gridItem.append(dishDiv, $("<h2>").append(orderButton));
+
+              gridContainer.append(gridItem);
+              $(".grid-container").append(gridContainer);
+            });
+
+            const orderButtons = document.querySelectorAll(".order-button");
+            var clientId = localStorage.getItem("current_client_id");
+
+            orderButtons.forEach((button) => {
+              if (button.innerText === "Выберите клиента") {
+                button.disabled = true;
+              }
+              const dishId = button.dataset.id;
+              const dishTittle = button.dataset.name;
+              if (clientId != "") {
+                button.addEventListener("click", function () {
+                  var username_id = localStorage.getItem("username_id");
+                  var clientId = localStorage.getItem("current_client_id");
+                  const data_to_send = {
+                    action: "added_dish",
+                    message: `Заказ "${dishTittle}" добавлен`,
+                    current_dish_id: dishId,
+                    current_user_id: username_id,
+                    current_client_id: clientId,
+                  };
+                  var currentUrl = window.location.href;
+                  const urlObject = new URL(currentUrl);
+                  dish_filter = urlObject.searchParams.get("dish-filter");
+                  var is_menu = false;
+                  if (dish_filter == "samples") {
+                    is_menu = true;
+                  }
+                  if (is_menu) {
+                    const new_data_to_send = {
+                      action: "menu_add",
+                      message: `Заказ "${button.dataset.name}" добавлен`,
+                      current_menu_id: button.dataset.id,
+                      current_user_id: username_id,
+                      current_client_id: clientId,
+                    };
+                    socket.send(JSON.stringify(new_data_to_send));
+                  } else {
+                    socket.send(JSON.stringify(data_to_send));
+                  }
+                });
+              }
+            });
+          });
+        },
+        error: function (xhr, status, error) {
+          console.error(error);
+        },
+      });
+    });
+  </script>
+  <script></script>
 </body>
 {% endblock content %}
