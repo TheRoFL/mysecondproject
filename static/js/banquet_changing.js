@@ -16,6 +16,18 @@ function updateClientsList(data) {
     value: quantity,
   });
 
+  function updateQuantity(client_id, quantity) {
+    username_id = localStorage.getItem("username_id");
+    socket.send(
+      JSON.stringify({
+        action: "client_quantity_update",
+        client_id: client_id,
+        current_user_id: username_id,
+        quantity: quantity,
+      })
+    );
+  }
+
   var quantityLabel = $("<span>", { text: " человек " });
 
   var deleteBtn = $("<button>", {
@@ -39,7 +51,6 @@ function updateClientsList(data) {
     menuBtn
   );
 
-  console.log(newDiv);
   // Добавляем созданный div внутрь <div class="my_extra_clients">
   $(".my_extra_clients").append(newDiv);
 
@@ -88,6 +99,19 @@ function updateClientsList(data) {
       button.classList.add("active");
       button.textContent = "Выбрано для редактирования";
     }
+  });
+
+  const quantity_inputs = document.querySelectorAll(".quantity-input");
+  console.log(quantity_inputs);
+  function quantity_input_change() {
+    const client_id = $(this).data("id");
+    const quantity = Math.max(1, $(this).val()); // Ensure the quantity is not less than 1
+    updateQuantity(client_id, quantity);
+  }
+
+  // Присваиваем обработчик события "click" каждому input из массива quantity_inputs
+  quantity_inputs.forEach((input) => {
+    input.addEventListener("click", quantity_input_change);
   });
 
   // Создаем элементы
@@ -431,8 +455,33 @@ socket.onmessage = function (e) {
     var div_name = "client-container-" + current_client;
     document.getElementById(div_name).appendChild(newDiv);
 
-    var OrderdeleteButtons = document.querySelectorAll(".delete-btn");
-    OrderdeleteButtons.forEach(function (button) {
+    function handleDeleteDishButtonClick(event) {
+      const mybutton = event.target; // Получаем элемент, на котором произошло событие (в данном случае, кнопка)
+      const order_id = mybutton.dataset.id; // Получаем значение data-id из атрибута data-id
+      current_client_id = mybutton.dataset.clientid;
+      var username_id = localStorage.getItem("username_id");
+
+      socket.send(
+        JSON.stringify({
+          action: "dish_order_delete",
+          order_id: order_id,
+          current_user_id: username_id,
+          clientId: current_client_id,
+        })
+      );
+      var orderElement = document.querySelector(
+        `div.client-orders[data-id="${order_id}"]`
+      );
+
+      // Если элемент найден, удаляем его
+      if (orderElement) {
+        orderElement.remove();
+        mybutton.remove();
+      }
+    }
+
+    const OrderDeleteButtons = document.querySelectorAll(".delete-btn");
+    OrderDeleteButtons.forEach(function (button) {
       button.addEventListener("click", handleDeleteDishButtonClick);
     });
   } else if (action == "dish_added") {
@@ -604,7 +653,6 @@ deleteButtons.forEach((button) => {
 });
 
 const deleteMenuButtons = document.querySelectorAll(".delete-menu-btn");
-
 deleteMenuButtons.forEach((button) => {
   button.addEventListener("click", handleDeleteMenuButtonClick);
 });
@@ -677,7 +725,7 @@ function handleDeleteDishButtonClick(event) {
   }
 }
 
-var OrderdeleteButtons = document.querySelectorAll(".delete-btn");
-OrderdeleteButtons.forEach(function (button) {
+const OrderDeleteButtons = document.querySelectorAll(".delete-btn");
+OrderDeleteButtons.forEach(function (button) {
   button.addEventListener("click", handleDeleteDishButtonClick);
 });

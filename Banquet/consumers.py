@@ -88,12 +88,12 @@ class BanquetConsumer(WebsocketConsumer):
                 menu_id = data["menu_id"]
                 current_banquet = Banquet.objects.get(owner=current_user_profiledata, is_ordered=False)
 
-
                 current_client= Client.objects.get(id=client_id)
                 current_client_id = current_client.id
+
                 current_client.menu = None
                 current_client.save()
-
+                
                 response = {
                     "action":"client_menu_deleted",
                     'client_id': current_client_id,
@@ -168,15 +168,8 @@ class BanquetConsumer(WebsocketConsumer):
                 print(e)
 
                 
-            for current_client_dish_order in current_menu.dishes.all():
-                new_DishOrder = DishOrder.objects.create(
-                    product=current_client_dish_order.product,
-                    quantity=current_client_dish_order.quantity,
-                    owner=current_user_profiledata,
-                    is_for_banquet=True
-                    )
-                
-                current_client.menu = current_menu
+                           
+            current_client.menu = current_menu
             current_client.save()
 
             current_banquet = Banquet.objects.get(owner=current_user_profiledata, is_ordered=False)
