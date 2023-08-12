@@ -435,6 +435,10 @@ socket.onmessage = function (e) {
     OrderdeleteButtons.forEach(function (button) {
       button.addEventListener("click", handleDeleteDishButtonClick);
     });
+    var OrderdeleteButtons = document.querySelectorAll(".delete-btn");
+    OrderdeleteButtons.forEach(function (button) {
+      button.addEventListener("click", handleDeleteDishButtonClick);
+    });
   } else if (action == "dish_added") {
     var dataId = data.current_dish_order_id;
     var newQuantity = data.client_dishOrder_quantity;
