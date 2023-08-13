@@ -1,13 +1,8 @@
-img:hover {
-  border: 2px solid white;
-}
-button:hover {
-  border: 2px solid black;
-}
 /* Простой стиль для красивого отображения формы */
 body {
   font-family: Arial, sans-serif;
   padding-bottom: 2000px; /* Размер пространства внизу body (можно задать нужное значение) */
+  background-color: #fddada;
 }
 form {
   margin-top: 20px;
@@ -21,19 +16,6 @@ input {
   padding: 5px;
   margin-bottom: 10px;
   width: 300px;
-}
-button:hover {
-  border: 2px solid black;
-  background-color: #c0392b; /* Darker shade of red */
-}
-button {
-  background-color: #e74c3c; /* Change background color to red */
-  color: #fff;
-  border: none;
-  padding: 5px 10px;
-  margin: 5px;
-  cursor: pointer;
-  transition: background-color 0.3s ease; /* Add a transition effect */
 }
 
 .main-grid-container {
@@ -59,17 +41,6 @@ input[type="submit"]:active {
 }
 
 .quantity-input,
-.name-input {
-  width: 50px;
-  height: 30px;
-  font-size: 16px;
-  border: 1px solid #ff0000;
-  border-radius: 5px;
-  text-align: center;
-  outline: none;
-  transition: border-color 0.2s ease-in-out;
-}
-
 .quantity-input:focus,
 .name-input:focus {
   border-color: #d80000;
@@ -129,6 +100,75 @@ input[type="submit"]:active {
 .decrease-btn:hover,
 .delete-btn:hover {
   background-color: #c0392b; /* Darker shade of red */
+}
+
+.menu-client-btn.active {
+  background-color: #b71100; /* Здесь можно задать нужный вам стиль для подсветки */
+  text-decoration: underline; /* Подчеркиваем текст кнопки */
+}
+
+/*----------------------------------------------------------------*/
+.body {
+  padding: 0 230px;
+}
+
+.vseClients {
+  display: flex;
+  max-width: 1200px;
+  margin: 15px;
+  flex-wrap: wrap;
+}
+
+#showFormBtn {
+  font-size: 80px;
+  display: inline;
+}
+
+.formaClienta {
+  width: 240px;
+  height: 360px;
+  border-radius: 20px;
+  border: 3px solid #4a644b;
+  background-color: #fff;
+  color: #4a644b;
+  margin: 15px 30px;
+  display: inline-block;
+}
+
+.formaClienta_header {
+  padding: 5px;
+  padding-top: 15px;
+  height: 40px;
+  background-color: #4a644b;
+  border-radius: 15px 15px 0 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.name-input {
+  width: 140px;
+  height: 25px;
+  font-size: 14px;
+  border-radius: 10px;
+  text-align: center;
+}
+
+.quantity-input {
+  width: 40px;
+  height: 25px;
+  font-size: 14px;
+  border-radius: 10px;
+  text-align: center;
+}
+
+.delete-client-btn {
+  background-color: rgba(10, 10, 10, 0);
+}
+
+.musorka {
+  width: 17px;
+  margin-bottom: 10px;
 }
 
 .menu-client-btn.active {

@@ -19,10 +19,7 @@
   <link rel="stylesheet" href="/static/styles/banquet.css" />
 </head>
 <body>
-  <h1 style="margin-left: 10px">Создать клиента</h1>
-  <button id="showFormBtn" style="margin-left: 10px">Добавить клиента</button>
-
-  <div>
+  <div class="body">
     <form id="clientForm" style="margin-left: 10px">
       <label for="clientName">Название клиента:</label>
       <input type="text" id="clientName" required />
@@ -34,44 +31,205 @@
       <button type="submit">Сохранить</button>
       <button type="button" id="cancelFormBtn">Отменить</button>
     </form>
-    <h1>&nbsp</h1>
-    <hr style="width: 90%; height: 3px; background: #e74c3c" />
-    <h1>&nbsp</h1>
-    <div class="my_extra_clients">
+    <div class="vseClients">
       <!-- prettier-ignore -->
-      {% if banquet.clients.all %} 
-      {% for client in banquet.clients.all %}
-      <div class="my_client" data-id="{{client.id}}">
-        <input
-          class="name-input"
-          data-id="{{client.id}}"
-          value="{{ client.type }}"
-        />
-        в количестве
-        <input
-          class="quantity-input"
-          data-id="{{client.id}}"
-          value="{{ client.quantity }}"
-        />
-        человек
-        <button class="delete-client-btn" data-id="{{client.id}}">
-          Удалить
-        </button>
+      <div class="all_clients">
+        {% for client in banquet.clients.all %}
+        <div class="client-header">
+          <div class="client-info">
+            <h1 class="client-info-h1" data-id="{{client.id}}">
+              Меню для клиента типа "<span
+                class="client-name"
+                data-id="{{client.id}}"
+                >{{client.type}}</span
+              >" в количестве
+              <span class="client-quantity" data-id="{{client.id}}"
+                >{{client.quantity}}</span
+              >
+              человек
+            </h1>
+          </div>
+          <div
+            class="client-container-{{client.id}}"
+            id="client-container-{{client.id}}"
+          >
+            <!-- prettier-ignore -->
+            {% if client.menu %}
+
+            <div class="client-menu" data-id="{{client.id}}-{{client.menu.id}}">
+              <div class="client-menu-btn">
+                <h1 style="display: inline-block">{{client.menu}}</h1>
+                <button
+                  class="delete-menu-btn"
+                  data-id="{{client.menu.id}}"
+                  data-clientId="{{client.id}}"
+                  style="margin-top: 0px"
+                >
+                  Удалить
+                </button>
+              </div>
+              {% for dish in client.menu.dishes.all %}
+              <div class="client-menu-dish" data-id="{{dish.id}}">
+                <h1 style="margin-left: 25px">
+                  -{{dish.product.name}} x {{dish.quantity}} шт. =
+                  {{dish.price_count}}.00 руб.
+                </h1>
+              </div>
+              {% endfor %}
+              <h1 style="margin-left: 15px">
+                Итого:
+                <span class="menu-total" data-id="{{client.menu.id}}"
+                  >{{client.menu.all_dishes_price}}</span
+                >.00 руб. с человека
+              </h1>
+              <h1>--------------------------------------------------------</h1>
+            </div>
+
+            {%endif%}
+
+            <!-- prettier-ignore -->
+            {% comment %} {% else %} {% endcomment %}
+            {% for client_dishOrder in client.dishes.all %}
+            <div>
+              <div
+                class="client-orders-{{client_dishOrder.id}}"
+                id="client-orders-{{client_dishOrder.id}}"
+              >
+                <h1>
+                  <div
+                    class="client_dishOrder-element"
+                    data-id="{{client_dishOrder.id}}"
+                  >
+                    <!-- prettier-ignore -->
+                    <h2 style="margin-left: 30px">
+                    {{client_dishOrder.product.name}} x 
+                    <span
+                      class="client_order_quantity"
+                      data-id="{{client.id}}"
+                      id="{{client_dishOrder.id}}"
+                      >{{client_dishOrder.quantity}} 
+                    </span> шт. =
+                   
+                    <span
+                      class="client_order_price"
+                      data-id="{{client.id}}"
+                      id="{{client_dishOrder.id}}"
+                      >{{client_dishOrder.price_count}}</span
+                    >.00 руб.
+                  </h2>
+                  </div>
+                  <button
+                    class="delete-btn"
+                    data-id="{{client_dishOrder.id}}"
+                    data-clientId="{{client.id}}"
+                  >
+                    X
+                  </button>
+                </h1>
+              </div>
+            </div>
+            <!-- prettier-ignore -->
+            {% endfor %}
+          </div>
+
+          <h2
+            class="client-total-price"
+            style="margin-top: 50px; margin-left: 20px"
+          >
+            <!-- prettier-ignore -->
+            {% if client.menu %} 
+            Итого за всех клиентов:
+            <span
+              class="order-price-count"
+              data-id="{{client.id}}"
+              id="{{client.id}}"
+            >
+              {{client.total_client_price}}</span
+            >.00 руб. x
+            <span class="client-quantity-2" data-id="{{client.id}}"
+              >{{client.quantity}}</span
+            >
+            человек =
+            <span
+              class="client-price-count"
+              data-id="{{client.id}}"
+              id="{{client.id}}"
+              >{{client.menu_and_orders_price_count}}</span
+            >.00 руб.
+            <!-- prettier-ignore -->
+            {%else %} Итого за всех клиентов:
+            <span
+              class="order-price-count"
+              data-id="{{client.id}}"
+              id="{{client.id}}"
+            >
+              {{client.price_count}}</span
+            >.00 руб. x
+            <span class="client-quantity-2" data-id="{{client.id}}"
+              >{{client.quantity}}</span
+            >
+            человек =
+            <span
+              class="client-price-count"
+              data-id="{{client.id}}"
+              id="{{client.id}}"
+              >{{client.menu_and_orders_price_count}}</span
+            >.00 руб. {%endif%}
+          </h2>
+        </div>
+
+        <h1>&nbsp</h1>
+
+        {% endfor %}
+      </div>
+      {% if banquet.clients.all %} {% for client in banquet.clients.all %}
+      <div class="my_client formaClienta" data-id="{{client.id}}">
+        <div class="formaClienta_header">
+          <input
+            class="name-input"
+            data-id="{{client.id}}"
+            value="{{ client.type }}"
+          />
+          <p
+            style="
+              font-size: 10px;
+              display: inline;
+              color: #fff;
+              margin-bottom: 12px;
+            "
+          >
+            x
+          </p>
+          <input
+            class="quantity-input"
+            data-id="{{client.id}}"
+            value="{{ client.quantity }}"
+          />
+
+          <button class="delete-client-btn">
+            <img
+              data-id="{{client.id}}"
+              class="musorka"
+              src="/static/images/Мусорка.png"
+              alt="delete"
+            />
+          </button>
+        </div>
+
         <button class="menu-client-btn" data-id="{{client.id}}">
           Выбрать для редактирования
         </button>
+        <h1 style="margin-left: 15px">
+          Итого:
+          <span class="menu-total" data-id="{{client.menu.id}}"
+            >{{client.menu.all_dishes_price}}</span
+          >.00 руб. с человека
+        </h1>
       </div>
+
       {% endfor %} {% endif %}
+      <button id="showFormBtn" class="formaClienta">+</button>
     </div>
-    <h1>&nbsp</h1>
-    <hr style="width: 90%; height: 3px; background: #e74c3c" />
-    <h1>&nbsp</h1>
-    <style>
-      .menu-client-btn.active {
-        background-color: #b71100; /* Здесь можно задать нужный вам стиль для подсветки */
-        text-decoration: underline; /* Подчеркиваем текст кнопки */
-      }
-    </style>
 
     {% if current_client %}
     <h1>
@@ -231,166 +389,157 @@
       .client_dishOrder-element {
         display: inline-block;
       }
-      .name-input {
-        width: 150px; /* начальная ширина окна */
-        height: auto; /* автоматическая высота в зависимости от содержимого */
-        min-height: 30px; /* минимальная высота окна */
-        border: 1px solid #ccc;
-        padding: 5px;
-        font-size: 16px;
-        resize: vertical; /* разрешить изменение размера по вертикали */
-      }
     </style>
     <!-- prettier-ignore -->
     <div class="all_clients">
-    {% for client in banquet.clients.all %}
-    <div class="client-header">
-      <div class="client-info">
-        <h1 class="client-info-h1" data-id="{{client.id}}">
-          Меню для клиента типа "<span
-            class="client-name"
+      {% for client in banquet.clients.all %}
+      <div class="client-header">
+        <div class="client-info">
+          <h1 class="client-info-h1" data-id="{{client.id}}">
+            Меню для клиента типа "<span
+              class="client-name"
+              data-id="{{client.id}}"
+              >{{client.type}}</span
+            >" в количестве
+            <span class="client-quantity" data-id="{{client.id}}"
+              >{{client.quantity}}</span
+            >
+            человек
+          </h1>
+        </div>
+        <div
+          class="client-container-{{client.id}}"
+          id="client-container-{{client.id}}"
+        >
+          <!-- prettier-ignore -->
+          {% if client.menu %}
+  
+          <div class="client-menu" data-id="{{client.id}}-{{client.menu.id}}">
+            <div class="client-menu-btn">
+              <h1 style="display: inline-block">{{client.menu}}</h1>
+              <button
+                class="delete-menu-btn"
+                data-id="{{client.menu.id}}"
+                data-clientId="{{client.id}}"
+                style="margin-top: 0px"
+              >
+                Удалить
+              </button>
+            </div>
+            {% for dish in client.menu.dishes.all %}
+            <div class="client-menu-dish" data-id="{{dish.id}}">
+              <h1 style="margin-left: 25px">
+                -{{dish.product.name}} x {{dish.quantity}} шт. =
+                {{dish.price_count}}.00 руб.
+              </h1>
+            </div>
+            {% endfor %}
+            <h1 style="margin-left: 15px">
+              Итого:
+              <span class="menu-total" data-id="{{client.menu.id}}"
+                >{{client.menu.all_dishes_price}}</span
+              >.00 руб. с человека
+            </h1>
+            <h1>--------------------------------------------------------</h1>
+          </div>
+  
+          {%endif%}
+  
+          <!-- prettier-ignore -->
+          {% comment %} {% else %} {% endcomment %}
+          {% for client_dishOrder in client.dishes.all %}
+          <div>
+            <div
+              class="client-orders-{{client_dishOrder.id}}"
+              id="client-orders-{{client_dishOrder.id}}"
+            >
+              <h1>
+                <div
+                  class="client_dishOrder-element"
+                  data-id="{{client_dishOrder.id}}"
+                >
+                  <!-- prettier-ignore -->
+                  <h2 style="margin-left: 30px">
+                  {{client_dishOrder.product.name}} x 
+                  <span
+                    class="client_order_quantity"
+                    data-id="{{client.id}}"
+                    id="{{client_dishOrder.id}}"
+                    >{{client_dishOrder.quantity}} 
+                  </span> шт. =
+                 
+                  <span
+                    class="client_order_price"
+                    data-id="{{client.id}}"
+                    id="{{client_dishOrder.id}}"
+                    >{{client_dishOrder.price_count}}</span
+                  >.00 руб.
+                </h2>
+                </div>
+                <button
+                  class="delete-btn"
+                  data-id="{{client_dishOrder.id}}"
+                  data-clientId="{{client.id}}"
+                >
+                  X
+                </button>
+              </h1>
+            </div>
+          </div>
+          <!-- prettier-ignore -->
+          {% endfor %}
+        </div>
+  
+        <h2
+          class="client-total-price"
+          style="margin-top: 50px; margin-left: 20px"
+        >
+          <!-- prettier-ignore -->
+          {% if client.menu %} 
+          Итого за всех клиентов:
+          <span
+            class="order-price-count"
             data-id="{{client.id}}"
-            >{{client.type}}</span
-          >" в количестве
-          <span class="client-quantity" data-id="{{client.id}}"
+            id="{{client.id}}"
+          >
+            {{client.total_client_price}}</span
+          >.00 руб. x
+          <span class="client-quantity-2" data-id="{{client.id}}"
             >{{client.quantity}}</span
           >
-          человек
-        </h1>
-      </div>
-      <div
-        class="client-container-{{client.id}}"
-        id="client-container-{{client.id}}"
-      >
-        <!-- prettier-ignore -->
-        {% if client.menu %}
-
-        <div class="client-menu" data-id="{{client.id}}-{{client.menu.id}}">
-          <div class="client-menu-btn">
-            <h1 style="display: inline-block">{{client.menu}}</h1>
-            <button
-              class="delete-menu-btn"
-              data-id="{{client.menu.id}}"
-              data-clientId="{{client.id}}"
-              style="margin-top: 0px"
-            >
-              Удалить
-            </button>
-          </div>
-          {% for dish in client.menu.dishes.all %}
-          <div class="client-menu-dish" data-id="{{dish.id}}">
-            <h1 style="margin-left: 25px">
-              -{{dish.product.name}} x {{dish.quantity}} шт. =
-              {{dish.price_count}}.00 руб.
-            </h1>
-          </div>
-          {% endfor %}
-          <h1 style="margin-left: 15px">
-            Итого:
-            <span class="menu-total" data-id="{{client.menu.id}}"
-              >{{client.menu.all_dishes_price}}</span
-            >.00 руб. с человека
-          </h1>
-          <h1>--------------------------------------------------------</h1>
-        </div>
-
-        {%endif%}
-
-        <!-- prettier-ignore -->
-        {% comment %} {% else %} {% endcomment %}
-        {% for client_dishOrder in client.dishes.all %}
-        <div>
-          <div
-            class="client-orders-{{client_dishOrder.id}}"
-            id="client-orders-{{client_dishOrder.id}}"
+          человек =
+          <span
+            class="client-price-count"
+            data-id="{{client.id}}"
+            id="{{client.id}}"
+            >{{client.menu_and_orders_price_count}}</span
+          >.00 руб.
+          <!-- prettier-ignore -->
+          {%else %} Итого за всех клиентов:
+          <span
+            class="order-price-count"
+            data-id="{{client.id}}"
+            id="{{client.id}}"
           >
-            <h1>
-              <div
-                class="client_dishOrder-element"
-                data-id="{{client_dishOrder.id}}"
-              >
-                <!-- prettier-ignore -->
-                <h2 style="margin-left: 30px">
-                {{client_dishOrder.product.name}} x 
-                <span
-                  class="client_order_quantity"
-                  data-id="{{client.id}}"
-                  id="{{client_dishOrder.id}}"
-                  >{{client_dishOrder.quantity}} 
-                </span> шт. =
-               
-                <span
-                  class="client_order_price"
-                  data-id="{{client.id}}"
-                  id="{{client_dishOrder.id}}"
-                  >{{client_dishOrder.price_count}}</span
-                >.00 руб.
-              </h2>
-              </div>
-              <button
-                class="delete-btn"
-                data-id="{{client_dishOrder.id}}"
-                data-clientId="{{client.id}}"
-              >
-                X
-              </button>
-            </h1>
-          </div>
-        </div>
-        <!-- prettier-ignore -->
-        {% endfor %}
+            {{client.price_count}}</span
+          >.00 руб. x
+          <span class="client-quantity-2" data-id="{{client.id}}"
+            >{{client.quantity}}</span
+          >
+          человек =
+          <span
+            class="client-price-count"
+            data-id="{{client.id}}"
+            id="{{client.id}}"
+            >{{client.menu_and_orders_price_count}}</span
+          >.00 руб. {%endif%}
+        </h2>
       </div>
-
-      <h2
-        class="client-total-price"
-        style="margin-top: 50px; margin-left: 20px"
-      >
-        <!-- prettier-ignore -->
-        {% if client.menu %} 
-        Итого за всех клиентов:
-        <span
-          class="order-price-count"
-          data-id="{{client.id}}"
-          id="{{client.id}}"
-        >
-          {{client.total_client_price}}</span
-        >.00 руб. x
-        <span class="client-quantity-2" data-id="{{client.id}}"
-          >{{client.quantity}}</span
-        >
-        человек =
-        <span
-          class="client-price-count"
-          data-id="{{client.id}}"
-          id="{{client.id}}"
-          >{{client.menu_and_orders_price_count}}</span
-        >.00 руб.
-        <!-- prettier-ignore -->
-        {%else %} Итого за всех клиентов:
-        <span
-          class="order-price-count"
-          data-id="{{client.id}}"
-          id="{{client.id}}"
-        >
-          {{client.price_count}}</span
-        >.00 руб. x
-        <span class="client-quantity-2" data-id="{{client.id}}"
-          >{{client.quantity}}</span
-        >
-        человек =
-        <span
-          class="client-price-count"
-          data-id="{{client.id}}"
-          id="{{client.id}}"
-          >{{client.menu_and_orders_price_count}}</span
-        >.00 руб. {%endif%}
-      </h2>
-    </div>
-
-    <h1>&nbsp</h1>
-
-    {% endfor %}
-    </div>
+  
+      <h1>&nbsp</h1>
+  
+      {% endfor %}
+      </div>
     <h1>
       Сумма заказа:
       <span class="banquet-total-price" data-id="{{banquet.id}}"

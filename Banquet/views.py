@@ -32,6 +32,7 @@ def home(request, dish_type=None, clientId=None):
     if dish_type == None:
         try:
             current_dishes = Dish.objects.all()
+            print (current_dishes)
             for current_dish in current_dishes:
                 current_dish.tittle = current_dish.name
                 current_dish.name = current_dish.name.replace(" ", "_")
@@ -40,7 +41,7 @@ def home(request, dish_type=None, clientId=None):
             return redirect('/')
         
         contex = {"current_dishes":current_dishes, "banquet":banquet}
-
+        
     elif dish_type == 'samples':
         menu_samples = MenuSample.objects.all()
 
@@ -82,7 +83,7 @@ def home(request, dish_type=None, clientId=None):
             client_name = current_client.type
         except Client.DoesNotExist:
             pass
-
+    print (current_dishes)
     if not current_dishes:
         current_dishes = menu_samples
     

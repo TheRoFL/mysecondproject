@@ -1,8 +1,8 @@
 .header {
   display: flex;
   justify-content: space-between;
-  margin-left: 25px;
-  margin-right: 25px;
+  background-color: black;
+  height: 200px;
 }
 .header_logo {
   height: 90px;
@@ -34,4 +34,5 @@
 .aboutYou_profile {
   height: 70px;
   margin-top: 20px;
+  margin-right: 20px;
 }
