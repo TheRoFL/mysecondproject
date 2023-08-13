@@ -14,7 +14,6 @@ def home(request, dish_type=None, clientId=None):
     if clientId == "null":
         clientId=None
     dish_type = request.GET.get('dish-filter')
-    print(dish_type)
     if dish_type == "all" or dish_type == "null":
         dish_type = None
     try:

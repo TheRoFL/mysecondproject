@@ -76,21 +76,30 @@ class BanquetConsumer(WebsocketConsumer):
             
         elif action == "client_delete":
             client_id = data["client_id"]
-
-            current_client= Client.objects.get(id=client_id)
+            current_banquet = Banquet.objects.get(owner=current_user_profiledata, is_ordered=False)
+            current_client = Client.objects.get(id=client_id)
             current_client_id = current_client.id
+            for dish_order in current_client.dishes.all():
+                dish_order.delete()
+
             current_client.delete()
-            response = {"action":"client_deleted", "client_id": current_client_id}
+            response = {
+                    "action":"client_deleted",
+                    'client_id': current_client_id,
+                    'current_banquet_id':current_banquet.id,
+                    'total_banquet_price': current_banquet.total_price()
+                    }
+
             self.send_response(response)
-  
+       
         elif action == "client_menu_delete":
                 client_id = data["client_id"]
                 menu_id = data["menu_id"]
                 current_banquet = Banquet.objects.get(owner=current_user_profiledata, is_ordered=False)
 
-
                 current_client= Client.objects.get(id=client_id)
                 current_client_id = current_client.id
+
                 current_client.menu = None
                 current_client.save()
 
@@ -168,15 +177,8 @@ class BanquetConsumer(WebsocketConsumer):
                 print(e)
 
                 
-            for current_client_dish_order in current_menu.dishes.all():
-                new_DishOrder = DishOrder.objects.create(
-                    product=current_client_dish_order.product,
-                    quantity=current_client_dish_order.quantity,
-                    owner=current_user_profiledata,
-                    is_for_banquet=True
-                    )
-                
-                current_client.menu = current_menu
+                           
+            current_client.menu = current_menu
             current_client.save()
 
             current_banquet = Banquet.objects.get(owner=current_user_profiledata, is_ordered=False)
@@ -207,7 +209,7 @@ class BanquetConsumer(WebsocketConsumer):
             print(data)
             current_order_id = data["order_id"]
             current_order = get_object_or_404(DishOrder, id=current_order_id)
-            my_current_client_id = data["clientId"]
+            my_current_client_id = data["client_id"]
             new_current_client = get_object_or_404(Client, id=my_current_client_id)
             current_banquet = Banquet.objects.get(owner=current_user_profiledata, is_ordered=False)
             
@@ -217,7 +219,7 @@ class BanquetConsumer(WebsocketConsumer):
                         "order_id": current_order_id,
                         'order_total_price': new_current_client.total_client_price(),
                         'client_total_price': new_current_client.menu_and_orders_price_count(),
-                        'clientId':my_current_client_id,
+                        'client_id':my_current_client_id,
                         'banqet_id':current_banquet.id,
                         'total_banquet_price':current_banquet.total_price()
                         }

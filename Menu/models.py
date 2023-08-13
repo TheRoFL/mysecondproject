@@ -3,7 +3,7 @@ from django.db import models
 
 
 def upload_to(self, filename):
-        return f"menu_images/{self.type}/{self.name}.png"
+        return f"menu_images/{self.type}/{self.create_tittle2()}.png"
 
     
 class Dish(models.Model):  
@@ -24,6 +24,7 @@ class Dish(models.Model):
     rating = models.PositiveIntegerField(default=None) #калорийность блюда
     
     image = models.ImageField(upload_to=upload_to) #изображение блюда
+
 
 
     def __str__(self):

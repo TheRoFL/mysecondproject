@@ -16,6 +16,18 @@ function updateClientsList(data) {
     value: quantity,
   });
 
+  function updateQuantity(client_id, quantity) {
+    username_id = localStorage.getItem("username_id");
+    socket.send(
+      JSON.stringify({
+        action: "client_quantity_update",
+        client_id: client_id,
+        current_user_id: username_id,
+        quantity: quantity,
+      })
+    );
+  }
+
   var quantityLabel = $("<span>", { text: " человек " });
 
   var deleteBtn = $("<button>", {
@@ -39,7 +51,6 @@ function updateClientsList(data) {
     menuBtn
   );
 
-  console.log(newDiv);
   // Добавляем созданный div внутрь <div class="my_extra_clients">
   $(".my_extra_clients").append(newDiv);
 
@@ -54,7 +65,7 @@ function updateClientsList(data) {
   // Добавляем обработчик событий на каждую кнопку
   menuButtons.forEach((button) => {
     // Получаем значение атрибута data-id у каждой кнопки (client.id)
-    const clientId = button.getAttribute("data-id");
+    const client_id = button.getAttribute("data-id");
 
     // Добавляем обработчик событий на нажатие кнопки
     button.addEventListener("click", () => {
@@ -67,7 +78,7 @@ function updateClientsList(data) {
       dish_filter = urlObject.searchParams.get("dish-filter");
 
       window.location.href =
-        `/banquet/?editting-clientId=${clientId}` +
+        `/banquet/?editting-client_id=${client_id}` +
         "&dish-filter=" +
         dish_filter;
       window.scrollTo(0, scrollTop);
@@ -75,38 +86,52 @@ function updateClientsList(data) {
 
     // Проверяем текущий URL и сравниваем с целевой ссылкой
     const currentUrl = window.location.pathname.replace(/\/$/, ""); // Удаляем последний слеш, если есть
-    const targetUrl = `/banquet/?editting-clientId=${clientId}`;
+    const targetUrl = `/banquet/?editting-client_id=${client_id}`;
 
     function getURLParameter(name) {
       const urlParams = new URLSearchParams(window.location.search);
       return urlParams.get(name);
     }
-    const NewclientId = getURLParameter("editting-clientId");
+    const Newclient_id = getURLParameter("editting-client_id");
 
-    if (clientId === NewclientId) {
+    if (client_id === Newclient_id) {
       // Если текущий URL совпадает с целевой ссылкой, подсвечиваем кнопку
       button.classList.add("active");
       button.textContent = "Выбрано для редактирования";
     }
   });
 
-  // Создаем элементы
-  var clientHeader = $("<div>", { class: "client-header" });
+  const quantity_inputs = document.querySelectorAll(".quantity-input");
+  function quantity_input_change() {
+    const client_id = $(this).data("id");
+    const quantity = Math.max(1, $(this).val()); // Ensure the quantity is not less than 1
+    updateQuantity(client_id, quantity);
+  }
 
+  // Присваиваем обработчик события "click" каждому input из массива quantity_inputs
+  quantity_inputs.forEach((input) => {
+    input.addEventListener("click", quantity_input_change);
+  });
+
+  // Создаем элементы
+  var clientHeader = $("<div>", {
+    class: "client-header",
+    "data-id": client_id,
+  });
   var clientInfo = $("<div>", { class: "client-info" });
   var clientInfoH1 = $("<h1>", {
-    class: "client-info-h1",
-    "data-id": clientId,
+    class: "client-info",
+    "data-id": client_id,
   });
   clientInfoH1.html(
-    `Меню для клиента типа "<span class='client-name' data-id='${clientId}'>${client_name}</span>" 
-    в количестве <span class='client-quantity' data-id='${clientId}'>${quantity}</span> человек`
+    `Меню для клиента типа "<span class='client-name' data-id='${client_id}'>${client_name}</span>" 
+    в количестве <span class='client-quantity' data-id='${client_id}'>${quantity}</span> человек`
   );
   clientInfo.append(clientInfoH1);
 
   var clientContainer = $("<div>", {
-    class: `client-container-${clientId}`,
-    id: `client-container-${clientId}`,
+    class: `client-container-${client_id}`,
+    id: `client-container-${client_id}`,
   });
 
   var clientTotalPrice = $("<h2>", {
@@ -114,10 +139,10 @@ function updateClientsList(data) {
     style: "margin-top: 50px; margin-left: 20px",
   });
   clientTotalPrice.html(
-    `Итого за всех клиентов: <span class='order-price-count' data-id='${clientId}' 
-    id='${clientId}'>0</span>.00 руб. x <span class='client-quantity-2'
-     data-id='${clientId}'>${quantity}</span> человек = <span class='client-price-count' 
-     data-id='${clientId}' id='${clientId}'>0</span>.00 руб.`
+    `Итого за всех клиентов: <span class='order-price-count' data-id='${client_id}' 
+    id='${client_id}'>0</span>.00 руб. x <span class='client-quantity-2'
+     data-id='${client_id}'>${quantity}</span> человек = <span class='client-price-count' 
+     data-id='${client_id}' id='${client_id}'>0</span>.00 руб.`
   );
 
   // Добавляем элементы на страницу
@@ -152,19 +177,26 @@ socket.onmessage = function (e) {
   if (action === "client_added") {
     updateClientsList(data);
   } else if (action === "client_deleted") {
-    var clientId = data["client_id"];
+    var client_id = data["client_id"];
+    var banqet_id = data["current_banquet_id"];
     const clientElement = document.querySelector(
-      `.my_client[data-id="${clientId}"]`
+      `.my_client[data-id="${client_id}"]`
     );
-
+    const clientHeaderElement = document.querySelector(
+      `.client-header[data-id="${client_id}"]`
+    );
+    const banqet_id_element = document.querySelector(
+      `.banquet-total-price[data-id="${banqet_id}"]`
+    );
+    banqet_id_element.textContent = data["total_banquet_price"] + ".00 руб.";
     if (clientElement) {
       clientElement.remove();
+      clientHeaderElement.remove();
       const scrollTop =
         window.pageYOffset ||
         document.documentElement.scrollTop ||
         document.body.scrollTop ||
         0;
-      location.reload();
       window.scrollTo(0, scrollTop);
     }
   } else if (action === "order_deleted") {
@@ -178,12 +210,12 @@ socket.onmessage = function (e) {
     }
 
     const new_OrderTotalPrice = document.querySelector(
-      `span.order-price-count[data-id="${data.clientId}"]`
+      `span.order-price-count[data-id="${data.client_id}"]`
     );
     new_OrderTotalPrice.textContent = data.order_total_price;
 
     const new_client_total_price = document.querySelector(
-      `span.client-price-count[data-id="${data.clientId}"]`
+      `span.client-price-count[data-id="${data.client_id}"]`
     );
     new_client_total_price.textContent = data.client_total_price;
 
@@ -192,13 +224,23 @@ socket.onmessage = function (e) {
     );
     total_banquet_price.textContent = data["total_banquet_price"] + ".00 руб.";
   } else if (action === "client_quantity_changed") {
-    clientId = data["client_id"];
+    client_id = data["client_id"];
     banquet_id = data["banquet_id"];
-    const client_quantity = document.querySelector(
-      `.client-quantity[data-id="${clientId}"]`
+
+    const quantity_input = document.querySelector(
+      `.quantity-input[data-id="${client_id}"]`
     );
+    $(".quantity-input").on("change", function () {
+      const client_id = $(this).data("id");
+      const quantity = Math.max(1, $(this).val()); // Ensure the quantity is not less than 1
+      updateQuantity(client_id, quantity);
+    });
+    const client_quantity = document.querySelector(
+      `.client-quantity[data-id="${client_id}"]`
+    );
+
     const client_quantity_two = document.querySelector(
-      `.client-quantity-2[data-id="${clientId}"]`
+      `.client-quantity-2[data-id="${client_id}"]`
     );
 
     const client_price = document.querySelector(
@@ -213,15 +255,15 @@ socket.onmessage = function (e) {
     client_price.textContent = data["client_total_price"];
     total_banquet_price.textContent = data["total_banquet_price"] + ".00 руб.";
   } else if (action === "client_name_changed") {
-    clientId = data["client_id"];
+    client_id = data["client_id"];
     new_name = data["new_name"];
     const client_name = document.querySelector(
-      `.client-name[data-id="${clientId}"]`
+      `.client-name[data-id="${client_id}"]`
     );
     client_name.textContent = new_name;
 
     current_client_id = localStorage.getItem("current_client_id");
-    if (clientId == current_client_id) {
+    if (client_id == current_client_id) {
       const client_name_2 = document.querySelectorAll(`.client-name-2`);
       client_name_2.forEach((element) => {
         element.textContent = new_name;
@@ -431,8 +473,33 @@ socket.onmessage = function (e) {
     var div_name = "client-container-" + current_client;
     document.getElementById(div_name).appendChild(newDiv);
 
-    var OrderdeleteButtons = document.querySelectorAll(".delete-btn");
-    OrderdeleteButtons.forEach(function (button) {
+    function handleDeleteDishButtonClick(event) {
+      const mybutton = event.target; // Получаем элемент, на котором произошло событие (в данном случае, кнопка)
+      const order_id = mybutton.dataset.id; // Получаем значение data-id из атрибута data-id
+      current_client_id = mybutton.dataset.clientid;
+      var username_id = localStorage.getItem("username_id");
+
+      socket.send(
+        JSON.stringify({
+          action: "dish_order_delete",
+          order_id: order_id,
+          current_user_id: username_id,
+          client_id: current_client_id,
+        })
+      );
+      var orderElement = document.querySelector(
+        `div.client-orders[data-id="${order_id}"]`
+      );
+
+      // Если элемент найден, удаляем его
+      if (orderElement) {
+        orderElement.remove();
+        mybutton.remove();
+      }
+    }
+
+    const OrderDeleteButtons = document.querySelectorAll(".delete-btn");
+    OrderDeleteButtons.forEach(function (button) {
       button.addEventListener("click", handleDeleteDishButtonClick);
     });
   } else if (action == "dish_added") {
@@ -577,7 +644,7 @@ function handleDeleteDishButtonClick(event) {
       action: "dish_order_delete",
       order_id: order_id,
       current_user_id: username_id,
-      clientId: current_client_id,
+      client_id: current_client_id,
     })
   );
 }
@@ -604,13 +671,12 @@ deleteButtons.forEach((button) => {
 });
 
 const deleteMenuButtons = document.querySelectorAll(".delete-menu-btn");
-
 deleteMenuButtons.forEach((button) => {
   button.addEventListener("click", handleDeleteMenuButtonClick);
 });
 
 const orderButtons = document.querySelectorAll(".order-button");
-var clientId = localStorage.getItem("current_client_id");
+var client_id = localStorage.getItem("current_client_id");
 
 orderButtons.forEach((button) => {
   if (button.innerText === "Выберите клиента") {
@@ -618,16 +684,16 @@ orderButtons.forEach((button) => {
   }
   const dishId = button.dataset.id;
   const dishTittle = button.dataset.name;
-  if (clientId != "") {
+  if (client_id != "") {
     button.addEventListener("click", function () {
       var username_id = localStorage.getItem("username_id");
-      var clientId = localStorage.getItem("current_client_id");
+      var client_id = localStorage.getItem("current_client_id");
       const data_to_send = {
         action: "added_dish",
         message: `Заказ "${dishTittle}" добавлен`,
         current_dish_id: dishId,
         current_user_id: username_id,
-        current_client_id: clientId,
+        current_client_id: client_id,
       };
       var currentUrl = window.location.href;
       const urlObject = new URL(currentUrl);
@@ -642,7 +708,7 @@ orderButtons.forEach((button) => {
           message: `Заказ "${button.dataset.name}" добавлен`,
           current_menu_id: button.dataset.id,
           current_user_id: username_id,
-          current_client_id: clientId,
+          current_client_id: client_id,
         };
         socket.send(JSON.stringify(new_data_to_send));
       } else {
@@ -663,7 +729,7 @@ function handleDeleteDishButtonClick(event) {
       action: "dish_order_delete",
       order_id: order_id,
       current_user_id: username_id,
-      clientId: current_client_id,
+      client_id: current_client_id,
     })
   );
   var orderElement = document.querySelector(
@@ -677,7 +743,14 @@ function handleDeleteDishButtonClick(event) {
   }
 }
 
-var OrderdeleteButtons = document.querySelectorAll(".delete-btn");
-OrderdeleteButtons.forEach(function (button) {
+const OrderDeleteButtons = document.querySelectorAll(".delete-btn");
+OrderDeleteButtons.forEach(function (button) {
   button.addEventListener("click", handleDeleteDishButtonClick);
 });
+
+var current_dish_filter = localStorage.getItem("dish-filter");
+var buttonToHighlight = $(
+  'button.dish-filter[data-filter="' + current_dish_filter + '"]'
+);
+
+buttonToHighlight.addClass("highlighted");
