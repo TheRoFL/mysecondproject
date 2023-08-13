@@ -10,7 +10,7 @@ $("button.dish-filter").on("click", function () {
     method: "GET",
     data: requestParams,
     dataType: "json",
-    success: function (data, client_name) {
+    success: function (data) {
       // Обработка успешного ответа
       data = JSON.parse(data);
 
@@ -123,4 +123,8 @@ $("button.dish-filter").on("click", function () {
       console.error(error);
     },
   });
+});
+
+$("button.menu-client-btn").on("click", function () {
+  console.log("sdfsd");
 });
