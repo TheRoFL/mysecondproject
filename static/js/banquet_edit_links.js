@@ -1,16 +1,7 @@
-document.addEventListener("DOMContentLoaded", () => {
-  const savedPosition = sessionStorage.getItem("scrollPosition");
-
-  if (savedPosition) {
-    // Прокручиваем страницу к сохраненной позиции
-    window.scrollTo(0, savedPosition);
-
-    // Удаляем сохраненную позицию прокрутки из sessionStorage
-    sessionStorage.removeItem("scrollPosition");
-  }
-});
 // Получаем все кнопки с классом "menu-client-btn"
 const menuButtons = document.querySelectorAll(".menu-client-btn");
+const x1 = document.querySelector(".menuu");
+const y1 = document.querySelector(".overflow2");
 
 // Добавляем обработчик событий на каждую кнопку
 menuButtons.forEach((button) => {
@@ -19,6 +10,7 @@ menuButtons.forEach((button) => {
 
   // Добавляем обработчик событий на нажатие кнопки
   button.addEventListener("click", () => {
+    console.log("xui");
     const currentPosition = window.scrollY;
     sessionStorage.setItem("scrollPosition", currentPosition);
     var currentUrl = window.location.href;
@@ -27,9 +19,8 @@ menuButtons.forEach((button) => {
     const urlObject = new URL(currentUrl);
     dish_filter = urlObject.searchParams.get("dish-filter");
 
-    window.location.href =
-      `/banquet/?editting-clientId=${clientId}` + "&dish-filter=" + dish_filter;
-    window.scrollTo(0, scrollTop);
+    x1.classList.remove("hidden2");
+    y1.classList.remove("hidden2");
   });
 
   // Проверяем текущий URL и сравниваем с целевой ссылкой
@@ -45,7 +36,6 @@ menuButtons.forEach((button) => {
   if (clientId === NewclientId) {
     // Если текущий URL совпадает с целевой ссылкой, подсвечиваем кнопку
     button.classList.add("active");
-    button.textContent = "Выбрано для редактирования";
   }
 });
 
@@ -75,4 +65,16 @@ clientLinks.forEach((link) => {
     const newURL = link.getAttribute("href");
     const dataId = this.dataset.id;
   });
+});
+
+document.addEventListener("keydown", (e) => {
+  if (e.code == "Escape") {
+    x1.classList.add("hidden2");
+    y1.classList.add("hidden2");
+  }
+});
+
+y1.addEventListener("click", () => {
+  x1.classList.add("hidden2");
+  y1.classList.add("hidden2");
 });

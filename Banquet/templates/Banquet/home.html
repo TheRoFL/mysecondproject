@@ -35,7 +35,10 @@
       <!-- prettier-ignore -->
       {% if banquet.clients.all %} 
       {% for client in banquet.clients.all %}
-      <div class="my_client formaClienta" data-id="{{client.id}}">
+      <div
+        class="my_client formaClienta menu-client-btn"
+        data-id="{{client.id}}"
+      >
         <div class="formaClienta_header">
           <input
             class="name-input"
@@ -67,125 +70,102 @@
             />
           </button>
         </div>
-
-        <button class="menu-client-btn" data-id="{{client.id}}">
-          Выбрать для редактирования
-        </button>
       </div>
 
       {% endfor %} {% endif %}
       <button id="showFormBtn" class="formaClienta">+</button>
     </div>
-
-    {% if current_client %}
-    <h1>
-      Режим редактирования меню "<span
-        class="client-name-3"
-        data-id="{{client.id}}"
-        >{{current_client.type}}</span
-      >"
-    </h1>
-    {% else %}
-    <h1>Выберите меню для редактирования</h1>
-    {% endif %}
-    <style>
-      .dish-filter {
-        text-decoration: none;
-      }
-
-      .active {
-        text-decoration: underline;
-      }
-    </style>
-    <button
-      class="dish-filter {% if dish_type == 'samples' %}active{% endif %}"
-      data-filter="samples"
-      id="requestButton"
-    >
-      Готовые меню
-    </button>
-    <button
-      class="dish-filter {% if dish_type == 'samples' %}active{% endif %}"
-      data-filter="all"
-      id="requestButton"
-    >
-      Все блюда
-    </button>
-    <button
-      class="dish-filter {% if dish_type == 'salads' %}active{% endif %}"
-      data-filter="salads"
-      id="requestButton"
-    >
-      Салаты
-    </button>
-    <button
-      class="dish-filter {% if dish_type == 'hot_dishes' %}active{% endif %}"
-      data-filter="hot_dishes"
-      id="requestButton"
-    >
-      Горячие блюда
-    </button>
-    <button
-      class="dish-filter {% if dish_type == 'drinks' %}active{% endif %}"
-      data-filter="drinks"
-      id="requestButton"
-    >
-      Напитки
-    </button>
-    <button
-      class="dish-filter {% if dish_type == 'desserts' %}active{% endif %}"
-      data-filter="desserts"
-      id="requestButton"
-    >
-      Десерты
-    </button>
-    <a
-      class="dish-filter {% if dish_type == 'samples' %}active{% endif %}"
-      href="/banquet/?dish-filter=samples&editting-clientId={{clientId}}"
-      >Готовые меню</a
-    >
-    {% if dish_type != 'samples' %}
-    <div class="grid-container">
-      {% for current_dish in current_dishes %}
-      <div class="grid-item">
-        <div
-          class="dishes"
-          data-name="{{current_dish.create_tittle}}"
-          data-tittle="{{current_dish.name}}"
-          data-weight="{{current_dish.weight}}"
-          data-price="{{current_dish.price}}"
-          data-sostav="{{current_dish.ingredients}}"
-          data-type="{{current_dish.type}}"
-        >
-          <img
-            src="http://localhost:8000/media/menu_images/{{current_dish.type}}/{{current_dish.name}}.png"
-          />
-          <h3>
-            {{current_dish.tittle}} / {{current_dish.weight}} гр. /
-            {{current_dish.price}} руб.
-          </h3>
-        </div>
-        <h2>
-          <button
-            class="order-button"
-            data-id="{{current_dish.id}}"
-            data-name="{{current_dish.tittle}}"
+    <div class="overflow2 hidden2"></div>
+    <div class="menuu hidden2">
+      <button
+        class="dish-filter {% if dish_type == 'samples' %}active{% endif %}"
+        data-filter="samples"
+        id="requestButton"
+      >
+        Готовые меню
+      </button>
+      <button
+        class="dish-filter {% if dish_type == 'samples' %}active{% endif %}"
+        data-filter="all"
+        id="requestButton"
+      >
+        Все блюда
+      </button>
+      <button
+        class="dish-filter {% if dish_type == 'salads' %}active{% endif %}"
+        data-filter="salads"
+        id="requestButton"
+      >
+        Салаты
+      </button>
+      <button
+        class="dish-filter {% if dish_type == 'hot_dishes' %}active{% endif %}"
+        data-filter="hot_dishes"
+        id="requestButton"
+      >
+        Горячие блюда
+      </button>
+      <button
+        class="dish-filter {% if dish_type == 'drinks' %}active{% endif %}"
+        data-filter="drinks"
+        id="requestButton"
+      >
+        Напитки
+      </button>
+      <button
+        class="dish-filter {% if dish_type == 'desserts' %}active{% endif %}"
+        data-filter="desserts"
+        id="requestButton"
+      >
+        Десерты
+      </button>
+      <a
+        class="dish-filter {% if dish_type == 'samples' %}active{% endif %}"
+        href="/banquet/?dish-filter=samples&editting-clientId={{clientId}}"
+        >Готовые меню</a
+      >
+      {% if dish_type != 'samples' %}
+      <div class="grid-container">
+        {% for current_dish in current_dishes %}
+        <div class="grid-item">
+          <div
+            class="dishes"
+            data-name="{{current_dish.create_tittle}}"
+            data-tittle="{{current_dish.name}}"
+            data-weight="{{current_dish.weight}}"
+            data-price="{{current_dish.price}}"
+            data-sostav="{{current_dish.ingredients}}"
+            data-type="{{current_dish.type}}"
           >
-            {% if current_client %} Добавить для "<span
-              class="client-name-2"
-              data-id="{{client.id}}"
-              >{{current_client.type}}</span
-            >" {%else%} Выберите клиента {% endif %}
-          </button>
-        </h2>
+            <img
+              src="http://localhost:8000/media/menu_images/{{current_dish.type}}/{{current_dish.name}}.png"
+            />
+            <h3>
+              {{current_dish.tittle}} / {{current_dish.weight}} гр. /
+              {{current_dish.price}} руб.
+            </h3>
+          </div>
+          <h2>
+            <button
+              class="order-button"
+              data-id="{{current_dish.id}}"
+              data-name="{{current_dish.tittle}}"
+            >
+              {% if current_client %} Добавить для "<span
+                class="client-name-2"
+                data-id="{{client.id}}"
+                >{{current_client.type}}</span
+              >" {%else%} Выберите клиента {% endif %}
+            </button>
+          </h2>
+        </div>
+
+        {% endfor %}
       </div>
 
-      {% endfor %}
-    </div>
-
-    {% else %}
-    <!-- prettier-ignore -->
-    <div class="grid-container">
+      {% else %}
+      <!-- prettier-ignore -->
+      <div class="grid-container">
       {% for menu_sample in current_dishes %}
 
       <h1>{{menu_sample}} текст чтобы  </h1>
@@ -222,8 +202,8 @@
       {% endfor %}
     </div>
 
-    {% endif %}
-
+      {% endif %}
+    </div>
     <h1>&nbsp</h1>
     <hr style="width: 90%; height: 3px; background: #e74c3c" />
     <h1>&nbsp</h1>
