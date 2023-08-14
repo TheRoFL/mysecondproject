@@ -144,11 +144,6 @@
       href="/banquet/?dish-filter=samples&editting-clientId={{clientId}}"
       >Готовые меню</a
     >
-    <a
-      class="dish-filter {% if dish_type == 'all' %}active{% endif %}"
-      href="/banquet/?dish-filter=all&editting-clientId={{clientId}}"
-      >Все блюда</a
-    >
     {% if dish_type != 'samples' %}
     <div class="grid-container">
       {% for current_dish in current_dishes %}
@@ -535,30 +530,22 @@
     });
   </script>
   <script>
-    $("button.menu-client-btn").on("click", function () {
-      var client_id = $(this).data("id"); // Получаем значение data-filter
+      $("button.menu-client-btn").on("click", function () {
+        var client_id = $(this).data("id"); // Получаем значение data-filter
 
-      var requestParams = {
-        client_id: client_id, // Используем полученное значение для параметра запроса
-      };
+        var requestParams = {
+          client_id: client_id, // Используем полученное значение для параметра запроса
+        };
 
-      $.ajax({
-        url: "http://127.0.0.1:8000/banquet/",
-        method: "GET",
-        data: requestParams,
-        dataType: "json",
-        success: function (data) {
-          data = JSON.parse(data);
+        $.ajax({
+          url: "http://127.0.0.1:8000/banquet/",
+          method: "GET",
+          data: requestParams,
+          dataType: "json",
+          success: function (data) {
+            data = JSON.parse(data);
 
-          $(document).ready(function () {
-            console.log(data);
-          });
-        },
-        error: function (xhr, status, error) {
-          console.error(error);
-        },
-      });
-    });
+    <script src="/static/js/banquet_filters.js">
   </script>
 </body>
 {% endblock content %}
