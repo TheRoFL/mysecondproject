@@ -383,9 +383,6 @@
 
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="/static/js/banquet_changing.js"></script>
-  {% comment %}
-  <script src="/static/js/banquet_edit_links.js"></script>
-  {% endcomment %}
 
   <button id="requestButton">Запросить данные</button>
   <div id="result"></div>
@@ -509,23 +506,7 @@
       });
     });
   </script>
-  <script>
-      $("button.menu-client-btn").on("click", function () {
-        var client_id = $(this).data("id"); // Получаем значение data-filter
-
-        var requestParams = {
-          client_id: client_id, // Используем полученное значение для параметра запроса
-        };
-
-        $.ajax({
-          url: "http://127.0.0.1:8000/banquet/",
-          method: "GET",
-          data: requestParams,
-          dataType: "json",
-          success: function (data) {
-            data = JSON.parse(data);
-
-    <script src="/static/js/banquet_filters.js">
-  </script>
+  <script src="/static/js/banquet_filters.js"></script>
+  <script src="/static/js/banquet_edit_links.js"></script>
 </body>
 {% endblock content %}

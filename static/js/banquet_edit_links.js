@@ -6,8 +6,7 @@ const y1 = document.querySelector(".overflow2");
 // Добавляем обработчик событий на каждую кнопку
 menuButtons.forEach((button) => {
   // Получаем значение атрибута data-id у каждой кнопки (client.id)
-  const clientId = button.getAttribute("data-id");
-
+  button.classList.add("active");
   // Добавляем обработчик событий на нажатие кнопки
   button.addEventListener("click", () => {
     console.log("xui");
@@ -24,19 +23,12 @@ menuButtons.forEach((button) => {
   });
 
   // Проверяем текущий URL и сравниваем с целевой ссылкой
-  const currentUrl = window.location.pathname.replace(/\/$/, ""); // Удаляем последний слеш, если есть
-  const targetUrl = `/banquet/?editting-clientId=${clientId}`;
 
   function getURLParameter(name) {
     const urlParams = new URLSearchParams(window.location.search);
     return urlParams.get(name);
   }
   const NewclientId = getURLParameter("editting-clientId");
-
-  if (clientId === NewclientId) {
-    // Если текущий URL совпадает с целевой ссылкой, подсвечиваем кнопку
-    button.classList.add("active");
-  }
 });
 
 // Получаем ссылку на клиентов по классу
