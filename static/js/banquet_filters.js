@@ -124,7 +124,3 @@ $("button.dish-filter").on("click", function () {
     },
   });
 });
-
-$("button.menu-client-btn").on("click", function () {
-  console.log("sdfsd");
-});

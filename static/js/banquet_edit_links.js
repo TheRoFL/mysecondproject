@@ -3,61 +3,62 @@ const menuButtons = document.querySelectorAll(".menu-client-btn");
 const x1 = document.querySelector(".menuu");
 const y1 = document.querySelector(".overflow2");
 
-// Добавляем обработчик событий на каждую кнопку
 menuButtons.forEach((button) => {
-  // Получаем значение атрибута data-id у каждой кнопки (client.id)
-  button.classList.add("active");
-  // Добавляем обработчик событий на нажатие кнопки
   button.addEventListener("click", () => {
-    console.log("xui");
-    const currentPosition = window.scrollY;
-    sessionStorage.setItem("scrollPosition", currentPosition);
-    var currentUrl = window.location.href;
-
-    // Парсируем параметры текущего URL
-    const urlObject = new URL(currentUrl);
-    dish_filter = urlObject.searchParams.get("dish-filter");
-
+    localStorage.setItem("current_client_id", button.dataset.id);
+    localStorage.setItem("current_client_name", button.dataset.name);
+    menuButtons.forEach((button) => {
+      var current_client_id = localStorage.getItem("current_client_id");
+      if (button.dataset.id == current_client_id) {
+        button.classList.add("active");
+      } else {
+        button.classList.remove("active");
+      }
+    });
     x1.classList.remove("hidden2");
     y1.classList.remove("hidden2");
+
+    const orderButtons = document.querySelectorAll(".order-button");
+    var current_client_name = localStorage.getItem("current_client_name");
+    function handleOrderButtonClick(event) {
+      var username_id = localStorage.getItem("username_id");
+      var clientId = localStorage.getItem("current_client_id");
+      var current_dish_filter = localStorage.getItem("dish-filter");
+      const data_to_send = {
+        action: "added_dish",
+        message: `Заказ "${event.target.dataset.name}" добавлен`,
+        current_dish_id: event.target.dataset.id,
+        current_user_id: username_id,
+        current_client_id: clientId,
+      };
+      dish_filter = current_dish_filter;
+      var is_menu = false;
+      if (dish_filter == "samples") {
+        is_menu = true;
+      }
+      if (is_menu) {
+        const new_data_to_send = {
+          action: "menu_add",
+          message: `Заказ "${event.target.dataset.name}" добавлен`,
+          current_menu_id: event.target.dataset.id,
+          current_user_id: username_id,
+          current_client_id: clientId,
+        };
+        socket.send(JSON.stringify(new_data_to_send));
+      } else {
+        socket.send(JSON.stringify(data_to_send));
+      }
+    }
+    orderButtons.forEach((button) => {
+      // Remove the old event listener, if any
+      button.removeEventListener("click", handleOrderButtonClick);
+      button.textContent = `Добавить для "${current_client_name}"`;
+      button.addEventListener("click", handleOrderButtonClick);
+    });
   });
-
-  // Проверяем текущий URL и сравниваем с целевой ссылкой
-
-  function getURLParameter(name) {
-    const urlParams = new URLSearchParams(window.location.search);
-    return urlParams.get(name);
-  }
-  const NewclientId = getURLParameter("editting-clientId");
 });
 
 // Получаем ссылку на клиентов по классу
-const clientLinks = document.querySelectorAll(".dish-filter");
-
-function getQueryParamValue(url, param) {
-  const urlObject = new URL(url);
-  return urlObject.searchParams.get(param);
-}
-// Перебираем ссылки на клиентов и назначаем обработчик события на клик
-clientLinks.forEach((link) => {
-  link.addEventListener("click", function () {
-    const url = window.location.href;
-
-    const currentPosition = window.scrollY;
-    sessionStorage.setItem("scrollPosition", currentPosition);
-    // Получаем clientid из data-id атрибута кнопки клиента
-    let clientId = null;
-    const urlObject = new URL(url);
-    clientId = urlObject.searchParams.get("editting-clientId");
-    this.href += clientId;
-
-    const urlParams = new URLSearchParams(window.location.search);
-    const editting_clientId = urlParams.get("editting-clientId");
-
-    const newURL = link.getAttribute("href");
-    const dataId = this.dataset.id;
-  });
-});
 
 document.addEventListener("keydown", (e) => {
   if (e.code == "Escape") {
