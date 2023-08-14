@@ -60,47 +60,6 @@ function updateClientsList(data) {
     button.addEventListener("click", handleDeleteClientButtonClick);
   });
 
-  const menuButtons = document.querySelectorAll(".menu-client-btn");
-
-  // Добавляем обработчик событий на каждую кнопку
-  menuButtons.forEach((button) => {
-    // Получаем значение атрибута data-id у каждой кнопки (client.id)
-    const client_id = button.getAttribute("data-id");
-
-    // Добавляем обработчик событий на нажатие кнопки
-    button.addEventListener("click", () => {
-      const currentPosition = window.scrollY;
-      sessionStorage.setItem("scrollPosition", currentPosition);
-      var currentUrl = window.location.href;
-
-      // Парсируем параметры текущего URL
-      const urlObject = new URL(currentUrl);
-      dish_filter = urlObject.searchParams.get("dish-filter");
-
-      window.location.href =
-        `/banquet/?editting-client_id=${client_id}` +
-        "&dish-filter=" +
-        dish_filter;
-      window.scrollTo(0, scrollTop);
-    });
-
-    // Проверяем текущий URL и сравниваем с целевой ссылкой
-    const currentUrl = window.location.pathname.replace(/\/$/, ""); // Удаляем последний слеш, если есть
-    const targetUrl = `/banquet/?editting-client_id=${client_id}`;
-
-    function getURLParameter(name) {
-      const urlParams = new URLSearchParams(window.location.search);
-      return urlParams.get(name);
-    }
-    const Newclient_id = getURLParameter("editting-client_id");
-
-    if (client_id === Newclient_id) {
-      // Если текущий URL совпадает с целевой ссылкой, подсвечиваем кнопку
-      button.classList.add("active");
-      button.textContent = "Выбрано для редактирования";
-    }
-  });
-
   const quantity_inputs = document.querySelectorAll(".quantity-input");
   function quantity_input_change() {
     const client_id = $(this).data("id");
