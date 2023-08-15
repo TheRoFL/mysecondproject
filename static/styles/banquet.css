@@ -3,6 +3,7 @@ body {
   font-family: Arial, sans-serif;
   padding-bottom: 2000px; /* Размер пространства внизу body (можно задать нужное значение) */
   background-color: #fddada;
+  color: #4a644b;
 }
 form {
   margin-top: 20px;
@@ -63,18 +64,20 @@ input[type="submit"]:active {
 }
 
 /* Styles for the "Заказать" button */
-.order-button {
+.order-button,
+.dish-filter {
   background-color: #4a644b; /* Red background color */
   color: #fff; /* White text color */
   border: none;
   padding: 10px 20px;
   cursor: pointer;
-  font-size: 20px;
+  font-size: 15px;
   transition: background-color 0.3s ease; /* Add a transition effect on hover */
 }
 
 /* Change button background color to a darker shade of red when hovered */
-.order-button:hover {
+.order-button:hover,
+.dish-filter:hover {
   background-color: #2f4030; /* Darker shade of red */
 }
 
@@ -85,6 +88,7 @@ input[type="submit"]:active {
 /* Styles for the buttons */
 .increase-btn,
 .decrease-btn,
+.delete-menu-btn,
 .delete-btn {
   background-color: #e74c3c; /* Change background color to red */
   color: #fff;
@@ -93,15 +97,24 @@ input[type="submit"]:active {
   margin: 5px;
   cursor: pointer;
   transition: background-color 0.3s ease; /* Add a transition effect */
+  border-radius: 10px;
 }
 
 /* Change button background color to a darker shade of red when hovered */
 .increase-btn:hover,
 .decrease-btn:hover,
+.delete-menu-btn:hover,
 .delete-btn:hover {
-  background-color: #c0392b; /* Darker shade of red */
+  background-color: #bf3a2b; /* Darker shade of red */
 }
 
+.delete-menu-btn:active,
+.delete-btn:active,
+.order-button:active,
+.dish-filter:active {
+  transform: scale(0.85);
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+}
 /*----------------------------------------------------------------*/
 .body {
   padding: 0 230px;
@@ -174,6 +187,22 @@ input[type="submit"]:active {
   text-decoration: none;
 }
 
+/* .menuu {
+  display: inline-block;
+  color: black;
+  background-color: #fff;
+  position: fixed; 
+  top: 50%;
+  left: 50%;
+  z-index: 10;
+  width: 1000px;
+  height: 1000px;
+  margin: -500px 0 0 -500px;
+  border-radius: 30px;
+  padding: 15px;
+  align-self: center;
+} */
+
 .menuu {
   display: inline-block;
   color: black;
@@ -201,4 +230,23 @@ input[type="submit"]:active {
 
 .hidden2 {
   display: none;
+}
+
+.confirm-order {
+  background-color: #4a644b;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.2s, box-shadow 0.2s;
+}
+
+.confirm-order:hover {
+  background-color: #3b513c;
+}
+
+.confirm-order:active {
+  transform: scale(0.95);
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
 }

@@ -201,7 +201,7 @@
       {% endif %}
     </div>
     <h1>&nbsp</h1>
-    <hr style="width: 90%; height: 3px; background: #e74c3c" />
+    <hr style="width: 90%; height: 3px; background: #4a644b" />
     <h1>&nbsp</h1>
     <style>
       .delete-btn {
@@ -367,19 +367,21 @@
       <span class="banquet-total-price" data-id="{{banquet.id}}"
         >{{banquet.total_price}}.00 руб.
       </span>
-      <button><a href="/banquet/ordering/">Оформить заказ</a></button>
+      <button class="confirm-order">
+        <a href="/banquet/ordering/">Оформить заказ</a>
+      </button>
     </h1>
   </div>
 
   <h1>&nbsp</h1>
-  <hr style="width: 90%; height: 3px; background: #e74c3c" />
+  <hr style="width: 90%; height: 3px; background: #4a644b" />
   <h1>&nbsp</h1>
-
-  {% for menu_sample in menu_samples %} {{menu_sample}} {% endfor %}
 
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="/static/js/banquet_changing.js"></script>
   <script src="/static/js/banquet_filters.js"></script>
   <script src="/static/js/banquet_edit_links.js"></script>
+
+  <div class="grid-container" id="menuContainer"></div>
 </body>
 {% endblock content %}

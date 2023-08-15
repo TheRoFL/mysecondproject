@@ -82,7 +82,6 @@ def home(request, dish_type=None, clientId=None):
             client_name = current_client.type
         except Client.DoesNotExist:
             pass
-    print (current_dishes)
     if not current_dishes:
         current_dishes = menu_samples
     
@@ -91,6 +90,8 @@ def home(request, dish_type=None, clientId=None):
         serialized_data = serialize('json', current_dishes)
         return JsonResponse(serialized_data, client_name, safe=False)
     else:
+        menu_samples = MenuSample.objects.all()
+        contex["menu_samples"] = menu_samples
         return render(request, 'Banquet/home.html', contex)    
 
 
