@@ -122,8 +122,6 @@ $("button.dish-filter").on("click", function () {
         });
 
         const ws = document.querySelectorAll(".dishes");
-        console.log(ws);
-        console.log("hui2228");
         var x, y;
         for (let i = 0; i < ws.length; i++) {
           var div = `<div class = "overflow hidden" id="${i}"></div>

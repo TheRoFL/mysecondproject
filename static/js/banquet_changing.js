@@ -293,6 +293,10 @@ socket.onmessage = function (e) {
 
     deleteButton.setAttribute("data-id", current_menu_id);
     deleteButton.setAttribute("data-clientid", client_id);
+    deleteButton.setAttribute(
+      "data-unique_id",
+      client_id + "-" + current_menu_id
+    );
     deleteButton.style.marginTop = "0px";
     deleteButton.style.marginLeft = "18px";
     deleteButton.textContent = "Удалить";
@@ -390,6 +394,12 @@ socket.onmessage = function (e) {
       `.banquet-total-price[data-id="${data.current_banquet_id}"]`
     );
     total_banquet_price.textContent = data["total_banquet_price"] + ".00 руб.";
+
+    const menuDeleteButton = document.querySelector(
+      `.delete-menu-btn[data-unique_id="${client_id + "-" + current_menu_id}"]`
+    );
+    console.log(menuDeleteButton);
+    menuDeleteButton.addEventListener("click", handleDeleteMenuButtonClick);
   } else if (action == "new_dish_added") {
     var newDiv = document.createElement("div");
     div_name = "client-orders-" + data.current_dish_order_id;

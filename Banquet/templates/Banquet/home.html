@@ -34,7 +34,11 @@
       <!-- prettier-ignore -->
       {% if banquet.clients.all %} 
       {% for client in banquet.clients.all %}
-      <div class="my_client formaClienta menu-client-btn">
+      <div
+        class="my_client formaClienta menu-client-btn"
+        data-id="{{client.id}}"
+        data-name="{{client.type}}"
+      >
         <div class="formaClienta_header">
           <input
             class="name-input"
@@ -57,7 +61,11 @@
             value="{{ client.quantity }}"
           />
 
-          <button class="delete-client-btn">
+          <button
+            class="delete-client-btn"
+            data-id="{{client.id}}"
+            data-name="{{client.type}}"
+          >
             <img
               data-id="{{client.id}}"
               class="musorka"
