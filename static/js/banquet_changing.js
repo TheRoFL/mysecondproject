@@ -423,6 +423,8 @@ socket.onmessage = function (e) {
     deleteButton.classList.add("delete-btn");
     deleteButton.dataset.id = data.current_dish_order_id;
     deleteButton.dataset.clientid = data.client_id;
+    deleteButton.dataset.unique_id =
+      data.current_dish_order_id + "-" + data.client_id;
     deleteButton.innerText = "X";
 
     // Добавляем кнопку удаления в div
@@ -456,11 +458,6 @@ socket.onmessage = function (e) {
         mybutton.remove();
       }
     }
-
-    const OrderDeleteButtons = document.querySelectorAll(".delete-btn");
-    OrderDeleteButtons.forEach(function (button) {
-      button.addEventListener("click", handleDeleteDishButtonClick);
-    });
   } else if (action == "dish_added") {
     var dataId = data.current_dish_order_id;
     var newQuantity = data.client_dishOrder_quantity;
@@ -500,6 +497,15 @@ socket.onmessage = function (e) {
       `.banquet-total-price[data-id="${data.current_banquet_id}"]`
     );
     total_banquet_price.textContent = data["total_banquet_price"] + ".00 руб.";
+  }
+
+  if (action == "new_dish_added") {
+    const unique_id = data.current_dish_order_id + "-" + data.client_id;
+    const OrderDeleteButton = document.querySelector(
+      `.delete-btn[data-unique_id='${unique_id}']`
+    );
+
+    OrderDeleteButton.addEventListener("click", handleDeleteDishButtonClick);
   }
 };
 
@@ -622,12 +628,6 @@ function handleDeleteMenuButtonClick(event) {
     })
   );
 }
-
-const deleteButtons = document.querySelectorAll(".delete-client-btn");
-
-deleteButtons.forEach((button) => {
-  button.addEventListener("click", handleDeleteClientButtonClick);
-});
 
 const deleteMenuButtons = document.querySelectorAll(".delete-menu-btn");
 deleteMenuButtons.forEach((button) => {

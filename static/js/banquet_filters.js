@@ -47,10 +47,13 @@ $("button.dish-filter").on("click", function () {
             src: "http://localhost:8000/media/" + item.fields.image,
           });
 
-          var h3 = $("<h3>").html(
-            `${item.fields.name} / ${item.fields.weight} гр. / ${item.fields.price} руб.`
-          );
-
+          if (item.fields.name) {
+            var h3 = $("<h3>").html(
+              `${item.fields.name.replace(/_/g, " ")} / ${
+                item.fields.weight
+              } гр. / ${item.fields.price} руб.`
+            );
+          }
           var clientId = localStorage.getItem("current_client_id");
           var current_client_name = localStorage.getItem("current_client_name");
           if (clientId) {

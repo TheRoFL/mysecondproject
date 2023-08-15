@@ -57,7 +57,9 @@ menuButtons.forEach((button) => {
               });
 
               var h3 = $("<h3>").html(
-                `${item.fields.name} / ${item.fields.weight} гр. / ${item.fields.price} руб.`
+                `${item.fields.name.replace(/_/g, " ")} / ${
+                  item.fields.weight
+                } гр. / ${item.fields.price} руб.`
               );
 
               var clientId = localStorage.getItem("current_client_id");

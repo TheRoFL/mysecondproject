@@ -120,11 +120,6 @@
       >
         Десерты
       </button>
-      <a
-        class="dish-filter {% if dish_type == 'samples' %}active{% endif %}"
-        href="/banquet/?dish-filter=samples&editting-clientId={{clientId}}"
-        >Готовые меню</a
-      >
       {% if dish_type != 'samples' %}
       <div class="grid-container">
         {% for current_dish in current_dishes %}
