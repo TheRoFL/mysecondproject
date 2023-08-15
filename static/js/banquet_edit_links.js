@@ -1,10 +1,14 @@
 // Получаем все кнопки с классом "menu-client-btn"
-const menuButtons = document.querySelectorAll(".menu-client-btn");
+const menuButtons = document.querySelectorAll(".vash_zakaz");
 const x1 = document.querySelector(".menuu");
 const y1 = document.querySelector(".overflow2");
 
 menuButtons.forEach((button) => {
   button.addEventListener("click", () => {
+    // var current_client_id = button.dataset.id;
+    // var current_client_name = button.dataset.name;
+    // localStorage.setItem("current_client_id", current_client_id);
+    // localStorage.setItem("current_client_name", current_client_name);
     // костыль, который прогружает заново меню и навешивает лисенеры, и более не навешивается более 1
     {
       var filter = $(this).data("filter"); // Получаем значение data-filter
@@ -57,9 +61,7 @@ menuButtons.forEach((button) => {
               });
 
               var h3 = $("<h3>").html(
-                `${item.fields.name.replace(/_/g, " ")} / ${
-                  item.fields.weight
-                } гр. / ${item.fields.price} руб.`
+                `${item.fields.name}  / ${item.fields.price} руб.`
               );
 
               var clientId = localStorage.getItem("current_client_id");
@@ -85,6 +87,54 @@ menuButtons.forEach((button) => {
 
             const orderButtons = document.querySelectorAll(".order-button");
             var clientId = localStorage.getItem("current_client_id");
+
+            const ws = document.querySelectorAll(".dishes");
+            console.log(ws);
+            console.log("hui2228");
+            var x, y;
+            for (let i = 0; i < ws.length; i++) {
+              var div = `<div class = "overflow hidden" id="${i}"></div>
+    <div class="modWind hidden" id="${i + 3500}">
+    <div ><img style = "width: 200px"
+    src="http://localhost:8000/media/menu_images/${ws[i].getAttribute(
+      "data-type"
+    )}/${ws[i].getAttribute("data-tittle")}.png"
+    /> </div>
+      <div class="name">${ws[i].getAttribute("data-name")}</div>
+      <div class="grams">${ws[i].getAttribute("data-weight")} гр</div>
+      <div class="price">${ws[i].getAttribute("data-price")} руб</div>
+      <div class="sostav">${ws[i].getAttribute("data-sostav")}</div>
+  </div>
+  `;
+              document
+                .querySelector(".dishes")
+                .insertAdjacentHTML("beforebegin", div);
+
+              ws[i].addEventListener("click", () => {
+                x = document.getElementById(i);
+                y = document.getElementById(i + 3500);
+                x.classList.remove("hidden");
+                y.classList.remove("hidden");
+              });
+
+              const exit = document.querySelectorAll(".overflow");
+
+              exit.forEach((element) => {
+                element.addEventListener("click", () => {
+                  x = document.getElementById(i);
+                  y = document.getElementById(i + 3500);
+                  x.classList.add("hidden");
+                  y.classList.add("hidden");
+                });
+              });
+            }
+
+            document.addEventListener("keydown", (e) => {
+              if (e.code == "Escape") {
+                x.classList.add("hidden");
+                y.classList.add("hidden");
+              }
+            });
 
             orderButtons.forEach((button) => {
               if (!clientId) {
@@ -135,6 +185,7 @@ menuButtons.forEach((button) => {
         },
       });
     }
+
     localStorage.setItem("current_client_id", button.dataset.id);
     localStorage.setItem("current_client_name", button.dataset.name);
     menuButtons.forEach((button) => {

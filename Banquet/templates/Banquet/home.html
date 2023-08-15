@@ -15,7 +15,6 @@
     var username_id = localStorage.getItem("username_id");
     var current_client_id = localStorage.getItem("current_client_id");
   </script>
-  <link rel="stylesheet" href="/static/styles/menu-grid.css" />
   <link rel="stylesheet" href="/static/styles/banquet.css" />
 </head>
 <body>
@@ -35,11 +34,7 @@
       <!-- prettier-ignore -->
       {% if banquet.clients.all %} 
       {% for client in banquet.clients.all %}
-      <div
-        class="my_client formaClienta menu-client-btn"
-        data-id="{{client.id}}"
-        data-name="{{client.type}}"
-      >
+      <div class="my_client formaClienta menu-client-btn">
         <div class="formaClienta_header">
           <input
             class="name-input"
@@ -71,6 +66,11 @@
             />
           </button>
         </div>
+        <div
+          class="vash_zakaz"
+          data-id="{{client.id}}"
+          data-name="{{client.type}}"
+        ></div>
       </div>
 
       {% endfor %} {% endif %}
@@ -78,69 +78,54 @@
     </div>
     <div class="overflow2 hidden2"></div>
     <div class="menuu hidden2">
-      <button
-        class="dish-filter {% if dish_type == 'samples' %}active{% endif %}"
-        data-filter="samples"
-        id="requestButton"
-      >
-        Готовые меню
-      </button>
-      <button
-        class="dish-filter {% if dish_type == 'samples' %}active{% endif %}"
-        data-filter="all"
-        id="requestButton"
-      >
-        Все блюда
-      </button>
-      <button
-        class="dish-filter {% if dish_type == 'salads' %}active{% endif %}"
-        data-filter="salads"
-        id="requestButton"
-      >
-        Салаты
-      </button>
-      <button
-        class="dish-filter {% if dish_type == 'hot_dishes' %}active{% endif %}"
-        data-filter="hot_dishes"
-        id="requestButton"
-      >
-        Горячие блюда
-      </button>
-      <button
-        class="dish-filter {% if dish_type == 'drinks' %}active{% endif %}"
-        data-filter="drinks"
-        id="requestButton"
-      >
-        Напитки
-      </button>
-      <button
-        class="dish-filter {% if dish_type == 'desserts' %}active{% endif %}"
-        data-filter="desserts"
-        id="requestButton"
-      >
-        Десерты
-      </button>
+      <div class="dd-f">
+        <button
+          class="dish-filter {% if dish_type == 'samples' %}active{% endif %}"
+          data-filter="samples"
+          id="requestButton"
+        >
+          Готовые меню
+        </button>
+        <button
+          class="dish-filter {% if dish_type == 'samples' %}active{% endif %}"
+          data-filter="all"
+          id="requestButton"
+        >
+          Все блюда
+        </button>
+        <button
+          class="dish-filter {% if dish_type == 'salads' %}active{% endif %}"
+          data-filter="salads"
+          id="requestButton"
+        >
+          Салаты
+        </button>
+        <button
+          class="dish-filter {% if dish_type == 'hot_dishes' %}active{% endif %}"
+          data-filter="hot_dishes"
+          id="requestButton"
+        >
+          Горячие блюда
+        </button>
+        <button
+          class="dish-filter {% if dish_type == 'drinks' %}active{% endif %}"
+          data-filter="drinks"
+          id="requestButton"
+        >
+          Напитки
+        </button>
+        <button
+          class="dish-filter {% if dish_type == 'desserts' %}active{% endif %}"
+          data-filter="desserts"
+          id="requestButton"
+        >
+          Десерты
+        </button>
+      </div>
       {% if dish_type != 'samples' %}
       <div class="grid-container">
         {% for current_dish in current_dishes %}
         <div class="grid-item">
-          <div
-            class="dishes"
-            data-name="{{current_dish.create_tittle}}"
-            data-tittle="{{current_dish.name}}"
-            data-weight="{{current_dish.weight}}"
-            data-price="{{current_dish.price}}"
-            data-sostav="{{current_dish.ingredients}}"
-            data-type="{{current_dish.type}}"
-          >
-            <img
-              src="http://localhost:8000/media/menu_images/{{current_dish.type}}/{{current_dish.name}}.png"
-            />
-            <h3>
-              {{current_dish.tittle}} / {{current_dish.weight}} гр. /
-              {{current_dish.price}} руб.
-            </h3>
-          </div>
           <h2>
             <button
               class="order-button"
@@ -381,7 +366,7 @@
   <script src="/static/js/banquet_changing.js"></script>
   <script src="/static/js/banquet_filters.js"></script>
   <script src="/static/js/banquet_edit_links.js"></script>
-
+  <script src="/static/js/test.js"></script>
   <div class="grid-container" id="menuContainer"></div>
 </body>
 {% endblock content %}

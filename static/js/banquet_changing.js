@@ -347,13 +347,6 @@ socket.onmessage = function (e) {
       header.insertAdjacentElement("afterend", menuDiv.cloneNode(true));
     });
 
-    var OrderdeleteButtons = document.querySelectorAll(".delete-menu-btn");
-
-    // Перебираем найденные кнопки и добавляем к каждой обработчик события
-    OrderdeleteButtons.forEach(function (button) {
-      button.addEventListener("click", handleDeleteDishButtonClick);
-    });
-
     // Определение функции обработчика события
     function handleDeleteDishButtonClick(event) {
       // Получаем данные из атрибутов кнопки
@@ -713,3 +706,9 @@ var buttonToHighlight = $(
 );
 
 buttonToHighlight.addClass("highlighted");
+
+const deleteButtons = document.querySelectorAll(".delete-client-btn");
+
+deleteButtons.forEach((button) => {
+  button.addEventListener("click", handleDeleteClientButtonClick);
+});

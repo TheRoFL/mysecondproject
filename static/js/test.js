@@ -1,6 +1,5 @@
 const ws = document.querySelectorAll(".dishes");
-var x = 0;
-var y = 0;
+var x, y;
 for (let i = 0; i < ws.length; i++) {
   var div = `<div class = "overflow hidden" id="${i}"></div>
     <div class="modWind hidden" id="${i + 3500}">
