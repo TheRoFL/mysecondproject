@@ -29,6 +29,7 @@ $("button.dish-filter").on("click", function () {
 
         $(".grid-container").empty();
         var jsonData = data;
+        console.log("---------------------");
         if (jsonData["current_menu"]) {
           jsonData["current_menu"].forEach(function (item, index) {
             var gridItem = $("<div>");
@@ -57,18 +58,35 @@ $("button.dish-filter").on("click", function () {
             }).text(`Добавить для "${current_client_name}"`);
 
             gridItem.append(dishDiv, $("<h2>").append(orderButton));
-
             gridContainer.append(gridItem);
-
+            $(".grid-container").append(gridContainer);
             var jsonDishesData = data;
 
-            jsonDishesData["current_menu_dishes"].forEach(function (
-              item,
-              index
-            ) {
-              dishes = JSON.parse(item);
-              console.log(dishes);
+            console.log(jsonDishesData["current_menu_dishes"]);
+
+            var check = [];
+            jsonDishesData["current_menu_dishes"].forEach(function (dish) {
+              if (
+                item.fields.dishes.includes(dish.pk) & !check.includes(dish.pk)
+              ) {
+                check.push(dish.pk);
+                console.log();
+                var dishElement = document.createElement("div");
+
+                var innerHtml = `
+                <div class="dishes" data-name="${dish.fields.name}" data-type="${dish.fields.type}" data-tittle="${dish.fields.name}" ...>
+                <h1><img src="http://localhost:8000/media/${dish.fields.image}"></h1>
+                  <h1>${dish.fields.name}</h1>  
+                </div>
+              `;
+
+                dishElement.innerHTML = innerHtml;
+
+                gridContainer.append(dishElement);
+              }
             });
+
+            gridContainer.append(gridItem);
             $(".grid-container").append(gridContainer);
           });
         } else {

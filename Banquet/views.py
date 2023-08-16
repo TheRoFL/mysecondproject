@@ -85,26 +85,15 @@ def home(request, dish_type=None, clientId=None):
     if not current_dishes:
         current_dishes = menu_samples
         serialized_data = serialize('json', current_dishes)
-        for menu_sample in menu_samples:
-            menu_dishes.append(serialize('json', menu_sample.dishes.all()))
+        for menu_sample in MenuSample.objects.all():
+            for dish_order in menu_sample.dishes.all():
+                serialized_product = serialize('json', [dish_order.product])
+                menu_dishes.append(json.loads(serialized_product)[0])
 
+        print(menu_dishes)
         serialized_menu_dishes = json.dumps(menu_dishes)
         
-    # if not current_dishes:
-    #     current_dishes = MenuSample.objects.all()
-    #     serialized_data = serialize('json', current_dishes)
-    #     for menu_sample in MenuSample.objects.all():
-    #         dish_queryset = menu_sample.dishes.all()
-    #         print(dish_queryset)
-    #         product_queryset = dish_queryset.values('product')
-    #         print(product_queryset)
-    #         serialized_products = serialize('json', product_queryset)
-
-    #         menu_dishes.append(serialized_products)
-    #     serialized_menu_dishes = json.dumps(menu_dishes)
-        
-
-
+           
     if "application/json" in request.META.get("HTTP_ACCEPT", ""):
         serialized_data = serialize('json', current_dishes)
 
