@@ -206,7 +206,6 @@ class BanquetConsumer(WebsocketConsumer):
             self.send_response(response)
 
         elif action == "dish_order_delete":
-            print(data)
             current_order_id = data["order_id"]
             current_order = get_object_or_404(DishOrder, id=current_order_id)
             my_current_client_id = data["client_id"]

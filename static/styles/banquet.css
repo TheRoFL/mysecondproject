@@ -202,9 +202,6 @@ input[type="submit"]:active {
   display: none;
 }
 
-.order-button {
-}
-
 .dish-filter {
   background-color: #fff;
   color: #4a644b;
@@ -246,6 +243,40 @@ input[type="submit"]:active {
 }
 
 .grid-item h3 {
+  margin-top: 10px;
+  font-size: 17px;
+  margin: 4%;
+}
+
+.grid-container2 {
+  display: flex;
+  flex-wrap: wrap;
+  padding: 15px 30px;
+}
+
+.grid-container2 h1 {
+  width: 100%; /* Занимает всю ширину первой строки */
+  text-align: center; /* Центрирование заголовка */
+}
+
+.grid-item2 {
+  width: calc(33.33% - 20px); /* Три элемента в ряд, учитывая отступы */
+  height: 250px;
+  margin: 10px; /* Отступ между элементами */
+  color: #4a644b;
+  border-radius: 10px;
+  border: 1.5px solid #4a644b;
+}
+
+.grid-item2 img {
+  width: 92%;
+  height: 92%;
+  margin: 4%;
+  border-radius: 10px;
+  object-fit: cover; /* Масштабируем изображение, чтобы оно полностью заполнило элемент */
+}
+
+.grid-item2 h3 {
   margin-top: 10px;
   font-size: 17px;
   margin: 4%;

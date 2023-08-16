@@ -13,7 +13,7 @@ $("button.dish-filter").on("click", function () {
     success: function (data) {
       // Обработка успешного ответа
       data = JSON.parse(data);
-
+      console.log(data);
       $(document).ready(function () {
         var current_dish_filter = localStorage.getItem("dish-filter");
         const buttonToUnHighlight = document.querySelectorAll(".dish-filter");
@@ -29,53 +29,122 @@ $("button.dish-filter").on("click", function () {
 
         $(".grid-container").empty();
         var jsonData = data;
+        if (jsonData["current_menu"]) {
+          jsonData["current_menu"].forEach(function (item, index) {
+            var gridItem = $("<div>");
+            var gridContainer = $("<div>", { class: "grid-item2" });
+            var dishDiv = $("<div>", {
+              // class: "dishes",
+              "data-name": item.fields.name,
+              "data-tittle": item.fields.name,
+              "data-weight": item.fields.weight,
+              "data-price": item.fields.price,
+              "data-sostav": item.fields.ingredients,
+              "data-type": item.fields.type,
+            });
 
-        jsonData.forEach(function (item, index) {
-          var gridItem = $("<div>");
-          var gridContainer = $("<div>", { class: "grid-item" });
-          var dishDiv = $("<div>", {
-            class: "dishes",
-            "data-name": item.fields.name,
-            "data-tittle": item.fields.name,
-            "data-weight": item.fields.weight,
-            "data-price": item.fields.price,
-            "data-sostav": item.fields.ingredients,
-            "data-type": item.fields.type,
-          });
-
-          var img = $("<img>", {
-            src: "http://localhost:8000/media/" + item.fields.image,
-          });
-
-          if (item.fields.name) {
-            var h3 = $("<h3>").html(
-              `${item.fields.name.replace(/_/g, " ")} / ${
-                item.fields.price
-              } руб.`
+            var h1 = document.createElement("h1");
+            h1.textContent = item.fields.type;
+            dishDiv.append(h1);
+            var current_client_name = localStorage.getItem(
+              "current_client_name"
             );
-          }
-          var clientId = localStorage.getItem("current_client_id");
-          var current_client_name = localStorage.getItem("current_client_name");
-          if (clientId) {
+
             var orderButton = $("<button>", {
               class: "order-button",
               "data-id": item.pk,
-              "data-name": item.fields.name,
+              "data-name": item.fields.type,
             }).text(`Добавить для "${current_client_name}"`);
-          } else {
-            var orderButton = $("<button>", {
-              class: "order-button",
-              "data-id": index + 1,
-              "data-name": item.fields.name,
-            }).text("Выберите клиента");
-          }
 
-          dishDiv.append(img, h3);
-          gridItem.append(dishDiv, $("<h2>").append(orderButton));
+            gridItem.append(dishDiv, $("<h2>").append(orderButton));
 
-          gridContainer.append(gridItem);
-          $(".grid-container").append(gridContainer);
-        });
+            gridContainer.append(gridItem);
+
+            var jsonDishesData = data;
+
+            jsonDishesData["current_menu_dishes"].forEach(function (
+              item,
+              index
+            ) {
+              dishes = JSON.parse(item);
+              console.log(dishes);
+            });
+            $(".grid-container").append(gridContainer);
+          });
+        } else {
+          jsonData.forEach(function (item, index) {
+            if (item.model != "Banquet.menusample") {
+              var gridItem = $("<div>");
+              var gridContainer = $("<div>", { class: "grid-item" });
+              var dishDiv = $("<div>", {
+                class: "dishes",
+                "data-name": item.fields.name,
+                "data-tittle": item.fields.name,
+                "data-weight": item.fields.weight,
+                "data-price": item.fields.price,
+                "data-sostav": item.fields.ingredients,
+                "data-type": item.fields.type,
+              });
+
+              var img = $("<img>", {
+                src: "http://localhost:8000/media/" + item.fields.image,
+              });
+
+              if (item.fields.name) {
+                var h3 = $("<h3>").html(
+                  `${item.fields.name.replace(/_/g, " ")} / ${
+                    item.fields.price
+                  } руб.`
+                );
+              }
+
+              var current_client_name = localStorage.getItem(
+                "current_client_name"
+              );
+
+              var orderButton = $("<button>", {
+                class: "order-button",
+                "data-id": item.pk,
+                "data-name": item.fields.name,
+              }).text(`Добавить для "${current_client_name}"`);
+
+              dishDiv.append(img, h3);
+              gridItem.append(dishDiv, $("<h2>").append(orderButton));
+
+              gridContainer.append(gridItem);
+            } else {
+              var gridItem = $("<div>");
+              var gridContainer = $("<div>", { class: "grid-item2" });
+              var dishDiv = $("<div>", {
+                // class: "dishes",
+                "data-name": item.fields.name,
+                "data-tittle": item.fields.name,
+                "data-weight": item.fields.weight,
+                "data-price": item.fields.price,
+                "data-sostav": item.fields.ingredients,
+                "data-type": item.fields.type,
+              });
+
+              var h1 = document.createElement("h1");
+              h1.textContent = item.fields.type;
+              dishDiv.append(h1);
+              var current_client_name = localStorage.getItem(
+                "current_client_name"
+              );
+
+              var orderButton = $("<button>", {
+                class: "order-button",
+                "data-id": item.pk,
+                "data-name": item.fields.type,
+              }).text(`Добавить для "${current_client_name}"`);
+
+              gridItem.append(dishDiv, $("<h2>").append(orderButton));
+
+              gridContainer.append(gridItem);
+            }
+            $(".grid-container").append(gridContainer);
+          });
+        }
 
         const orderButtons = document.querySelectorAll(".order-button");
         var clientId = localStorage.getItem("current_client_id");

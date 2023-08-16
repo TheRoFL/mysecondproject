@@ -5,10 +5,6 @@ const y1 = document.querySelector(".overflow2");
 
 menuButtons.forEach((button) => {
   button.addEventListener("click", () => {
-    // var current_client_id = button.dataset.id;
-    // var current_client_name = button.dataset.name;
-    // localStorage.setItem("current_client_id", current_client_id);
-    // localStorage.setItem("current_client_name", current_client_name);
     // костыль, который прогружает заново меню и навешивает лисенеры, и более не навешивается более 1
     {
       var filter = $(this).data("filter"); // Получаем значение data-filter
@@ -48,7 +44,7 @@ menuButtons.forEach((button) => {
               var gridContainer = $("<div>", { class: "grid-item" });
               var dishDiv = $("<div>", {
                 class: "dishes",
-                "data-name": item.fields.name,
+                "data-name": item.fields.name.replace(/_/g, " "),
                 "data-tittle": item.fields.name,
                 "data-weight": item.fields.weight,
                 "data-price": item.fields.price,
@@ -61,7 +57,9 @@ menuButtons.forEach((button) => {
               });
 
               var h3 = $("<h3>").html(
-                `${item.fields.name}  / ${item.fields.price} руб.`
+                `${item.fields.name.replace(/_/g, " ")}  / ${
+                  item.fields.price
+                } руб.`
               );
 
               var clientId = localStorage.getItem("current_client_id");
@@ -89,8 +87,6 @@ menuButtons.forEach((button) => {
             var clientId = localStorage.getItem("current_client_id");
 
             const ws = document.querySelectorAll(".dishes");
-            console.log(ws);
-            console.log("hui2228");
             var x, y;
             for (let i = 0; i < ws.length; i++) {
               var div = `<div class = "overflow hidden" id="${i}"></div>

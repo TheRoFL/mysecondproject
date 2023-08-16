@@ -4,7 +4,7 @@ from django.db.models import Q
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.core.serializers import serialize
-
+import json
 from Menu.models import *
 from .models import *
 
@@ -31,7 +31,6 @@ def home(request, dish_type=None, clientId=None):
     if dish_type == None:
         try:
             current_dishes = Dish.objects.all()
-            print (current_dishes)
             for current_dish in current_dishes:
                 current_dish.tittle = current_dish.name
                 current_dish.name = current_dish.name.replace(" ", "_")
@@ -73,22 +72,51 @@ def home(request, dish_type=None, clientId=None):
             "banquet":banquet
         }
 
-    
-    client_name = None
+
     if clientId:
         try:
             current_client = Client.objects.get(id=clientId)
             contex["current_client"] =  current_client
-            client_name = current_client.type
         except Client.DoesNotExist:
             pass
+     
+    serialized_menu_dishes = None
+    menu_dishes = []
     if not current_dishes:
         current_dishes = menu_samples
-    
+        serialized_data = serialize('json', current_dishes)
+        for menu_sample in menu_samples:
+            menu_dishes.append(serialize('json', menu_sample.dishes.all()))
+
+        serialized_menu_dishes = json.dumps(menu_dishes)
+        
+    # if not current_dishes:
+    #     current_dishes = MenuSample.objects.all()
+    #     serialized_data = serialize('json', current_dishes)
+    #     for menu_sample in MenuSample.objects.all():
+    #         dish_queryset = menu_sample.dishes.all()
+    #         print(dish_queryset)
+    #         product_queryset = dish_queryset.values('product')
+    #         print(product_queryset)
+    #         serialized_products = serialize('json', product_queryset)
+
+    #         menu_dishes.append(serialized_products)
+    #     serialized_menu_dishes = json.dumps(menu_dishes)
+        
+
 
     if "application/json" in request.META.get("HTTP_ACCEPT", ""):
         serialized_data = serialize('json', current_dishes)
-        return JsonResponse(serialized_data, client_name, safe=False)
+
+        if serialized_menu_dishes:
+            combined_data = {
+                    "current_menu": json.loads(serialized_data),
+                    "current_menu_dishes": json.loads(serialized_menu_dishes)
+                }
+            serialized_combined_data = json.dumps(combined_data)
+            print(serialized_combined_data)
+            return JsonResponse(serialized_combined_data, safe=False)
+        else: return JsonResponse(serialized_data, safe=False)
     else:
         menu_samples = MenuSample.objects.all()
         contex["menu_samples"] = menu_samples

@@ -398,7 +398,6 @@ socket.onmessage = function (e) {
     const menuDeleteButton = document.querySelector(
       `.delete-menu-btn[data-unique_id="${client_id + "-" + current_menu_id}"]`
     );
-    console.log(menuDeleteButton);
     menuDeleteButton.addEventListener("click", handleDeleteMenuButtonClick);
   } else if (action == "new_dish_added") {
     var newDiv = document.createElement("div");
