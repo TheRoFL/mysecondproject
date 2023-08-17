@@ -29,11 +29,10 @@ $("button.dish-filter").on("click", function () {
 
         $(".grid-container").empty();
         var jsonData = data;
-        console.log("---------------------");
         if (jsonData["current_menu"]) {
           jsonData["current_menu"].forEach(function (item, index) {
             var gridItem = $("<div>");
-            var gridContainer = $("<div>", { class: "grid-item2" });
+            var gridContainer = $("<div>", { class: "grid-container" });
             var dishDiv = $("<div>", {
               // class: "dishes",
               "data-name": item.fields.name,
@@ -62,15 +61,12 @@ $("button.dish-filter").on("click", function () {
             $(".grid-container").append(gridContainer);
             var jsonDishesData = data;
 
-            console.log(jsonDishesData["current_menu_dishes"]);
-
             var check = [];
             jsonDishesData["current_menu_dishes"].forEach(function (dish) {
               if (
                 item.fields.dishes.includes(dish.pk) & !check.includes(dish.pk)
               ) {
                 check.push(dish.pk);
-                console.log();
                 var dishElement = document.createElement("div");
 
                 var innerHtml = `
@@ -92,11 +88,13 @@ $("button.dish-filter").on("click", function () {
         } else {
           jsonData.forEach(function (item, index) {
             if (item.model != "Banquet.menusample") {
-              var gridItem = $("<div>");
+              var gridItem = $("<div>", { class: "grid-item-2" });
               var gridContainer = $("<div>", { class: "grid-item" });
-              var dishDiv = $("<div>", {
+              var dishDiv = $("<div>", {});
+
+              var dishDiv2 = $("<div>", {
                 class: "dishes",
-                "data-name": item.fields.name,
+                "data-name": item.fields.name.replace(/_/g, " "),
                 "data-tittle": item.fields.name,
                 "data-weight": item.fields.weight,
                 "data-price": item.fields.price,
@@ -105,6 +103,9 @@ $("button.dish-filter").on("click", function () {
               });
 
               var img = $("<img>", {
+                class: "grid-dish-img",
+                id: item.pk,
+                "data-id": item.pk,
                 src: "http://localhost:8000/media/" + item.fields.image,
               });
 
@@ -126,8 +127,9 @@ $("button.dish-filter").on("click", function () {
                 "data-name": item.fields.name,
               }).text(`Добавить для "${current_client_name}"`);
 
-              dishDiv.append(img, h3);
-              gridItem.append(dishDiv, $("<h2>").append(orderButton));
+              dishDiv2.append(img, h3);
+              dishDiv.append(dishDiv2, orderButton);
+              gridItem.append(dishDiv);
 
               gridContainer.append(gridItem);
             } else {
@@ -257,6 +259,22 @@ $("button.dish-filter").on("click", function () {
             x.classList.add("hidden");
             y.classList.add("hidden");
           }
+        });
+
+        // Получаем ссылку на кнопку и изображение
+        var animate_orderButtons = document.querySelectorAll(".order-button");
+        animate_orderButtons.forEach((button) => {
+          button.addEventListener("click", function () {
+            var dishImage = document.querySelector(
+              `.grid-dish-img[data-id="${button.dataset.id}"]`
+            );
+            dishImage.classList.add("highlight-image");
+
+            // Убираем класс через секунду
+            setTimeout(function () {
+              dishImage.classList.remove("highlight-image");
+            }, 300);
+          });
         });
       });
     },

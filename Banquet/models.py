@@ -83,7 +83,7 @@ class Banquet(models.Model):
     clients = models.ManyToManyField(Client)
     type = models.CharField(max_length=50)
     owner = models.ForeignKey(ProfileData, on_delete=models.CASCADE, default=None)
-
+    ordered_date = models.DateField(null=True, blank=True, default=None)  # Дата заказа
     is_ordered = models.BooleanField(default=False)
 
     quantity = 0
@@ -102,4 +102,5 @@ class Banquet(models.Model):
         for client in self.clients.all():
             self.total += client.menu_and_orders_price_count()
         return self.total 
+    
     

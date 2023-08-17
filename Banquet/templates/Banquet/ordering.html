@@ -16,8 +16,212 @@
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
-<button id="requestButton">Запросить данные</button>
-<div id="result"></div>
+<style>
+  .submit-btn,
+  .cancel-btn {
+    background-color: #4a644b;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.1s;
+  }
+
+  /* Анимация при наведении на кнопку */
+  .submit-btn:hover,
+  .cancel-btn:hover {
+    background-color: #2f4030;
+    transform: scale(1.05);
+  }
+
+  /* Анимация при нажатии на кнопку */
+  .submit-btn:active,
+  .cancel-btn:active {
+    background-color: #2f4030;
+    transform: scale(0.95);
+  }
+
+  .delivery-label {
+    color: #4a644b;
+    font-weight: bold;
+    display: block;
+    margin-bottom: 10px;
+    transition: color 0.3s;
+  }
+
+  .delivery-input {
+    border: 1px solid #4a644b;
+    padding: 5px;
+    transition: border-color 0.3s;
+  }
+
+  .delivery-label:hover {
+    color: #2c4733;
+  }
+
+  .delivery-input:hover,
+  .delivery-input:focus {
+    border-color: #2c4733;
+  }
+</style>
+<style>
+  /* Стиль для недоступных дат */
+  input[type="date"]:invalid {
+    border-color: red;
+  }
+</style>
+<div id="divToRemove">
+  {% if current_banquet %}
+  <h1>
+    Мероприятие {{current_banquet}} стоимостью
+    {{current_banquet.total_price}}.00 руб.
+  </h1>
+
+  {% for dish_order in dish_orders %}
+  <h1>{{dish_order}}</h1>
+  {% endfor %}
+  <form id="orderForm" method="POST" action="">
+    {% csrf_token %}
+    <!-- Delivery Address -->
+    <input type="hidden" name="banquet_id" value="{{current_banquet.id}}" />
+    <label for="delivery_address">Адрес проведения мероприятия:</label>
+    <input type="text" id="delivery_address" name="delivery_address" />
+    <br />
+
+    <!-- Delivery Time -->
+    <label for="delivery_time">Время начала мероприятия:</label>
+    <input type="time" id="delivery_time" name="delivery_time" />
+    <br />
+
+    <h1>Уже занятые даты: {{occupied_dates}}</h1>
+    <script>
+      var occupied_dates = "{{occupied_dates}}";
+      // Преобразование HTML-кода в настоящий массив JavaScript
+      var dataArray = JSON.parse(occupied_dates.replace(/&#x27;/g, '"'));
+
+      // Создание нового массива с уникальными элементами
+      var uniqueArray = Array.from(dataArray);
+      console.log(uniqueArray); // Вывод в консоль нового массива с уникальными элементами
+    </script>
+
+    <label for="delivery_date">Дата начала:</label>
+    <input type="date" id="delivery_date" name="delivery_date" />
+    <script>
+      const today = new Date(); // Текущая дата
+      const disabledDays = 2; // Количество дней для блокировки
+
+      const deliveryDateInput = document.getElementById("delivery_date");
+      var occupied_dates = "{{occupied_dates}}";
+      // Преобразование HTML-кода в настоящий массив JavaScript
+      var dataArray = JSON.parse(occupied_dates.replace(/&#x27;/g, '"'));
+
+      // Создание нового массива с уникальными элементами
+      var uniqueArray = Array.from(dataArray);
+      var disabledDates = ["2023-08-20", "2023-08-25"];
+      disabledDates = disabledDates.concat(uniqueArray);
+      console.log(disabledDates);
+      deliveryDateInput.addEventListener("input", function () {
+        const selectedDate = new Date(this.value);
+        this.classList.remove("invalid-date");
+        // Вычисляем дату, которую нужно заблокировать (сегодня + disabledDays)
+        const maxBlockedDate = new Date(today);
+        maxBlockedDate.setDate(today.getDate() + disabledDays);
+        if (disabledDates.includes(this.value)) {
+          this.value = ""; // Очищаем значение, если выбрана заблокированная дата
+          this.classList.add("invalid-date");
+          alert(
+            "Эта дата недоступна для выбора. На нее уже заказано мероприятие"
+          );
+        }
+
+        if (selectedDate <= maxBlockedDate) {
+          this.value = ""; // Очищаем значение, если выбрана заблокированная дата
+          this.classList.add("invalid-date");
+          alert("Эта дата недоступна для выбора 3 дня.");
+        }
+      });
+    </script>
+    <br />
+    <label for="delivery_time">Время продолжительности мероприятия:</label>
+    <input type="time" id="duration_time" name="duration_time" value="03:00" />
+
+    <br />
+
+    <!-- Order Comments -->
+    <label for="order_comments">Комментарий к заказу:</label>
+    <textarea
+      id="order_comments"
+      name="order_comments"
+      rows="4"
+      cols="50"
+    ></textarea>
+    <br />
+
+    <!-- Submit Button -->
+    <input type="submit" value="Оформить заказ" class="submit-btn" />
+    <input value="Отменить" class="cancel-btn" />
+  </form>
+
+  {% else %}
+
+  <h1>У вас нету заказов на оформление</h1>
+
+  {% endif %}
+</div>
+
+<script>
+  const socket = new ReconnectingWebSocket(
+    "ws://" + window.location.host + "/ws/CartEditingSocket/"
+  );
+
+  socket.onopen = function () {
+    console.log("CartEditingSocket соединение открыто.");
+  };
+
+  socket.onmessage = function (e) {
+    const data = JSON.parse(e.data);
+    if (data.canceled === "canceled") {
+      var divToRemove = document.getElementById("divToRemove");
+      if (divToRemove) {
+        divToRemove.remove();
+        var h1Element = document.createElement("h1");
+        h1Element.textContent = "Заказ удален";
+        document.body.appendChild(h1Element);
+
+        var messageElement = document.createElement("p");
+        messageElement.textContent =
+          "Вы будете перенаправлены на главную страницу через 3 секунды.";
+        document.body.appendChild(messageElement);
+
+        // Redirect to /menu after 3 seconds
+        setTimeout(function () {
+          window.location.href = "/banquet";
+        }, 3000);
+      }
+    }
+  };
+
+  socket.onclose = function () {
+    console.log("CartEditingSocket соединение закрыто. Переподключение...");
+  };
+
+  const cancelButtons = document.querySelectorAll(".cancel-btn");
+
+  cancelButtons.forEach((cancel) => {
+    cancel.addEventListener("click", () => {
+      var username_id = "{{user.id}}";
+      socket.send(
+        JSON.stringify({
+          action: "canceled",
+          id: "{{current_order.id}}",
+          username_id: username_id,
+        })
+      );
+    });
+  });
+</script>
 
 <script>
   var json_data;

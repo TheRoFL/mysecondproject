@@ -15,6 +15,7 @@
     var username_id = localStorage.getItem("username_id");
     var current_client_id = localStorage.getItem("current_client_id");
   </script>
+
   <link rel="stylesheet" href="/static/styles/banquet.css" />
 </head>
 <body>
@@ -59,6 +60,7 @@
             class="quantity-input"
             data-id="{{client.id}}"
             value="{{ client.quantity }}"
+            pattern="[A-Za-z]{3}"
           />
 
           <button
@@ -375,6 +377,7 @@
   <script src="/static/js/banquet_filters.js"></script>
   <script src="/static/js/banquet_edit_links.js"></script>
   <script src="/static/js/test.js"></script>
+  <script src="/static/js/banquet_animations.js"></script>
   <div class="grid-container" id="menuContainer"></div>
 </body>
 {% endblock content %}

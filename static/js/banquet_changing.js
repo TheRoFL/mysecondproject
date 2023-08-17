@@ -151,12 +151,6 @@ socket.onmessage = function (e) {
     if (clientElement) {
       clientElement.remove();
       clientHeaderElement.remove();
-      const scrollTop =
-        window.pageYOffset ||
-        document.documentElement.scrollTop ||
-        document.body.scrollTop ||
-        0;
-      window.scrollTo(0, scrollTop);
     }
   } else if (action === "order_deleted") {
     orderId = data.order_id;
@@ -189,11 +183,6 @@ socket.onmessage = function (e) {
     const quantity_input = document.querySelector(
       `.quantity-input[data-id="${client_id}"]`
     );
-    $(".quantity-input").on("change", function () {
-      const client_id = $(this).data("id");
-      const quantity = Math.max(1, $(this).val()); // Ensure the quantity is not less than 1
-      updateQuantity(client_id, quantity);
-    });
     const client_quantity = document.querySelector(
       `.client-quantity[data-id="${client_id}"]`
     );
@@ -556,13 +545,13 @@ clientForm.addEventListener("submit", (event) => {
   );
 });
 
-$(".quantity-input").on("change", function () {
+$(".quantity-input").on("input", function () {
   const client_id = $(this).data("id");
   const quantity = Math.max(1, $(this).val()); // Ensure the quantity is not less than 1
   updateQuantity(client_id, quantity);
 });
 
-$(".name-input").on("change", function () {
+$(".name-input").on("input", function () {
   const client_id = $(this).data("id");
   const name = $(this).val();
   username_id = localStorage.getItem("username_id");

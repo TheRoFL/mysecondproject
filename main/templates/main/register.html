@@ -1,11 +1,119 @@
-{% extends "index.html" %}
-<!-- prettier-ignore -->
-{% block title %}Create an account{% endblock %}
-{% block content %}
-<h1>Create an account</h1>
-<p>Please, sign up using the following form:</p>
-<form action="." method="post">
-  {{ user_form.as_p }} {% csrf_token %}
-  <p><input type="submit" value="Create my account" /></p>
-</form>
+{% extends "index.html" %} {% block content %}
+<html>
+  <head>
+    <title>Регистрационная форма</title>
+    <style>
+      .error {
+        color: red;
+      }
+    </style>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://www.google.com/recaptcha/api.js"></script>
+    <script>
+      function onSubmit(token) {
+        document.getElementById("registration-form").submit();
+      }
+    </script>
+  </head>
+  <body>
+    <h1>Создание аккаунта</h1>
+    <p>Пожалуйста, заполните форму:</p>
+
+    <form id="registration-form" action="#" method="post">
+      {% csrf_token %}
+      <label for="email">Email:</label>
+      <input type="email" id="login" name="login" required />
+      <span id="login-error" class="error"></span><br />
+
+      <label for="password">Пароль:</label>
+      <input
+        type="password"
+        id="password"
+        name="password"
+        required
+        minlength="6"
+      /><br />
+
+      <label for="confirm-password">Подтвердите пароль:</label>
+      <input
+        type="password"
+        id="confirm-password"
+        name="confirm-password"
+        required
+        minlength="6"
+      /><br />
+      <span id="password-error" class="error"></span><br />
+      {% comment %}
+      <button
+        class="g-recaptcha"
+        data-sitekey="6LfA2LInAAAAAGZLK17Fs-dWEAkLnTcl9uNhKnG3"
+        data-callback="onSubmit"
+        data-action="submit"
+      >
+        Submit
+      </button>
+      {% endcomment %}
+
+      <input type="submit" value="Зарегистрироваться" />
+    </form>
+
+    <script>
+      const passwordInput = document.getElementById("password");
+      const confirmPasswordInput = document.getElementById("confirm-password");
+      const passwordError = document.getElementById("password-error");
+
+      confirmPasswordInput.addEventListener("input", () => {
+        if (passwordInput.value !== confirmPasswordInput.value) {
+          passwordError.textContent = "Пароли не совпадают";
+        } else {
+          passwordError.textContent = "";
+        }
+      });
+      passwordInput.addEventListener("input", () => {
+        if (passwordInput.value)
+          if (
+            passwordInput.value !== confirmPasswordInput.value &&
+            confirmPasswordInput.value != ""
+          ) {
+            passwordError.textContent = "Пароли не совпадают";
+          } else {
+            passwordError.textContent = "";
+          }
+      });
+      const form = document.getElementById("registration-form");
+      form.addEventListener("submit", (event) => {
+        if (passwordInput.value.length < 6) {
+          event.preventDefault();
+          passwordError.textContent = "Пароль должен быть длиннее 5 символов";
+        } else if (passwordInput.value !== confirmPasswordInput.value) {
+          event.preventDefault();
+          passwordError.textContent = "Пароли не совпадают";
+        }
+      });
+
+      const loginInput = document.getElementById("login");
+      const loginError = document.getElementById("login-error");
+
+      loginInput.addEventListener("input", () => {
+        const username = loginInput.value;
+
+        $.ajax({
+          url: "http://127.0.0.1:8000/register/", // Замените на свой путь к скрипту проверки логина
+          method: "GET",
+          data: { username: username },
+          dataType: "json",
+
+          success: function (response) {
+            console.log(response);
+            if (response["response"] == "login_unvailable") {
+              loginError.textContent = "Такой логин уже занят";
+            } else {
+              loginError.textContent = "";
+            }
+          },
+        });
+      });
+    </script>
+  </body>
+</html>
 {% endblock %}

@@ -1,20 +1,76 @@
 {% extends 'index.html' %}
 <!-- prettier-ignore -->
+
 {% block content %} {% load static %}
 <h1>PROFILE</h1>
 
 {% if currentprofile %}
 <h1>Вот ваш профиль</h1>
-<h1>{{currentprofile.name}}</h1>
-<h1>{{currentprofile.surname}}</h1>
-<h1>{{currentprofile.sex}}</h1>
-<h1>{{currentprofile.birthdate}}</h1>
-<h1>{{currentprofile.city}}</h1>
-<h1>{{currentprofile.address}}</h1>
+<input
+  class="currentprofile-surname"
+  value="{{currentprofile.surname}}"
+  id="surname-input"
+/><br />
+
+<input
+  class="currentprofile-name"
+  value="{{currentprofile.name}}"
+  id="name-input"
+/><br />
+<input
+  class="currentprofile-patronymic"
+  value="{{currentprofile.patronymic}}"
+  id="patronymic-input"
+/><br />
+
+<input
+  class="currentprofile-number"
+  value="{{currentprofile.number}}"
+  pattern="+7[0-9]{3}-[0-9]{3}"
+  type="tel"
+  id="number-input"
+/><br />
+
 <h1>{{currentprofile.bonuses}} бонусов</h1>
 
 <h2><a href="orders/">История моих заказов: </a></h2>
 
 {% else %}
 <h1>У вас нету профиля</h1>
-{% endif %} {% endblock content %}
+{% endif %}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+  $(document).ready(function () {
+    $(
+      "input.currentprofile-name, input.currentprofile-surname, input.currentprofile-number, input.currentprofile-patronymic"
+    ).on("change", function () {
+      var name = $(".currentprofile-name").val();
+      var surname = $(".currentprofile-surname").val();
+      var number = $(".currentprofile-number").val();
+      var patronymic = $(".currentprofile-patronymic").val();
+
+      var requestParams = {
+        name: name,
+        surname: surname,
+        number: number,
+        patronymic: patronymic,
+      };
+      // Обработка изменения текста в input и отправка на сервер
+
+      $.ajax({
+        url: "http://127.0.0.1:8000/profile/",
+        method: "GET",
+        data: requestParams,
+        dataType: "json",
+        success: function (data) {
+          data = JSON.parse(data);
+        },
+        error: function (xhr, status, error) {
+          console.error(error);
+        },
+      });
+    });
+  });
+</script>
+
+{% endblock content %}

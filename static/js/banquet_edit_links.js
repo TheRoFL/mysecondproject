@@ -31,7 +31,7 @@ menuButtons.forEach((button) => {
             });
 
             var buttonToHighlight = $(
-              'button.dish-filter[data-filter="' + current_dish_filter + '"]'
+              'button.dish-filter[data-filter="' + "all" + '"]'
             );
 
             buttonToHighlight.addClass("highlighted");
@@ -40,46 +40,81 @@ menuButtons.forEach((button) => {
             var jsonData = data;
 
             jsonData.forEach(function (item, index) {
-              var gridItem = $("<div>");
-              var gridContainer = $("<div>", { class: "grid-item" });
-              var dishDiv = $("<div>", {
-                class: "dishes",
-                "data-name": item.fields.name.replace(/_/g, " "),
-                "data-tittle": item.fields.name,
-                "data-weight": item.fields.weight,
-                "data-price": item.fields.price,
-                "data-sostav": item.fields.ingredients,
-                "data-type": item.fields.type,
-              });
+              if (item.model != "Banquet.menusample") {
+                var gridItem = $("<div>", { class: "grid-item-2" });
+                var gridContainer = $("<div>", { class: "grid-item" });
+                var dishDiv = $("<div>", {});
 
-              var img = $("<img>", {
-                src: "http://localhost:8000/media/" + item.fields.image,
-              });
+                var dishDiv2 = $("<div>", {
+                  class: "dishes",
+                  "data-name": item.fields.name.replace(/_/g, " "),
+                  "data-tittle": item.fields.name,
+                  "data-weight": item.fields.weight,
+                  "data-price": item.fields.price,
+                  "data-sostav": item.fields.ingredients,
+                  "data-type": item.fields.type,
+                });
 
-              var h3 = $("<h3>").html(
-                `${item.fields.name.replace(/_/g, " ")}  / ${
-                  item.fields.price
-                } руб.`
-              );
+                var img = $("<img>", {
+                  class: "grid-dish-img",
+                  id: item.pk,
+                  "data-id": item.pk,
+                  src: "http://localhost:8000/media/" + item.fields.image,
+                });
 
-              var clientId = localStorage.getItem("current_client_id");
-              var current_client_name = localStorage.getItem(
-                "current_client_name"
-              );
-              var orderButtonText = clientId
-                ? `Добавить для "${current_client_name}"`
-                : "Выберите клиента";
+                if (item.fields.name) {
+                  var h3 = $("<h3>").html(
+                    `${item.fields.name.replace(/_/g, " ")} / ${
+                      item.fields.price
+                    } руб.`
+                  );
+                }
 
-              var orderButton = $("<button>", {
-                class: "order-button",
-                "data-id": clientId ? item.pk : index + 1,
-                "data-name": item.fields.name,
-              }).text(orderButtonText);
+                var current_client_name = localStorage.getItem(
+                  "current_client_name"
+                );
 
-              dishDiv.append(img, h3);
-              gridItem.append(dishDiv, $("<h2>").append(orderButton));
+                var orderButton = $("<button>", {
+                  class: "order-button",
+                  "data-id": item.pk,
+                  "data-name": item.fields.name,
+                }).text(`Добавить для "${current_client_name}"`);
 
-              gridContainer.append(gridItem);
+                dishDiv2.append(img, h3);
+                dishDiv.append(dishDiv2, orderButton);
+                gridItem.append(dishDiv);
+
+                gridContainer.append(gridItem);
+              } else {
+                var gridItem = $("<div>");
+                var gridContainer = $("<div>", { class: "grid-item2" });
+                var dishDiv = $("<div>", {
+                  // class: "dishes",
+                  "data-name": item.fields.name,
+                  "data-tittle": item.fields.name,
+                  "data-weight": item.fields.weight,
+                  "data-price": item.fields.price,
+                  "data-sostav": item.fields.ingredients,
+                  "data-type": item.fields.type,
+                });
+
+                var h1 = document.createElement("h1");
+                h1.textContent = item.fields.type;
+                dishDiv.append(h1);
+                var current_client_name = localStorage.getItem(
+                  "current_client_name"
+                );
+
+                var orderButton = $("<button>", {
+                  class: "order-button",
+                  "data-id": item.pk,
+                  "data-name": item.fields.type,
+                }).text(`Добавить для "${current_client_name}"`);
+
+                gridItem.append(dishDiv, $("<h2>").append(orderButton));
+
+                gridContainer.append(gridItem);
+              }
               $(".grid-container").append(gridContainer);
             });
 
@@ -173,6 +208,21 @@ menuButtons.forEach((button) => {
                   }
                 });
               }
+            });
+            var animate_orderButtonss =
+              document.querySelectorAll(".order-button");
+            animate_orderButtonss.forEach((button) => {
+              button.addEventListener("click", function () {
+                var dishImage = document.querySelector(
+                  `.grid-dish-img[data-id="${button.dataset.id}"]`
+                );
+                dishImage.classList.add("highlight-image");
+
+                // Убираем класс через секунду
+                setTimeout(function () {
+                  dishImage.classList.remove("highlight-image");
+                }, 300);
+              });
             });
           });
         },

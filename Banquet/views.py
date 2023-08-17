@@ -20,7 +20,7 @@ def home(request, dish_type=None, clientId=None):
         current_user = User.objects.get(id=request.user.id)
         current_user_profiledata = ProfileData.objects.get(user=current_user)
     except ProfileData.DoesNotExist:
-        pass
+        return redirect("/profile")
     
     try:
         banquet = Banquet.objects.get(owner=current_user_profiledata, is_ordered=False)
@@ -90,7 +90,7 @@ def home(request, dish_type=None, clientId=None):
                 serialized_product = serialize('json', [dish_order.product])
                 menu_dishes.append(json.loads(serialized_product)[0])
 
-        print(menu_dishes)
+
         serialized_menu_dishes = json.dumps(menu_dishes)
         
            
@@ -103,7 +103,6 @@ def home(request, dish_type=None, clientId=None):
                     "current_menu_dishes": json.loads(serialized_menu_dishes)
                 }
             serialized_combined_data = json.dumps(combined_data)
-            print(serialized_combined_data)
             return JsonResponse(serialized_combined_data, safe=False)
         else: return JsonResponse(serialized_data, safe=False)
     else:
@@ -125,7 +124,28 @@ def ordering(request):
     except Banquet.DoesNotExist:
          pass
     
-    
+    if request.method == "POST":
+        try:
+            current_user = User.objects.get(id=request.user.id)
+            current_user_profiledata = ProfileData.objects.get(user=current_user)
+        except ProfileData.DoesNotExist:
+            pass
+        delivery_address = request.POST.get("delivery_address")
+        delivery_time = request.POST.get("delivery_time")  # Получение данных из формы
+        delivery_date = request.POST.get("delivery_date")  # Получение даты заказа
+        order_comments = request.POST.get("order_comments")  
+        duration_time = request.POST.get("duration_time")  
+
+        current_banquet_id = request.POST.get("banquet_id")  
+
+        current_banquet = Banquet.objects.get(id=current_banquet_id)
+        # current_banquet.delivery_address = delivery_address
+        # current_banquet.delivery_time = delivery_time
+        current_banquet.ordered_date = delivery_date
+        current_banquet.is_ordered = True
+        current_banquet.save()
+
+
 
     param1 = request.GET.get('param1')
     param2 = request.GET.get('param2')
@@ -139,15 +159,18 @@ def ordering(request):
         'param2': param2
     }
     
-    
-    current_banquet = Banquet.objects.filter(owner=current_user_profiledata, is_ordered=False)
+    occupied_dates = []
+    current_banquet = Banquet.objects.get(owner=current_user_profiledata, is_ordered=False)
+    all_banquets = Banquet.objects.filter(is_ordered=True)
+    for banquet in all_banquets:
+        occupied_dates.append(banquet.ordered_date.strftime('%Y-%m-%d'))
+
     
     contex = {
-        'current_banquet':current_banquet
+        'current_banquet':current_banquet,
+        'occupied_dates':occupied_dates
         }
     
-    if "application/json" in request.META.get("HTTP_ACCEPT", ""):
-        serialized_data = serialize('json', current_banquet)
-        return JsonResponse(serialized_data, safe=False)
-    else:
-        return render(request, 'Banquet/ordering.html', contex)       
+
+    return render(request, 'Banquet/ordering.html', contex)       
+    

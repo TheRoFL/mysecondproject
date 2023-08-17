@@ -56,23 +56,23 @@ class BanquetConsumer(WebsocketConsumer):
             quantity = data["quantity"] 
             current_client_id = data["client_id"]
 
-            
-            current_client= Client.objects.get(id=current_client_id)
+            if quantity != None:
+                current_client= Client.objects.get(id=current_client_id)
 
-            current_client.quantity = quantity
-            current_client.save()
-            current_banquet = Banquet.objects.get(owner=current_user_profiledata, is_ordered=False)
-            
-            response = {"action":"client_quantity_changed",
-                        "new_quantity":current_client.quantity, 
-                        "client_id": current_client.id,
-                        "banquet_id":current_banquet.id,
-                        "client_total_price":current_client.menu_and_orders_price_count(),
-                        "client_order_price":current_client.price_count(),
-                        "total_banquet_price":current_banquet.total_price() 
-                        }
-            
-            self.send_response(response)
+                current_client.quantity = quantity
+                current_client.save()
+                current_banquet = Banquet.objects.get(owner=current_user_profiledata, is_ordered=False)
+                
+                response = {"action":"client_quantity_changed",
+                            "new_quantity":current_client.quantity, 
+                            "client_id": current_client.id,
+                            "banquet_id":current_banquet.id,
+                            "client_total_price":current_client.menu_and_orders_price_count(),
+                            "client_order_price":current_client.price_count(),
+                            "total_banquet_price":current_banquet.total_price() 
+                            }
+                
+                self.send_response(response)
             
         elif action == "client_delete":
             client_id = data["client_id"]
