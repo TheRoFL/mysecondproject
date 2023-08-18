@@ -170,6 +170,7 @@ input[type="submit"]:active {
 
 .menu-client-btn.active {
   box-shadow: 1px 1px 20px 10px #4a644b;
+  transform: scale(1.1);
 }
 
 .menuu {
@@ -360,10 +361,17 @@ span {
 .grid-dish-img {
   /* Ваши текущие стили изображения */
   transition: box-shadow 0.3s ease; /* Добавляем анимацию для свойства box-shadow */
+  transition: transform 0.3s ease;
+}
+
+.grid-dish-img.active {
+  box-shadow: 0 0 45px rgba(74, 100, 75, 2); /* Зеленая тень при наведении */
+  transform: scale(1.1);
 }
 
 .grid-dish-img:hover {
   box-shadow: 0 0 30px rgba(74, 100, 75, 2); /* Зеленая тень при наведении */
+  cursor: pointer;
 }
 
 .dish-filter:hover {
@@ -417,4 +425,15 @@ span {
   margin: 4%;
   border-radius: 10px;
   object-fit: cover; /* Масштабируем изображение, чтобы оно полностью заполнило элемент */
+}
+
+.my_client,
+.formaClienta {
+  transition: transform 0.3s ease;
+  transform: scale(1);
+}
+
+.my_client:hover,
+.formaClienta:hover {
+  transform: scale(1.075);
 }

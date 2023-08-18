@@ -31,7 +31,7 @@
       <button type="submit">Сохранить</button>
       <button type="button" id="cancelFormBtn">Отменить</button>
     </form>
-    <div class="vseClients">
+    <div class="vseClients" id="all_clients">
       <!-- prettier-ignore -->
       {% if banquet.clients.all %} 
       {% for client in banquet.clients.all %}
@@ -378,6 +378,13 @@
   <script src="/static/js/banquet_edit_links.js"></script>
   <script src="/static/js/test.js"></script>
   <script src="/static/js/banquet_animations.js"></script>
-  <div class="grid-container2" id="menuContainer"></div>
+
+  <script>
+    $(".my_client").each(function () {
+      if ($(this).find(".vash_zakaz").hasClass("active")) {
+        $(this).addClass("green-border"); // Добавляем класс для зеленой рамки
+      }
+    });
+  </script>
 </body>
 {% endblock content %}

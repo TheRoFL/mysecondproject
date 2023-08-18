@@ -86,6 +86,7 @@ $("button.dish-filter").on("click", function () {
 
               var dishDiv2 = $("<div>", {
                 class: "dishes",
+                "data-id": item.pk,
                 "data-name": item.fields.name.replace(/_/g, " "),
                 "data-tittle": item.fields.name,
                 "data-weight": item.fields.weight,
@@ -128,7 +129,8 @@ $("button.dish-filter").on("click", function () {
               var gridItem = $("<div>");
               var gridContainer = $("<div>", { class: "grid-item2" });
               var dishDiv = $("<div>", {
-                // class: "dishes",
+                class: "dishes",
+                "data-id": item.pk,
                 "data-name": item.fields.name,
                 "data-tittle": item.fields.name,
                 "data-weight": item.fields.weight,
@@ -228,6 +230,11 @@ $("button.dish-filter").on("click", function () {
             .insertAdjacentHTML("beforebegin", div);
 
           ws[i].addEventListener("click", () => {
+            const button_id = ws[i].dataset.id;
+            const current_dish = document.querySelector(
+              `.grid-dish-img[data-id="${button_id}"]`
+            );
+            current_dish.classList.add("active");
             x = document.getElementById(i);
             y = document.getElementById(i + 3500);
             x.classList.remove("hidden");
@@ -238,6 +245,12 @@ $("button.dish-filter").on("click", function () {
 
           exit.forEach((element) => {
             element.addEventListener("click", () => {
+              const current_dishes =
+                document.querySelectorAll(`.grid-dish-img`);
+              current_dishes.forEach((button) => {
+                button.classList.remove("active");
+              });
+
               x = document.getElementById(i);
               y = document.getElementById(i + 3500);
               x.classList.add("hidden");

@@ -7,6 +7,15 @@ menuButtons.forEach((button) => {
   button.addEventListener("click", () => {
     // костыль, который прогружает заново меню и навешивает лисенеры, и более не навешивается более 1
     {
+      var main = document.querySelectorAll(`.my_client`);
+      main.forEach((button) => {
+        button.classList.remove("active");
+      });
+      var main = document.querySelector(
+        `.my_client[data-id="${button.dataset.id}"]`
+      );
+      main.classList.add("active");
+
       var filter = $(this).data("filter"); // Получаем значение data-filter
       localStorage.setItem("dish-filter", filter);
       var requestParams = {
@@ -47,6 +56,7 @@ menuButtons.forEach((button) => {
 
                 var dishDiv2 = $("<div>", {
                   class: "dishes",
+                  "data-id": item.pk,
                   "data-name": item.fields.name.replace(/_/g, " "),
                   "data-tittle": item.fields.name,
                   "data-weight": item.fields.weight,
@@ -142,6 +152,11 @@ menuButtons.forEach((button) => {
                 .insertAdjacentHTML("beforebegin", div);
 
               ws[i].addEventListener("click", () => {
+                const button_id = ws[i].dataset.id;
+                const current_dish = document.querySelector(
+                  `.grid-dish-img[data-id="${button_id}"]`
+                );
+                current_dish.classList.add("active");
                 x = document.getElementById(i);
                 y = document.getElementById(i + 3500);
                 x.classList.remove("hidden");
@@ -152,6 +167,11 @@ menuButtons.forEach((button) => {
 
               exit.forEach((element) => {
                 element.addEventListener("click", () => {
+                  const current_dishes =
+                    document.querySelectorAll(`.grid-dish-img`);
+                  current_dishes.forEach((button) => {
+                    button.classList.remove("active");
+                  });
                   x = document.getElementById(i);
                   y = document.getElementById(i + 3500);
                   x.classList.add("hidden");

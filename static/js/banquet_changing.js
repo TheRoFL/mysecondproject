@@ -121,6 +121,94 @@ function updateClientsList(data) {
   window.scrollTo(0, scrollTop);
 }
 
+function handleNewClientClick(button) {
+  var main = document.querySelectorAll(`.my_client`);
+  main.forEach((btn) => {
+    btn.classList.remove("active");
+  });
+
+  var main = document.querySelector(
+    `.my_client[data-id="${button.dataset.id}"]`
+  );
+  main.classList.add("active");
+
+  var filter = $(button).data("filter"); // Получаем значение data-filter
+  localStorage.setItem("dish-filter", filter);
+  var requestParams = {
+    "dish-filter": filter, // Используем полученное значение для параметра запроса
+  };
+
+  $.ajax({
+    url: "http://127.0.0.1:8000/banquet/",
+    method: "GET",
+    data: requestParams,
+    dataType: "json",
+    success: function (data) {
+      data = JSON.parse(data);
+
+      // Остальной код обработки данных
+
+      const orderButtons = document.querySelectorAll(".order-button");
+      var clientId = localStorage.getItem("current_client_id");
+
+      orderButtons.forEach((button) => {
+        if (!clientId) {
+          button.disabled = true;
+        }
+        var current_client_name = localStorage.getItem("current_client_name");
+        if (clientId != "") {
+          button.addEventListener("click", function () {
+            // Код добавления заказа
+
+            button.textContent = `Добавлено для "${current_client_name}"`;
+            button.disabled = true;
+
+            var dishImage = document.querySelector(
+              `.grid-dish-img[data-id="${button.dataset.id}"]`
+            );
+            dishImage.classList.add("highlight-image");
+
+            setTimeout(function () {
+              dishImage.classList.remove("highlight-image");
+            }, 300);
+          });
+        }
+      });
+
+      var animate_orderButtons = document.querySelectorAll(".order-button");
+      animate_orderButtons.forEach((button) => {
+        button.addEventListener("click", function () {
+          var dishImage = document.querySelector(
+            `.grid-dish-img[data-id="${button.dataset.id}"]`
+          );
+          dishImage.classList.add("highlight-image");
+
+          setTimeout(function () {
+            dishImage.classList.remove("highlight-image");
+          }, 300);
+        });
+      });
+    },
+    error: function (xhr, status, error) {
+      console.error(error);
+    },
+  });
+
+  localStorage.setItem("current_client_id", button.dataset.id);
+  localStorage.setItem("current_client_name", button.dataset.name);
+  menuButtons.forEach((btn) => {
+    var current_client_id = localStorage.getItem("current_client_id");
+    if (btn.dataset.id == current_client_id) {
+      btn.classList.add("active");
+    } else {
+      btn.classList.remove("active");
+    }
+  });
+
+  x1.classList.remove("hidden2");
+  y1.classList.remove("hidden2");
+}
+
 const socket = new ReconnectingWebSocket(
   "ws://" + window.location.host + "/ws/BanquetEditingSocket/"
 );
@@ -135,6 +223,342 @@ socket.onmessage = function (e) {
   action = data["action"];
   if (action === "client_added") {
     updateClientsList(data);
+    client_id = data["client_id"];
+    client_name = data["client_name"];
+    const my_client = document.querySelector(".my_client.created");
+    my_client.setAttribute("data-id", client_id);
+    my_client.classList.remove("created");
+
+    const button = document.querySelector(".vash_zakaz.created");
+    button.setAttribute("data-id", client_id);
+    button.setAttribute("data-name", client_name);
+    button.classList.remove("created");
+    button.addEventListener("click", () => {
+      // костыль, который прогружает заново меню и навешивает лисенеры, и более не навешивается более 1
+      {
+        var main = document.querySelectorAll(`.my_client`);
+        main.forEach((button) => {
+          button.classList.remove("active");
+        });
+        var main = document.querySelector(
+          `.my_client[data-id="${button.dataset.id}"]`
+        );
+        main.classList.add("active");
+
+        var filter = $(this).data("filter"); // Получаем значение data-filter
+        localStorage.setItem("dish-filter", filter);
+        var requestParams = {
+          "dish-filter": filter, // Используем полученное значение для параметра запроса
+        };
+
+        $.ajax({
+          url: "http://127.0.0.1:8000/banquet/",
+          method: "GET",
+          data: requestParams,
+          dataType: "json",
+          success: function (data) {
+            data = JSON.parse(data);
+
+            $(document).ready(function () {
+              var current_dish_filter = localStorage.getItem("dish-filter");
+              const buttonToUnHighlight =
+                document.querySelectorAll(".dish-filter");
+
+              buttonToUnHighlight.forEach((button) => {
+                button.classList.remove("highlighted");
+              });
+
+              var buttonToHighlight = $(
+                'button.dish-filter[data-filter="' + "all" + '"]'
+              );
+
+              buttonToHighlight.addClass("highlighted");
+
+              $(".grid-container").empty();
+              var jsonData = data;
+
+              jsonData.forEach(function (item, index) {
+                if (item.model != "Banquet.menusample") {
+                  var gridItem = $("<div>", { class: "grid-item-2" });
+                  var gridContainer = $("<div>", { class: "grid-item" });
+                  var dishDiv = $("<div>", {});
+
+                  var dishDiv2 = $("<div>", {
+                    class: "dishes",
+                    "data-id": item.pk,
+                    "data-name": item.fields.name.replace(/_/g, " "),
+                    "data-tittle": item.fields.name,
+                    "data-weight": item.fields.weight,
+                    "data-price": item.fields.price,
+                    "data-sostav": item.fields.ingredients,
+                    "data-type": item.fields.type,
+                  });
+
+                  var img = $("<img>", {
+                    class: "grid-dish-img",
+                    id: item.pk,
+                    "data-id": item.pk,
+                    src: "http://localhost:8000/media/" + item.fields.image,
+                  });
+
+                  if (item.fields.name) {
+                    var h3 = $("<h3>").html(
+                      `${item.fields.name.replace(/_/g, " ")} / ${
+                        item.fields.price
+                      } руб.`
+                    );
+                  }
+
+                  var current_client_name = localStorage.getItem(
+                    "current_client_name"
+                  );
+
+                  var orderButton = $("<button>", {
+                    class: "order-button",
+                    "data-id": item.pk,
+                    "data-name": item.fields.name,
+                  }).text(`Добавить для "${current_client_name}"`);
+
+                  dishDiv2.append(img, h3);
+                  dishDiv.append(dishDiv2, orderButton);
+                  gridItem.append(dishDiv);
+
+                  gridContainer.append(gridItem);
+                } else {
+                  var gridItem = $("<div>");
+                  var gridContainer = $("<div>", { class: "grid-item2" });
+                  var dishDiv = $("<div>", {
+                    // class: "dishes",
+                    "data-name": item.fields.name,
+                    "data-tittle": item.fields.name,
+                    "data-weight": item.fields.weight,
+                    "data-price": item.fields.price,
+                    "data-sostav": item.fields.ingredients,
+                    "data-type": item.fields.type,
+                  });
+
+                  var h1 = document.createElement("h1");
+                  h1.textContent = item.fields.type;
+                  dishDiv.append(h1);
+                  var current_client_name = localStorage.getItem(
+                    "current_client_name"
+                  );
+
+                  var orderButton = $("<button>", {
+                    class: "order-button",
+                    "data-id": item.pk,
+                    "data-name": item.fields.type,
+                  }).text(`Добавить для "${current_client_name}"`);
+
+                  gridItem.append(dishDiv, $("<h2>").append(orderButton));
+
+                  gridContainer.append(gridItem);
+                }
+                $(".grid-container").append(gridContainer);
+              });
+
+              const orderButtons = document.querySelectorAll(".order-button");
+              var clientId = localStorage.getItem("current_client_id");
+
+              const ws = document.querySelectorAll(".dishes");
+              var x, y;
+              for (let i = 0; i < ws.length; i++) {
+                var div = `<div class = "overflow hidden" id="${i}"></div>
+    <div class="modWind hidden" id="${i + 3500}">
+    <div ><img style = "width: 200px"
+    src="http://localhost:8000/media/menu_images/${ws[i].getAttribute(
+      "data-type"
+    )}/${ws[i].getAttribute("data-tittle")}.png"
+    /> </div>
+      <div class="name">${ws[i].getAttribute("data-name")}</div>
+      <div class="grams">${ws[i].getAttribute("data-weight")} гр</div>
+      <div class="price">${ws[i].getAttribute("data-price")} руб</div>
+      <div class="sostav">${ws[i].getAttribute("data-sostav")}</div>
+  </div>
+  `;
+                document
+                  .querySelector(".dishes")
+                  .insertAdjacentHTML("beforebegin", div);
+
+                ws[i].addEventListener("click", () => {
+                  const button_id = ws[i].dataset.id;
+                  const current_dish = document.querySelector(
+                    `.grid-dish-img[data-id="${button_id}"]`
+                  );
+                  current_dish.classList.add("active");
+                  x = document.getElementById(i);
+                  y = document.getElementById(i + 3500);
+                  x.classList.remove("hidden");
+                  y.classList.remove("hidden");
+                });
+
+                const exit = document.querySelectorAll(".overflow");
+
+                exit.forEach((element) => {
+                  element.addEventListener("click", () => {
+                    const current_dishes =
+                      document.querySelectorAll(`.grid-dish-img`);
+                    current_dishes.forEach((button) => {
+                      button.classList.remove("active");
+                    });
+                    x = document.getElementById(i);
+                    y = document.getElementById(i + 3500);
+                    x.classList.add("hidden");
+                    y.classList.add("hidden");
+                  });
+                });
+              }
+
+              document.addEventListener("keydown", (e) => {
+                if (e.code == "Escape") {
+                  x.classList.add("hidden");
+                  y.classList.add("hidden");
+                }
+              });
+
+              orderButtons.forEach((button) => {
+                if (!clientId) {
+                  button.disabled = true;
+                }
+
+                const dishId = button.dataset.id;
+                const dishTittle = button.dataset.name;
+
+                if (clientId != "") {
+                  button.addEventListener("click", function () {
+                    var username_id = localStorage.getItem("username_id");
+                    var clientId = localStorage.getItem("current_client_id");
+                    var current_dish_filter =
+                      localStorage.getItem("dish-filter");
+                    const data_to_send = {
+                      action: "added_dish",
+                      message: `Заказ "${dishTittle}" добавлен`,
+                      current_dish_id: dishId,
+                      current_user_id: username_id,
+                      current_client_id: clientId,
+                    };
+                    var currentUrl = window.location.href;
+                    const urlObject = new URL(currentUrl);
+                    dish_filter = current_dish_filter;
+                    var is_menu = false;
+                    if (dish_filter == "samples") {
+                      is_menu = true;
+                    }
+                    if (is_menu) {
+                      const new_data_to_send = {
+                        action: "menu_add",
+                        message: `Заказ "${button.dataset.name}" добавлен`,
+                        current_menu_id: button.dataset.id,
+                        current_user_id: username_id,
+                        current_client_id: clientId,
+                      };
+                      socket.send(JSON.stringify(new_data_to_send));
+                    } else {
+                      socket.send(JSON.stringify(data_to_send));
+                    }
+                  });
+                }
+              });
+              var animate_orderButtonss =
+                document.querySelectorAll(".order-button");
+              animate_orderButtonss.forEach((button) => {
+                button.addEventListener("click", function () {
+                  var dishImage = document.querySelector(
+                    `.grid-dish-img[data-id="${button.dataset.id}"]`
+                  );
+                  dishImage.classList.add("highlight-image");
+
+                  // Убираем класс через секунду
+                  setTimeout(function () {
+                    dishImage.classList.remove("highlight-image");
+                  }, 300);
+                });
+              });
+            });
+          },
+          error: function (xhr, status, error) {
+            console.error(error);
+          },
+        });
+      }
+
+      localStorage.setItem("current_client_id", button.dataset.id);
+      localStorage.setItem("current_client_name", button.dataset.name);
+      menuButtons.forEach((button) => {
+        var current_client_id = localStorage.getItem("current_client_id");
+        if (button.dataset.id == current_client_id) {
+          button.classList.add("active");
+        } else {
+          button.classList.remove("active");
+        }
+      });
+      x1.classList.remove("hidden2");
+      y1.classList.remove("hidden2");
+
+      const orderButtons = document.querySelectorAll(".order-button");
+      var current_client_name = localStorage.getItem("current_client_name");
+      // херь, которая обрабатывает нажатие на кнопку заказать
+      function handleOrderButtonClick(event) {
+        var username_id = localStorage.getItem("username_id");
+        var clientId = localStorage.getItem("current_client_id");
+        var current_dish_filter = localStorage.getItem("dish-filter");
+        const data_to_send = {
+          action: "added_dish",
+          message: `Заказ "${event.target.dataset.name}" добавлен`,
+          current_dish_id: event.target.dataset.id,
+          current_user_id: username_id,
+          current_client_id: clientId,
+        };
+        dish_filter = current_dish_filter;
+        var is_menu = false;
+        if (dish_filter == "samples") {
+          is_menu = true;
+        }
+        if (is_menu) {
+          const new_data_to_send = {
+            action: "menu_add",
+            message: `Заказ "${event.target.dataset.name}" добавлен`,
+            current_menu_id: event.target.dataset.id,
+            current_user_id: username_id,
+            current_client_id: clientId,
+          };
+          socket.send(JSON.stringify(new_data_to_send));
+        } else {
+          socket.send(JSON.stringify(data_to_send));
+        }
+      }
+
+      orderButtons.forEach((button) => {
+        // Remove the old event listener, if any
+        button.removeEventListener("click", handleOrderButtonClick, true);
+        button.textContent = `Добавить для "${current_client_name}"`;
+        button.addEventListener("click", handleOrderButtonClick);
+      });
+    });
+    const newClientNameInput = document.querySelector(".name-input.created");
+    newClientNameInput.setAttribute("data-id", client_id);
+    newClientNameInput.classList.remove("created");
+
+    const newClientQuantityInput = document.querySelector(
+      ".quantity-input.created"
+    );
+
+    newClientQuantityInput.setAttribute("data-id", client_id);
+    newClientQuantityInput.classList.remove("created");
+
+    const newClientDeleteBtn = document.querySelector(
+      ".delete-client-btn.created"
+    );
+    newClientDeleteBtn.setAttribute("data-id", client_id);
+    newClientDeleteBtn.dataset.id = client_id;
+    newClientDeleteBtn.classList.remove("created");
+
+    const newClientDeleteImg = document.querySelector(".musorka.created");
+    newClientDeleteImg.setAttribute("data-id", client_id);
+    newClientDeleteImg.dataset.id = client_id;
+    newClientDeleteImg.classList.remove("created");
+
+    localStorage.setItem("current_client_id", client_id);
   } else if (action === "client_deleted") {
     var client_id = data["client_id"];
     var banqet_id = data["current_banquet_id"];
@@ -221,6 +645,12 @@ socket.onmessage = function (e) {
         element.textContent = new_name;
       });
     }
+
+    client_form_to_change = document.querySelector(
+      `.vash_zakaz[data-id="${client_id}"]`
+    );
+    client_form_to_change.dataset.name = new_name;
+    localStorage.setItem("current_client_name", new_name);
   } else if (action === "client_menu_deleted") {
     client_id = data["client_id"];
     menu_id = data["menu_id"];
@@ -510,8 +940,191 @@ const clientForm = document.getElementById("clientForm");
 const cancelFormButton = document.getElementById("cancelFormBtn");
 
 showFormButton.addEventListener("click", () => {
-  clientForm.style.display = "block";
-  showFormButton.style.display = "none";
+  showFormButton.remove();
+  // Создаем основной div элемент
+  const divElement = document.createElement("div");
+  divElement.className = "my_client formaClienta menu-client-btn";
+  divElement.classList.add("created");
+  divElement.setAttribute("data-name", "Выберите клиента");
+  localStorage.setItem("current_client_name", "Выберите клиента");
+  // Создаем div для header
+  const headerDiv = document.createElement("div");
+  headerDiv.className = "formaClienta_header";
+
+  // Создаем input для имени
+  const nameInput = document.createElement("input");
+  nameInput.className = "name-input";
+  nameInput.value = "Введите клиента";
+  nameInput.classList.add("created");
+  nameInput.addEventListener("input", function () {
+    const client_id = $(this).data("id");
+    const name = $(this).val();
+    username_id = localStorage.getItem("username_id");
+    socket.send(
+      JSON.stringify({
+        action: "client_name_update",
+        client_id: client_id,
+        current_user_id: username_id,
+        name: name,
+      })
+    );
+  });
+  // Создаем элемент p
+  const pElement = document.createElement("p");
+  pElement.style.fontSize = "10px";
+  pElement.style.display = "inline";
+  pElement.style.color = "#fff";
+  pElement.style.marginBottom = "12px";
+  pElement.textContent = "x";
+
+  // Создаем input для количества
+  const quantityInput = document.createElement("input");
+  quantityInput.className = "quantity-input";
+  quantityInput.value = "1";
+  quantityInput.classList.add("created");
+  quantityInput.setAttribute("pattern", "[A-Za-z]{3}");
+
+  quantityInput.addEventListener("input", function () {
+    const client_id = $(this).data("id");
+    const quantity = Math.max(1, $(this).val()); // Ensure the quantity is not less than 1
+    updateQuantity(client_id, quantity);
+  });
+
+  // Создаем кнопку для удаления клиента
+  const deleteClientButton = document.createElement("button");
+  deleteClientButton.className = "delete-client-btn";
+  deleteClientButton.classList.add("created");
+  // Создаем изображение внутри кнопки
+  const deleteImage = document.createElement("img");
+  deleteImage.className = "musorka";
+  deleteImage.src = "/static/images/Мусорка.png";
+  deleteImage.alt = "delete";
+  deleteImage.classList.add("created");
+
+  // Добавляем элементы в иерархию
+  deleteClientButton.appendChild(deleteImage);
+  headerDiv.appendChild(nameInput);
+  headerDiv.appendChild(pElement);
+  headerDiv.appendChild(quantityInput);
+  headerDiv.appendChild(deleteClientButton);
+  divElement.appendChild(headerDiv);
+
+  const vashZakazDiv = document.createElement("div");
+  vashZakazDiv.className = "vash_zakaz";
+  vashZakazDiv.classList.add("created");
+  divElement.appendChild(vashZakazDiv); // Пустой div для vash_zakaz
+  // Добавляем созданный элемент в DOM
+  const container = document.getElementById("all_clients"); // Замените "container" на ID родительского контейнера, куда вы хотите добавить элемент
+  container.appendChild(divElement);
+
+  const showFormButton2 = document.createElement("button");
+  showFormButton2.id = "showFormBtn";
+  showFormButton2.className = "formaClienta";
+  showFormButton2.textContent = "+";
+  showFormButton2.addEventListener("click", () => {
+    showFormButton2.remove();
+    // Создаем основной div элемент
+    const divElement = document.createElement("div");
+    divElement.className = "my_client formaClienta menu-client-btn";
+    divElement.classList.add("created");
+    divElement.setAttribute("data-name", "Выберите клиента");
+    localStorage.setItem("current_client_name", "Выберите клиента");
+    // Создаем div для header
+    const headerDiv = document.createElement("div");
+    headerDiv.className = "formaClienta_header";
+
+    // Создаем input для имени
+    const nameInput = document.createElement("input");
+    nameInput.className = "name-input";
+    nameInput.value = "Введите клиента";
+    nameInput.classList.add("created");
+    nameInput.addEventListener("input", function () {
+      const client_id = $(this).data("id");
+      const name = $(this).val();
+      username_id = localStorage.getItem("username_id");
+      socket.send(
+        JSON.stringify({
+          action: "client_name_update",
+          client_id: client_id,
+          current_user_id: username_id,
+          name: name,
+        })
+      );
+    });
+    // Создаем элемент p
+    const pElement = document.createElement("p");
+    pElement.style.fontSize = "10px";
+    pElement.style.display = "inline";
+    pElement.style.color = "#fff";
+    pElement.style.marginBottom = "12px";
+    pElement.textContent = "x";
+
+    // Создаем input для количества
+    const quantityInput = document.createElement("input");
+    quantityInput.className = "quantity-input";
+    quantityInput.value = "1";
+    quantityInput.classList.add("created");
+    quantityInput.setAttribute("pattern", "[A-Za-z]{3}");
+
+    quantityInput.addEventListener("input", function () {
+      const client_id = $(this).data("id");
+      const quantity = Math.max(1, $(this).val()); // Ensure the quantity is not less than 1
+      updateQuantity(client_id, quantity);
+    });
+
+    // Создаем кнопку для удаления клиента
+    const deleteClientButton = document.createElement("button");
+    deleteClientButton.className = "delete-client-btn";
+    deleteClientButton.classList.add("created");
+    // Создаем изображение внутри кнопки
+    const deleteImage = document.createElement("img");
+    deleteImage.className = "musorka";
+    deleteImage.src = "/static/images/Мусорка.png";
+    deleteImage.alt = "delete";
+    deleteImage.classList.add("created");
+
+    // Добавляем элементы в иерархию
+    deleteClientButton.appendChild(deleteImage);
+    headerDiv.appendChild(nameInput);
+    headerDiv.appendChild(pElement);
+    headerDiv.appendChild(quantityInput);
+    headerDiv.appendChild(deleteClientButton);
+    divElement.appendChild(headerDiv);
+
+    const vashZakazDiv = document.createElement("div");
+    vashZakazDiv.className = "vash_zakaz";
+    vashZakazDiv.classList.add("created");
+    divElement.appendChild(vashZakazDiv); // Пустой div для vash_zakaz
+    // Добавляем созданный элемент в DOM
+    const container = document.getElementById("all_clients"); // Замените "container" на ID родительского контейнера, куда вы хотите добавить элемент
+    container.appendChild(divElement);
+
+    const showFormButton2 = document.createElement("button");
+    showFormButton2.id = "showFormBtn";
+    showFormButton2.className = "formaClienta";
+    showFormButton2.textContent = "+";
+    showFormButton2.addEventListener;
+    container.appendChild(showFormButton);
+    username_id = localStorage.getItem("username_id");
+    socket.send(
+      JSON.stringify({
+        action: "added_client",
+        clientName: "Введите клиента",
+        clientCount: 1,
+        current_user_id: username_id,
+      })
+    );
+  });
+  container.appendChild(showFormButton);
+  username_id = localStorage.getItem("username_id");
+  socket.send(
+    JSON.stringify({
+      action: "added_client",
+      clientName: "Введите клиента",
+      clientCount: 1,
+      current_user_id: username_id,
+    })
+  );
 });
 
 cancelFormButton.addEventListener("click", () => {
@@ -590,6 +1203,7 @@ function handleDeleteClientButtonClick(event) {
     })
   );
 }
+
 function handleDeleteDishButtonClick(event) {
   const mybutton = event.target; // Получаем элемент, на котором произошло событие (в данном случае, кнопка)
   const order_id = mybutton.dataset.id; // Получаем значение data-id из атрибута data-id
