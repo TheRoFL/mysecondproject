@@ -27,25 +27,15 @@ $("button.dish-filter").on("click", function () {
 
         buttonToHighlight.addClass("highlighted");
 
+        var GridContainer = document.querySelector(".grid-container");
         $(".grid-container").empty();
         var jsonData = data;
         if (jsonData["current_menu"]) {
           jsonData["current_menu"].forEach(function (item, index) {
-            var gridItem = $("<div>");
-            var gridContainer = $("<div>", { class: "grid-container" });
-            var dishDiv = $("<div>", {
-              // class: "dishes",
-              "data-name": item.fields.name,
-              "data-tittle": item.fields.name,
-              "data-weight": item.fields.weight,
-              "data-price": item.fields.price,
-              "data-sostav": item.fields.ingredients,
-              "data-type": item.fields.type,
-            });
+            var MenuGridContainer = $("<div>", { class: "menu-container" });
 
-            var h1 = document.createElement("h1");
-            h1.textContent = item.fields.type;
-            dishDiv.append(h1);
+            var h1 = $("<h1>", { class: "menu-item1" });
+            var header = $("<h2>").text(item.fields.type);
             var current_client_name = localStorage.getItem(
               "current_client_name"
             );
@@ -56,9 +46,9 @@ $("button.dish-filter").on("click", function () {
               "data-name": item.fields.type,
             }).text(`Добавить для "${current_client_name}"`);
 
-            gridItem.append(dishDiv, $("<h2>").append(orderButton));
-            gridContainer.append(gridItem);
-            $(".grid-container").append(gridContainer);
+            h1.append(header, orderButton);
+            MenuGridContainer.append(h1);
+            $(".grid-container").append(MenuGridContainer);
             var jsonDishesData = data;
 
             var check = [];
@@ -67,23 +57,25 @@ $("button.dish-filter").on("click", function () {
                 item.fields.dishes.includes(dish.pk) & !check.includes(dish.pk)
               ) {
                 check.push(dish.pk);
-                var dishElement = document.createElement("div");
+                var dishElement = document.createElement("div", {
+                  class: "menu-item",
+                });
 
                 var innerHtml = `
-                <div class="dishes" data-name="${dish.fields.name}" data-type="${dish.fields.type}" data-tittle="${dish.fields.name}" ...>
+                <div class="menu-item" data-name="${dish.fields.name}" data-type="${dish.fields.type}" data-tittle="${dish.fields.name}" ...>
                 <h1><img src="http://localhost:8000/media/${dish.fields.image}"></h1>
-                  <h1>${dish.fields.name}</h1>  
+                  <h1>${dish.fields.name}</h1>
+                  <h2>Цена: ${dish.fields.price} руб.</h2>
                 </div>
               `;
 
                 dishElement.innerHTML = innerHtml;
 
-                gridContainer.append(dishElement);
+                MenuGridContainer.append(dishElement);
+
+                $(".grid-container").MenuGridContainer;
               }
             });
-
-            gridContainer.append(gridItem);
-            $(".grid-container").append(gridContainer);
           });
         } else {
           jsonData.forEach(function (item, index) {

@@ -222,16 +222,17 @@ input[type="submit"]:active {
 
 .grid-container {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-end;
   padding: 15px 30px;
   flex-wrap: wrap;
+  flex-direction: row-reverse;
 }
 
 .grid-item {
   display: flex;
   flex-direction: column;
   align-items: center; /* Выравнивание по центру по горизонтали */
-  justify-content: center;
+  justify-content: space-evenly;
   border: 1px solid #ccc;
   padding: 10px;
   border-radius: 10px;
@@ -380,4 +381,40 @@ span {
 .highlight-image {
   box-shadow: 0 0 35px #4a644b;
   transition: box-shadow 0.3s ease;
+}
+
+.menu-container {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  grid-auto-rows: minmax(100px, auto);
+  gap: 10px;
+}
+
+.menu-item {
+  padding: 10px;
+  text-align: center;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  color: #4a644b;
+  font-size: 17px;
+
+  width: 250px;
+  height: 230px;
+}
+
+.menu-item1 {
+  grid-column: 2 / span 5; /* Этот элемент занимает 5 колонок */
+  color: #4a644b;
+}
+
+.menu-item1 h2 {
+  display: inline-block;
+}
+
+.menu-item img {
+  width: 92%;
+  height: 92%;
+  margin: 4%;
+  border-radius: 10px;
+  object-fit: cover; /* Масштабируем изображение, чтобы оно полностью заполнило элемент */
 }
