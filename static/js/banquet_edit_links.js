@@ -135,18 +135,26 @@ menuButtons.forEach((button) => {
             var x, y;
             for (let i = 0; i < ws.length; i++) {
               var div = `<div class = "overflow hidden" id="${i}"></div>
-    <div class="modWind hidden" id="${i + 3500}">
-    <div ><img style = "width: 200px"
-    src="http://localhost:8000/media/menu_images/${ws[i].getAttribute(
-      "data-type"
-    )}/${ws[i].getAttribute("data-tittle")}.png"
-    /> </div>
-      <div class="name">${ws[i].getAttribute("data-name")}</div>
-      <div class="grams">${ws[i].getAttribute("data-weight")} гр</div>
-      <div class="price">${ws[i].getAttribute("data-price")} руб</div>
-      <div class="sostav">${ws[i].getAttribute("data-sostav")}</div>
-  </div>
-  `;
+                  <div class="modWind hidden" id="${i + 3500}">
+                  <div ><img style = "width: 200px"
+                  src="http://localhost:8000/media/menu_images/${ws[
+                    i
+                  ].getAttribute("data-type")}/${ws[i].getAttribute(
+                "data-tittle"
+              )}.png"
+                  /> </div>
+                    <div class="name">${ws[i].getAttribute("data-name")}</div>
+                    <div class="grams">${ws[i].getAttribute(
+                      "data-weight"
+                    )} гр</div>
+                    <div class="price">${ws[i].getAttribute(
+                      "data-price"
+                    )} руб</div>
+                    <div class="sostav">${ws[i].getAttribute(
+                      "data-sostav"
+                    )}</div>
+                </div>
+                `;
               document
                 .querySelector(".dishes")
                 .insertAdjacentHTML("beforebegin", div);

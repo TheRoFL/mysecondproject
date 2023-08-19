@@ -210,7 +210,7 @@
     <!-- prettier-ignore -->
     <div class="all_clients">
     {% for client in banquet.clients.all %}
-    <div class="client-header">
+    <div class="client-header" data-id="{{client.id}}">
       <div class="client-info">
         <h1 class="client-info-h1" data-id="{{client.id}}">
           Меню для клиента типа "<span
@@ -351,9 +351,10 @@
           >{{client.menu_and_orders_price_count}}</span
         >.00 руб. {%endif%}
       </h2>
+      <h1>&nbsp</h1>
     </div>
 
-    <h1>&nbsp</h1>
+  
 
     {% endfor %}
     </div>

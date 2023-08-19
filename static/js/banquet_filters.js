@@ -27,7 +27,6 @@ $("button.dish-filter").on("click", function () {
 
         buttonToHighlight.addClass("highlighted");
 
-        var GridContainer = document.querySelector(".grid-container");
         $(".grid-container").empty();
         var jsonData = data;
         if (jsonData["current_menu"]) {
@@ -62,8 +61,26 @@ $("button.dish-filter").on("click", function () {
                 });
 
                 var innerHtml = `
-                <div class="menu-item" data-name="${dish.fields.name}" data-type="${dish.fields.type}" data-tittle="${dish.fields.name}" ...>
-                <h1><img src="http://localhost:8000/media/${dish.fields.image}"></h1>
+                <div class="menu-item" data-name="${
+                  dish.fields.name
+                }" data-type="${dish.fields.type}" data-tittle="${
+                  dish.fields.name
+                }">
+                <h1 class="dishes" data-id="${
+                  dish.pk
+                }" data-name="${dish.fields.name.replace(
+                  /_/g,
+                  " "
+                )}" data-tittle="${dish.fields.name.replace(
+                  / /g,
+                  "_"
+                )}" data-weight="${dish.fields.weight}" data-price="${
+                  dish.fields.price
+                }" data-sostav="${dish.fields.ingredients}" data-type="${
+                  dish.fields.type
+                }"><img class="grid-dish-img" data-id="${
+                  dish.pk
+                }" src="http://localhost:8000/media/${dish.fields.image}"></h1>
                   <h1>${dish.fields.name}</h1>
                   <h2>Цена: ${dish.fields.price} руб.</h2>
                 </div>
@@ -74,10 +91,14 @@ $("button.dish-filter").on("click", function () {
                 MenuGridContainer.append(dishElement);
 
                 $(".grid-container").MenuGridContainer;
+                GridContainer = document.querySelector(`.grid-container`);
+                GridContainer.classList.add("menu-mode");
               }
             });
           });
         } else {
+          GridContainer = document.querySelector(`.grid-container`);
+          GridContainer.classList.remove("menu-mode");
           jsonData.forEach(function (item, index) {
             if (item.model != "Banquet.menusample") {
               var gridItem = $("<div>", { class: "grid-item-2" });
@@ -232,9 +253,16 @@ $("button.dish-filter").on("click", function () {
           ws[i].addEventListener("click", () => {
             const button_id = ws[i].dataset.id;
             const current_dish = document.querySelector(
+              `.dishes[data-id="${button_id}"]`
+            );
+            const current_dish_img = document.querySelector(
               `.grid-dish-img[data-id="${button_id}"]`
             );
             current_dish.classList.add("active");
+            if (current_dish_img) {
+              current_dish_img.classList.add("active");
+            }
+
             x = document.getElementById(i);
             y = document.getElementById(i + 3500);
             x.classList.remove("hidden");
@@ -275,29 +303,31 @@ $("button.dish-filter").on("click", function () {
                 `.grid-dish-img[data-id="${button.dataset.id}"]`
               );
 
-              dishImage.classList.add("appear-shadow");
+              if (dishImage) {
+                dishImage.classList.add("appear-shadow");
 
-              // Убираем класс через секунду
-              setTimeout(function () {
-                dishImage.classList.remove("appear-shadow");
-                dishImage.classList.add("disappear-shadow");
-              }, 900);
-              setTimeout(function () {
-                dishImage.classList.remove("disappear-shadow");
-              }, 1400);
+                // Убираем класс через секунду
+                setTimeout(function () {
+                  dishImage.classList.remove("appear-shadow");
+                  dishImage.classList.add("disappear-shadow");
+                }, 900);
+                setTimeout(function () {
+                  dishImage.classList.remove("disappear-shadow");
+                }, 1400);
 
-              var originalText = button.textContent;
+                var originalText = button.textContent;
 
-              button.disabled = true;
-              var current_client_name = localStorage.getItem(
-                "current_client_name"
-              );
-              button.textContent = `Выбрано для ${current_client_name}`;
+                button.disabled = true;
+                var current_client_name = localStorage.getItem(
+                  "current_client_name"
+                );
+                button.textContent = `Выбрано для ${current_client_name}`;
 
-              setTimeout(function () {
-                button.disabled = false;
-                button.textContent = originalText;
-              }, 1000);
+                setTimeout(function () {
+                  button.disabled = false;
+                  button.textContent = originalText;
+                }, 1000);
+              }
             }
           });
         });

@@ -79,7 +79,7 @@ function updateClientsList(data) {
   });
   var clientInfo = $("<div>", { class: "client-info" });
   var clientInfoH1 = $("<h1>", {
-    class: "client-info",
+    class: "client-info-h1",
     "data-id": client_id,
   });
   clientInfoH1.html(
@@ -958,6 +958,12 @@ showFormButton.addEventListener("click", () => {
   nameInput.classList.add("created");
   nameInput.addEventListener("input", function () {
     const client_id = $(this).data("id");
+    var currentValue = $(this).val();
+    // Проверяем длину введенного текста
+    if (currentValue.length > 15) {
+      // Если длина больше максимальной, обрезаем текст до максимальной длины
+      $(this).val(currentValue.slice(0, 15));
+    }
     const name = $(this).val();
     username_id = localStorage.getItem("username_id");
     socket.send(
@@ -986,7 +992,16 @@ showFormButton.addEventListener("click", () => {
 
   quantityInput.addEventListener("input", function () {
     const client_id = $(this).data("id");
-    const quantity = Math.max(1, $(this).val()); // Ensure the quantity is not less than 1
+    var currentValue = $(this).val();
+
+    // Проверяем длину введенного текста
+    if (currentValue.length > 4) {
+      // Если длина больше максимальной, обрезаем текст до максимальной длины
+      $(this).val(currentValue.slice(0, 4));
+    }
+
+    const quantity = Math.min(2000, Math.max(0, $(this).val())); // Ограничиваем значение до 2000
+    $(this).val(quantity); // Обновляем значение поля ввода
     updateQuantity(client_id, quantity);
   });
 
@@ -1160,12 +1175,27 @@ clientForm.addEventListener("submit", (event) => {
 
 $(".quantity-input").on("input", function () {
   const client_id = $(this).data("id");
-  const quantity = Math.max(1, $(this).val()); // Ensure the quantity is not less than 1
+  var currentValue = $(this).val();
+
+  // Проверяем длину введенного текста
+  if (currentValue.length > 4) {
+    // Если длина больше максимальной, обрезаем текст до максимальной длины
+    $(this).val(currentValue.slice(0, 4));
+  }
+
+  const quantity = Math.min(2000, Math.max(0, $(this).val())); // Ограничиваем значение до 2000
+  $(this).val(quantity); // Обновляем значение поля ввода
   updateQuantity(client_id, quantity);
 });
 
 $(".name-input").on("input", function () {
   const client_id = $(this).data("id");
+  var currentValue = $(this).val();
+  // Проверяем длину введенного текста
+  if (currentValue.length > 15) {
+    // Если длина больше максимальной, обрезаем текст до максимальной длины
+    $(this).val(currentValue.slice(0, 15));
+  }
   const name = $(this).val();
   username_id = localStorage.getItem("username_id");
   socket.send(
