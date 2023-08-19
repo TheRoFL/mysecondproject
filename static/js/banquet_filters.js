@@ -270,15 +270,35 @@ $("button.dish-filter").on("click", function () {
         var animate_orderButtons = document.querySelectorAll(".order-button");
         animate_orderButtons.forEach((button) => {
           button.addEventListener("click", function () {
-            var dishImage = document.querySelector(
-              `.grid-dish-img[data-id="${button.dataset.id}"]`
-            );
-            dishImage.classList.add("highlight-image");
+            if (button.disabled != true) {
+              var dishImage = document.querySelector(
+                `.grid-dish-img[data-id="${button.dataset.id}"]`
+              );
 
-            // Убираем класс через секунду
-            setTimeout(function () {
-              dishImage.classList.remove("highlight-image");
-            }, 300);
+              dishImage.classList.add("appear-shadow");
+
+              // Убираем класс через секунду
+              setTimeout(function () {
+                dishImage.classList.remove("appear-shadow");
+                dishImage.classList.add("disappear-shadow");
+              }, 900);
+              setTimeout(function () {
+                dishImage.classList.remove("disappear-shadow");
+              }, 1400);
+
+              var originalText = button.textContent;
+
+              button.disabled = true;
+              var current_client_name = localStorage.getItem(
+                "current_client_name"
+              );
+              button.textContent = `Выбрано для ${current_client_name}`;
+
+              setTimeout(function () {
+                button.disabled = false;
+                button.textContent = originalText;
+              }, 1000);
+            }
           });
         });
       });

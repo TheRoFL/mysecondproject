@@ -99,14 +99,15 @@ input[type="submit"]:active {
 }
 /*----------------------------------------------------------------*/
 .body {
-  padding: 0 230px;
+  padding: 0 0%;
 }
 
 .vseClients {
   display: flex;
-  max-width: 1200px;
+  max-width: 100%;
   margin: 15px;
   flex-wrap: wrap;
+  margin-left: 6%;
 }
 
 #showFormBtn {
@@ -358,21 +359,6 @@ span {
   text-align: left;
   overflow: auto;
 }
-.grid-dish-img {
-  /* Ваши текущие стили изображения */
-  transition: box-shadow 0.3s ease; /* Добавляем анимацию для свойства box-shadow */
-  transition: transform 0.3s ease;
-}
-
-.grid-dish-img.active {
-  box-shadow: 0 0 45px rgba(74, 100, 75, 2); /* Зеленая тень при наведении */
-  transform: scale(1.1);
-}
-
-.grid-dish-img:hover {
-  box-shadow: 0 0 30px rgba(74, 100, 75, 2); /* Зеленая тень при наведении */
-  cursor: pointer;
-}
 
 .dish-filter:hover {
   transform: scale(1.1);
@@ -386,11 +372,60 @@ span {
   transform: scale(0.9);
 }
 
-.highlight-image {
-  box-shadow: 0 0 35px #4a644b;
-  transition: box-shadow 0.3s ease;
+.grid-dish-img {
+  /* Ваши текущие стили изображения */
+  transition: box-shadow 0.3s ease; /* Добавляем анимацию для свойства box-shadow */
+  transition: transform 0.3s ease;
 }
 
+.grid-dish-img.active {
+  box-shadow: 0 0 45px rgba(74, 100, 75, 2); /* Зеленая тень при наведении */
+  transform: scale(1.125);
+}
+
+.grid-dish-img.disappear-shadow.active {
+  box-shadow: 0 0 45px rgba(74, 100, 75, 2); /* Зеленая тень при наведении */
+  transform: scale(1.125);
+}
+
+.grid-dish-img:hover {
+  transform: scale(1.05);
+  cursor: pointer;
+}
+
+.grid-dish-img {
+  box-shadow: none;
+}
+
+.appear-shadow {
+  animation: appearAnimation 0.5s ease forwards;
+}
+
+.disappear-shadow {
+  animation: disappearAnimation 0.5s ease forwards;
+}
+
+@keyframes appearAnimation {
+  from {
+    box-shadow: none;
+    scale: 1;
+  }
+  to {
+    box-shadow: 0 0 50px rgba(74, 100, 75, 2);
+    scale: 1.1;
+  }
+}
+
+@keyframes disappearAnimation {
+  from {
+    box-shadow: 0 0 50px rgba(74, 100, 75, 2);
+    scale: 1.1;
+  }
+  to {
+    box-shadow: none;
+    scale: 1;
+  }
+}
 .menu-container {
   display: grid;
   grid-template-columns: repeat(5, 1fr);

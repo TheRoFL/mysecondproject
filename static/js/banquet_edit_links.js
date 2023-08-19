@@ -244,6 +244,27 @@ menuButtons.forEach((button) => {
                 }, 300);
               });
             });
+            // Получаем ссылку на кнопку и изображение
+            var animate_orderButtons =
+              document.querySelectorAll(".order-button");
+            animate_orderButtons.forEach((button) => {
+              button.addEventListener("click", function () {
+                var dishImage = document.querySelector(
+                  `.grid-dish-img[data-id="${button.dataset.id}"]`
+                );
+
+                dishImage.classList.add("appear-shadow");
+
+                // Убираем класс через секунду
+                setTimeout(function () {
+                  dishImage.classList.remove("appear-shadow");
+                  dishImage.classList.add("disappear-shadow");
+                }, 900);
+                setTimeout(function () {
+                  dishImage.classList.remove("disappear-shadow");
+                }, 1400);
+              });
+            });
           });
         },
         error: function (xhr, status, error) {

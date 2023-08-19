@@ -106,11 +106,11 @@ function updateClientsList(data) {
 
   // Добавляем элементы на страницу
   clientHeader.append(clientInfo, clientContainer, clientTotalPrice);
+  clientHeader.append("<h1>&nbsp;</h1>");
   var allClientsDiv = $(".all_clients");
   allClientsDiv.append(clientHeader);
 
   // Добавляем элемент <h1>&nbsp;</h1> как указано в вашем коде
-  allClientsDiv.append("<h1>&nbsp;</h1>");
 
   const scrollTop =
     window.pageYOffset ||
