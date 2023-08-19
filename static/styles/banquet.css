@@ -428,8 +428,8 @@ span {
 }
 .menu-container {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  grid-auto-rows: minmax(100px, auto);
+  grid-template-columns: repeat(4, 1fr);
+  grid-auto-rows: minmax(50px, auto);
   gap: 10px;
 }
 
@@ -446,7 +446,10 @@ span {
 }
 
 .menu-item1 {
-  grid-column: 2 / span 5; /* Этот элемент занимает 5 колонок */
+  display: grid;
+  justify-content: center;
+  gap: 10px;
+  grid-column: 1 / span 4; /* Этот элемент занимает 5 колонок */
   color: #4a644b;
 }
 
