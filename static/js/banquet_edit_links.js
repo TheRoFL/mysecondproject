@@ -134,8 +134,10 @@ menuButtons.forEach((button) => {
             const ws = document.querySelectorAll(".dishes");
             var x, y;
             for (let i = 0; i < ws.length; i++) {
-              var div = `<div class = "overflow hidden" id="${i}"></div>
-                  <div class="modWind hidden" id="${i + 3500}">
+              var div = `<div class = "overflow hidden" id="${
+                "overflow" + i
+              }"></div>
+                  <div class="modWind hidden" id="${"modWind" + i}">
                   <div ><img style = "width: 200px"
                   src="http://localhost:8000/media/menu_images/${ws[
                     i
@@ -165,26 +167,24 @@ menuButtons.forEach((button) => {
                   `.grid-dish-img[data-id="${button_id}"]`
                 );
                 current_dish.classList.add("active");
-                x = document.getElementById(i);
-                y = document.getElementById(i + 3500);
+                x = document.getElementById("overflow" + i);
+                y = document.getElementById("modWind" + i);
                 x.classList.remove("hidden");
                 y.classList.remove("hidden");
               });
 
-              const exit = document.querySelectorAll(".overflow");
+              const exit = document.getElementById("overflow" + i);
 
-              exit.forEach((element) => {
-                element.addEventListener("click", () => {
-                  const current_dishes =
-                    document.querySelectorAll(`.grid-dish-img`);
-                  current_dishes.forEach((button) => {
-                    button.classList.remove("active");
-                  });
-                  x = document.getElementById(i);
-                  y = document.getElementById(i + 3500);
-                  x.classList.add("hidden");
-                  y.classList.add("hidden");
+              exit.addEventListener("click", () => {
+                const current_dishes =
+                  document.querySelectorAll(`.grid-dish-img`);
+                current_dishes.forEach((button) => {
+                  button.classList.remove("active");
                 });
+                x = document.getElementById("overflow" + i);
+                y = document.getElementById("modWind" + i);
+                x.classList.add("hidden");
+                y.classList.add("hidden");
               });
             }
 
@@ -280,7 +280,7 @@ menuButtons.forEach((button) => {
                   var current_client_name = localStorage.getItem(
                     "current_client_name"
                   );
-                  button.textContent = `Выбрано для ${current_client_name}`;
+                  button.textContent = `Выбрано для "${current_client_name}"`;
 
                   setTimeout(function () {
                     button.disabled = false;
@@ -362,6 +362,8 @@ document.addEventListener("keydown", (e) => {
 });
 
 y1.addEventListener("click", () => {
+  var gridContainer = document.querySelector(".grid-container");
+  gridContainer.classList.remove("menu-mode");
   x1.classList.add("hidden2");
   y1.classList.add("hidden2");
 });

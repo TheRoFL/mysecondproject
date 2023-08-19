@@ -67,7 +67,7 @@ $("button.dish-filter").on("click", function () {
                   dish.fields.name
                 }">
                 <h1 class="dishes" data-id="${
-                  dish.pk
+                  dish.pk + "/" + index
                 }" data-name="${dish.fields.name.replace(
                   /_/g,
                   " "
@@ -79,7 +79,7 @@ $("button.dish-filter").on("click", function () {
                 }" data-sostav="${dish.fields.ingredients}" data-type="${
                   dish.fields.type
                 }"><img class="grid-dish-img" data-id="${
-                  dish.pk
+                  dish.pk + "/" + index
                 }" src="http://localhost:8000/media/${dish.fields.image}"></h1>
                   <h1>${dish.fields.name}</h1>
                   <h2>Цена: ${dish.fields.price} руб.</h2>
@@ -228,24 +228,21 @@ $("button.dish-filter").on("click", function () {
         const ws = document.querySelectorAll(".dishes");
         var x, y;
         for (let i = 0; i < ws.length; i++) {
-          var div = `<div class = "overflow hidden" id="${i}"></div>
-                <div class="modWind hidden" id="${i + 3500}">
-                <div ><img style = "width: 200px"
-                src="http://localhost:8000/media/menu_images/${ws[
-                  i
-                ].getAttribute("data-type")}/${ws[i].getAttribute(
-            "data-tittle"
-          )}.png"
-                /> </div>
-                  <div class="name">${ws[i].getAttribute("data-name")}</div>
-                  <div class="grams">${ws[i].getAttribute(
-                    "data-weight"
-                  )} гр</div>
-                  <div class="price">${ws[i].getAttribute(
-                    "data-price"
-                  )} руб</div>
-                  <div class="sostav">${ws[i].getAttribute("data-sostav")}</div>
-              </div>`;
+          var div = `<div class = "overflow hidden" id="${
+            "overflow" + i
+          }"></div>
+              <div class="modWind hidden" id="${"modWind" + i}">
+              <div ><img style = "width: 200px"
+              src="http://localhost:8000/media/menu_images/${ws[i].getAttribute(
+                "data-type"
+              )}/${ws[i].getAttribute("data-tittle")}.png"
+              /> </div>
+                <div class="name">${ws[i].getAttribute("data-name")}</div>
+                <div class="grams">${ws[i].getAttribute("data-weight")} гр</div>
+                <div class="price">${ws[i].getAttribute("data-price")} руб</div>
+                <div class="sostav">${ws[i].getAttribute("data-sostav")}</div>
+            </div>
+            `;
           document
             .querySelector(".dishes")
             .insertAdjacentHTML("beforebegin", div);
@@ -253,37 +250,26 @@ $("button.dish-filter").on("click", function () {
           ws[i].addEventListener("click", () => {
             const button_id = ws[i].dataset.id;
             const current_dish = document.querySelector(
-              `.dishes[data-id="${button_id}"]`
-            );
-            const current_dish_img = document.querySelector(
               `.grid-dish-img[data-id="${button_id}"]`
             );
             current_dish.classList.add("active");
-            if (current_dish_img) {
-              current_dish_img.classList.add("active");
-            }
-
-            x = document.getElementById(i);
-            y = document.getElementById(i + 3500);
+            x = document.getElementById("overflow" + i);
+            y = document.getElementById("modWind" + i);
             x.classList.remove("hidden");
             y.classList.remove("hidden");
           });
 
-          const exit = document.querySelectorAll(".overflow");
+          const exit = document.getElementById("overflow" + i);
 
-          exit.forEach((element) => {
-            element.addEventListener("click", () => {
-              const current_dishes =
-                document.querySelectorAll(`.grid-dish-img`);
-              current_dishes.forEach((button) => {
-                button.classList.remove("active");
-              });
-
-              x = document.getElementById(i);
-              y = document.getElementById(i + 3500);
-              x.classList.add("hidden");
-              y.classList.add("hidden");
+          exit.addEventListener("click", () => {
+            const current_dishes = document.querySelectorAll(`.grid-dish-img`);
+            current_dishes.forEach((button) => {
+              button.classList.remove("active");
             });
+            x = document.getElementById("overflow" + i);
+            y = document.getElementById("modWind" + i);
+            x.classList.add("hidden");
+            y.classList.add("hidden");
           });
         }
 
@@ -314,20 +300,18 @@ $("button.dish-filter").on("click", function () {
                 setTimeout(function () {
                   dishImage.classList.remove("disappear-shadow");
                 }, 1400);
-
-                var originalText = button.textContent;
-
-                button.disabled = true;
-                var current_client_name = localStorage.getItem(
-                  "current_client_name"
-                );
-                button.textContent = `Выбрано для ${current_client_name}`;
-
-                setTimeout(function () {
-                  button.disabled = false;
-                  button.textContent = originalText;
-                }, 1000);
               }
+              var originalText = button.textContent;
+
+              button.disabled = true;
+              var current_client_name = localStorage.getItem(
+                "current_client_name"
+              );
+              button.textContent = `Выбрано для "${current_client_name}"`;
+              setTimeout(function () {
+                button.disabled = false;
+                button.textContent = originalText;
+              }, 1000);
             }
           });
         });

@@ -363,8 +363,10 @@ socket.onmessage = function (e) {
               const ws = document.querySelectorAll(".dishes");
               var x, y;
               for (let i = 0; i < ws.length; i++) {
-                var div = `<div class = "overflow hidden" id="${i}"></div>
-    <div class="modWind hidden" id="${i + 3500}">
+                var div = `<div class = "overflow hidden" id="${
+                  "overflow" + i
+                }"></div>
+    <div class="modWind hidden" id="${"modWind" + i}">
     <div ><img style = "width: 200px"
     src="http://localhost:8000/media/menu_images/${ws[i].getAttribute(
       "data-type"
@@ -386,26 +388,24 @@ socket.onmessage = function (e) {
                     `.grid-dish-img[data-id="${button_id}"]`
                   );
                   current_dish.classList.add("active");
-                  x = document.getElementById(i);
-                  y = document.getElementById(i + 3500);
+                  x = document.getElementById("overflow" + i);
+                  y = document.getElementById("modWind" + i);
                   x.classList.remove("hidden");
                   y.classList.remove("hidden");
                 });
 
-                const exit = document.querySelectorAll(".overflow");
+                const exit = document.getElementById("overflow" + i);
 
-                exit.forEach((element) => {
-                  element.addEventListener("click", () => {
-                    const current_dishes =
-                      document.querySelectorAll(`.grid-dish-img`);
-                    current_dishes.forEach((button) => {
-                      button.classList.remove("active");
-                    });
-                    x = document.getElementById(i);
-                    y = document.getElementById(i + 3500);
-                    x.classList.add("hidden");
-                    y.classList.add("hidden");
+                exit.addEventListener("click", () => {
+                  const current_dishes =
+                    document.querySelectorAll(`.grid-dish-img`);
+                  current_dishes.forEach((button) => {
+                    button.classList.remove("active");
                   });
+                  x = document.getElementById("overflow" + i);
+                  y = document.getElementById("modWind" + i);
+                  x.classList.add("hidden");
+                  y.classList.add("hidden");
                 });
               }
 
@@ -994,13 +994,16 @@ showFormButton.addEventListener("click", () => {
     const client_id = $(this).data("id");
     var currentValue = $(this).val();
 
+    // Удаление всех символов, кроме цифр
+    currentValue = currentValue.replace(/\D/g, "");
+
     // Проверяем длину введенного текста
     if (currentValue.length > 4) {
       // Если длина больше максимальной, обрезаем текст до максимальной длины
-      $(this).val(currentValue.slice(0, 4));
+      currentValue = currentValue.slice(0, 4);
     }
 
-    const quantity = Math.min(2000, Math.max(0, $(this).val())); // Ограничиваем значение до 2000
+    const quantity = Math.min(2000, Math.max(0, currentValue)); // Ограничиваем значение до 2000
     $(this).val(quantity); // Обновляем значение поля ввода
     updateQuantity(client_id, quantity);
   });
@@ -1177,13 +1180,16 @@ $(".quantity-input").on("input", function () {
   const client_id = $(this).data("id");
   var currentValue = $(this).val();
 
+  // Удаление всех символов, кроме цифр
+  currentValue = currentValue.replace(/\D/g, "");
+
   // Проверяем длину введенного текста
   if (currentValue.length > 4) {
     // Если длина больше максимальной, обрезаем текст до максимальной длины
-    $(this).val(currentValue.slice(0, 4));
+    currentValue = currentValue.slice(0, 4);
   }
 
-  const quantity = Math.min(2000, Math.max(0, $(this).val())); // Ограничиваем значение до 2000
+  const quantity = Math.min(2000, Math.max(0, currentValue)); // Ограничиваем значение до 2000
   $(this).val(quantity); // Обновляем значение поля ввода
   updateQuantity(client_id, quantity);
 });

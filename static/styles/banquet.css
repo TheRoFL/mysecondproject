@@ -203,6 +203,8 @@ input[type="submit"]:active {
   overflow: auto;
   scrollbar-width: none;
   -ms-overflow-style: none;
+
+  animation: fadeIn 0.25s ease-in-out forwards; /* Применяем анимацию при появлении */
 }
 
 .menuu::-webkit-scrollbar {
@@ -360,10 +362,6 @@ input[type="submit"]:active {
   border-radius: 10px;
 }
 
-span {
-  font-style: italic;
-}
-
 .order-button {
   background-color: #4a644b;
   color: white;
@@ -387,6 +385,33 @@ span {
 .modWind {
   text-align: left;
   overflow: auto;
+  opacity: 0;
+  animation: fadeIn 0.25s ease-in-out forwards; /* Применяем анимацию при появлении */
+}
+
+.overflow {
+  opacity: 0;
+  animation: fadeIn 0.25s ease-in-out forwards; /* Применяем анимацию при появлении */
+}
+
+.overflow2 {
+  opacity: 0;
+  animation: fadeIn 0.25s ease-in-out forwards; /* Применяем анимацию при появлении */
+}
+
+.hidden {
+  display: none;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    scale: 1;
+  }
+  to {
+    opacity: 1;
+    scale: 1;
+  }
 }
 
 .dish-filter:hover {
@@ -503,4 +528,8 @@ span {
 .my_client:hover,
 .formaClienta:hover {
   transform: scale(1.075);
+}
+
+.banquet-total-price {
+  font-style: italic;
 }
