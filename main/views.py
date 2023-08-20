@@ -1,21 +1,24 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
-from django.db.models import Q
-from django.contrib import messages
-from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
-from django.http import HttpResponseRedirect
-from .forms import LoginForm, UserRegistrationForm
+from .forms import LoginForm
 from django.shortcuts import render
 from django.http import JsonResponse
-from .forms import UserRegistrationForm, UserRegistrationFormNew
-from django.urls import reverse
-import json
 
 def home(request):
-    return render(request, 'main/home.html')
+    if "application/json" in request.META.get("HTTP_ACCEPT", ""):
+        print(request.GET)
+        email_to_check = request.GET.get("email")
+        email_to_check = User.objects.filter(email=email_to_check)
+
+        if email_to_check:
+            response = {"response": "email_exists"}
+        else: response = None
+        return JsonResponse(response, safe=False)
+    else:
+        return render(request, 'main/home.html')
+    
 
 def login_user(request):
     if request.method == 'POST':
@@ -28,7 +31,12 @@ def login_user(request):
         if user is not None:
             if user.is_active:
                 login(request, user)
-                return redirect("/")
+                request = str(request)
+                redirect_to = request[33:len(request) - 3]
+                if (redirect_to):
+                    return redirect(redirect_to)
+                else:
+                    return redirect("/profile")
             else:
                 return HttpResponse('Disabled account')
         else:

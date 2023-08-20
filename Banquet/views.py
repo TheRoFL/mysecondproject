@@ -9,7 +9,7 @@ import json
 from Menu.models import *
 from .models import *
 
-
+@login_required(login_url='/login/')
 def home(request, dish_type=None, clientId=None):
     clientId = request.GET.get('editting-clientId')
     if clientId == "null":
