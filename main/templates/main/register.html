@@ -2,11 +2,6 @@
 <html>
   <head>
     <title>Регистрационная форма</title>
-    <style>
-      .error {
-        color: red;
-      }
-    </style>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://www.google.com/recaptcha/api.js"></script>
     <script>
@@ -16,46 +11,41 @@
     </script>
   </head>
   <body>
-    <h1>Создание аккаунта</h1>
-    <p>Пожалуйста, заполните форму:</p>
+    <div class="registration_form">
+      <form id="registration-form" action="#" method="post">
+        {% csrf_token %}
+        <p>
+          <label for="email">Email:</label>
+          <input type="email" id="login" name="login" required />
+          <span id="login-error" class="error"></span><br />
+        </p>
 
-    <form id="registration-form" action="#" method="post">
-      {% csrf_token %}
-      <label for="email">Email:</label>
-      <input type="email" id="login" name="login" required />
-      <span id="login-error" class="error"></span><br />
+        <p>
+          <label for="password">Пароль:</label>
+          <input
+            type="password"
+            id="password"
+            name="password"
+            required
+            minlength="6"
+          />
+        </p>
 
-      <label for="password">Пароль:</label>
-      <input
-        type="password"
-        id="password"
-        name="password"
-        required
-        minlength="6"
-      /><br />
+        <p>
+          <label for="confirm-password">Подтвердите пароль:</label>
+          <input
+            type="password"
+            id="confirm-password"
+            name="confirm-password"
+            required
+            minlength="6"
+          />
+          <span id="password-error" class="error"></span><br />
+        </p>
 
-      <label for="confirm-password">Подтвердите пароль:</label>
-      <input
-        type="password"
-        id="confirm-password"
-        name="confirm-password"
-        required
-        minlength="6"
-      /><br />
-      <span id="password-error" class="error"></span><br />
-      {% comment %}
-      <button
-        class="g-recaptcha"
-        data-sitekey="6LfA2LInAAAAAGZLK17Fs-dWEAkLnTcl9uNhKnG3"
-        data-callback="onSubmit"
-        data-action="submit"
-      >
-        Submit
-      </button>
-      {% endcomment %}
-
-      <input type="submit" value="Зарегистрироваться" />
-    </form>
+        <input class="login_button" type="submit" value="Зарегистрироваться" />
+      </form>
+    </div>
 
     <script>
       const passwordInput = document.getElementById("password");
@@ -64,7 +54,7 @@
 
       confirmPasswordInput.addEventListener("input", () => {
         if (passwordInput.value !== confirmPasswordInput.value) {
-          passwordError.textContent = "Пароли не совпадают";
+          passwordError.textContent = "!";
         } else {
           passwordError.textContent = "";
         }
@@ -106,7 +96,7 @@
           success: function (response) {
             console.log(response);
             if (response["response"] == "login_unvailable") {
-              loginError.textContent = "Такой логин уже занят";
+              loginError.textContent = "!";
             } else {
               loginError.textContent = "";
             }

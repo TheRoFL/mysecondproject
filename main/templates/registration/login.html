@@ -1,12 +1,20 @@
 {% extends "index.html" %} {% block content %}
-<div>
+<div class="login_overflow"></div>
+<div class="login_window">
   <form method="POST" action="">
-    {% csrf_token %} {{form.as_p}}
-    <input type="submit" value="Войти" />
-    <div style="display: block; margin-top: 10px">
-      <a href="/register">Зарегистрироваться</a>
-      <a href="/reset-password">Забыли пароль?</a>
-    </div>
+    {% csrf_token %}
+    <p class="login_pole">
+      <label for="id_username">Login: </label>
+      <input type="text" name="username" required="" id="id_username" />
+    </p>
+
+    <p class="login_pole">
+      <label for="id_password">Password:</label>
+      <input type="password" name="password" required="" id="id_password" />
+      <a class="forgot_pass" href="/reset-password">Забыли пароль?</a>
+    </p>
+
+    <input class="login_button" type="submit" value="Войти" />
   </form>
 </div>
 {% endblock content %}

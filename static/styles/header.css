@@ -24,15 +24,25 @@
   color: #fefefe;
 }
 
-.aboutYou {
-}
-.aboutYou_korzina {
-  height: 70px;
-  margin-right: 30px;
-  margin-top: 20px;
-}
 .aboutYou_profile {
   height: 70px;
   margin-top: 20px;
   margin-right: 20px;
+}
+
+.vhod {
+  margin: 15px;
+  font-size: 20px;
+  background-color: #fff;
+  color: #4a644b;
+  width: 130px;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  border: 2px solid #4a644b;
+  border-radius: 20px;
+}
+
+.vhod a:hover {
+  text-decoration: underline;
 }

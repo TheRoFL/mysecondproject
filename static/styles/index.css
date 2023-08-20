@@ -31,3 +31,136 @@ body {
 .hidden {
   display: none;
 }
+
+.login_window {
+  background-color: #fff;
+  display: inline-flex;
+  justify-content: center;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  z-index: 10;
+  width: 350px;
+  height: 220px;
+  margin: -110px 0 0 -200px;
+  border-radius: 30px;
+  border: 2px solid #4a644b;
+  padding: 15px;
+  text-align: left;
+  color: #4a644b;
+  font-size: 14px;
+}
+
+.login_pole {
+  margin: 5px;
+}
+
+p label {
+  display: block;
+}
+p input {
+  width: 250px;
+  height: 30px;
+  font-size: 14px;
+  margin: 5px 0;
+  background-color: #fff;
+  border-radius: 5px;
+  border: 1px solid #4a644b;
+  padding-left: 2px;
+}
+
+p input:-internal-autofill-selected {
+  background-color: #fff;
+}
+
+p input:last-child {
+  margin-bottom: 0;
+}
+
+.forgot_pass {
+  display: block;
+  margin-bottom: 15px;
+  font-size: 10px;
+}
+
+.forgot_pass:hover {
+  text-decoration: underline;
+}
+
+.login_button {
+  margin-top: 10px;
+  height: 30px;
+  width: 250px;
+  border-radius: 30px;
+  border: 1px solid #4a644b;
+  color: #4a644b;
+}
+
+.login_button:hover {
+  background-color: #4a644b;
+  color: #fff;
+}
+
+.registration_form {
+  background-color: #fff;
+  display: inline-flex;
+  justify-content: center;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  z-index: 10;
+  width: 350px;
+  height: 230px;
+  margin: -115px 0 0 -200px;
+  border-radius: 30px;
+  border: 2px solid #4a644b;
+  padding: 15px;
+  text-align: left;
+  color: #4a644b;
+  font-size: 14px;
+}
+
+.error {
+  color: red;
+  position: absolute;
+  font-size: 30px;
+  margin: 4px 3px;
+}
+
+.password_reset {
+  background-color: #fff;
+  display: inline-flex;
+  justify-content: center;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  z-index: 10;
+  width: 350px;
+  height: 230px;
+  margin: -115px 0 0 -200px;
+  border-radius: 30px;
+  border: 2px solid #4a644b;
+  padding: 15px;
+  text-align: left;
+  color: #4a644b;
+  font-size: 14px;
+}
+
+/* .profile_creation-form {
+  background-color: #fff;
+  display: inline-flex;
+  justify-content: center;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  z-index: 10;
+  width: 350px;
+  height: 230px;
+  margin: -115px 0 0 -200px;
+  border-radius: 30px;
+  border: 2px solid #4a644b;
+  padding: 15px;
+  text-align: left;
+  color: #4a644b;
+  font-size: 14px;
+} */
