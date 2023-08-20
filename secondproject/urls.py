@@ -12,8 +12,7 @@ urlpatterns = [
     path('profile/', include('Profile.urls')),
     path('cart/', include('Cart.urls')),
     path('banquet/', include('Banquet.urls')),
-    path('email/', include(email_urls), name='email-verification'),
-    
+    path('accounts/', include('django.contrib.auth.urls')),
 ]
 
 if settings.DEBUG:

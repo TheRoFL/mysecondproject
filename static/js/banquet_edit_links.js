@@ -99,7 +99,6 @@ menuButtons.forEach((button) => {
                 var gridItem = $("<div>");
                 var gridContainer = $("<div>", { class: "grid-item2" });
                 var dishDiv = $("<div>", {
-                  // class: "dishes",
                   "data-name": item.fields.name,
                   "data-tittle": item.fields.name,
                   "data-weight": item.fields.weight,

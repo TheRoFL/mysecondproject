@@ -4,6 +4,7 @@ from django.db.models import Q
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.core.serializers import serialize
+from django.core.mail import send_mail
 import json
 from Menu.models import *
 from .models import *
@@ -172,5 +173,11 @@ def ordering(request):
         }
     
 
+    subject = 'Тестовое письмо'
+    message = 'Это тестовое письмо.'
+    from_email = 'theroflx@yandex.ru'
+    recipient_list = ['gabellaoff@yandex.ru']
+
+    # send_mail(subject, message, from_email, recipient_list)
     return render(request, 'Banquet/ordering.html', contex)       
     

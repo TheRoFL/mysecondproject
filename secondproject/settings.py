@@ -1,9 +1,10 @@
 from pathlib import Path
 import os
 
-LOGIN_REDIRECT_URL = '/profile/'
+LOGIN_URL = 'login'  # Имя URL для страницы входа
+LOGIN_REDIRECT_URL = '/'  # Имя URL для перенаправления после успешного входа
+
 LOGOUT_REDIRECT_URL = '/'
-LOGIN_URL = 'login'
 LOGOUT_URL = 'logout'
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 LANGUAGE_CODE = 'ru-RU'
@@ -29,14 +30,16 @@ EMAIL_PAGE_DOMAIN = 'http://127.0.0.1:8000/' # Host
 # EMAIL_MULTI_USER = True  # optional (defaults to False)
 
 # For Django Email Backend
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = 587
-EMAIL_HOST_USER = 'example1000@gmail.com'
-EMAIL_HOST_PASSWORD = 'yourGmailAppPassword'
-EMAIL_USE_TLS = True
-DEFAULT_FROM_EMAIL = 'example1000@gmail.com'
-SERVER_EMAIL = 'example1000@gmail.com'
+# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+EMAIL_HOST = 'smtp.yandex.ru'
+EMAIL_PORT = 465
+EMAIL_HOST_USER = 'theroflx@yandex.ru'
+EMAIL_HOST_PASSWORD = 'whespimmmanwnoxh'
+EMAIL_USE_TLS = False
+EMAIL_USE_SSL = True
+DEFAULT_FROM_EMAIL = 'theroflx@yandex.ru'
+SERVER_EMAIL = 'theroflx@yandex.ru'
 
 
 

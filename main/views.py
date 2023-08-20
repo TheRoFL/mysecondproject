@@ -12,7 +12,6 @@ from django.shortcuts import render
 from django.http import JsonResponse
 from .forms import UserRegistrationForm, UserRegistrationFormNew
 from django.urls import reverse
-from django_email_verification import send_email
 import json
 
 def home(request):
@@ -38,31 +37,9 @@ def login_user(request):
         form = LoginForm()
     return render(request, 'registration/login.html', {'form': form})
 
-def home(request):
-    return render(request, 'main/home.html')
-
 def LogoutUser(request):
     logout(request)
     return redirect('homepage')
-
-    if request.method == 'POST':
-       form = UserCreationForm(request.POST)
-       if form.is_valid():
-            user = form.save(commit=False)
-            user.username = user.username.lower()
-            username = user.username
-            if User.objects.filter(username=username).exists():
-                messages.error(request, 'Login already exists')
-            else:
-                user.save()
-                login(request, user)
-                return redirect('homepage')     
-
-    else:
-        form = UserCreationForm()
-
-    contex = {'form' : form}
-    return render(request, 'main/login_register.html', contex)
 
 def register(request):
     if "application/json" in request.META.get("HTTP_ACCEPT", ""):
@@ -87,30 +64,3 @@ def register(request):
             
     else:
         return render(request,'main/register.html')
-
-
-
-# def register_user(request):
-#     form = UserRegistrationFormNew()
-
-#     if request.method == 'POST':
-#         form = UserRegistrationFormNew(request.POST)
-
-#         if form.is_valid():
-#             form.save(commit=False)
-#             user_email = form.cleaned_data['email']
-#             user_username = form.cleaned_data['username']
-#             user_password = form.cleaned_data['password1']
-
-#             # Create new user
-#             user = User.objects.create_user(username=user_username, email=user_email, password=user_password)
-
-#             # Make user unactive until they click link to token in email
-#             user.is_active = False 
-#             send_email(user)
-#             print("Mail is sent")
-
-#             return HttpResponseRedirect(reverse('login'))
-
-#     return render(request, 'registration/register.html', {'form':form})
-

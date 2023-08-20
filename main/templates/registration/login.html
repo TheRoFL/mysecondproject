@@ -1,15 +1,12 @@
-{% extends "index.html" %}
-{% block content %}
+{% extends "index.html" %} {% block content %}
 <div>
-    <form method="POST" action="">
-      {% csrf_token %}
-    
-      {{form.as_p}}
-      <input type="submit" value="Войти" />
-      <div style="display: block; margin-top: 10px">
-        <label>Have not an account yet?</label>
-        <a href="{% url "register" %}">Sign up</a>
-      </div>
-    </form>
-  </div>
-  {% endblock content %}
+  <form method="POST" action="">
+    {% csrf_token %} {{form.as_p}}
+    <input type="submit" value="Войти" />
+    <div style="display: block; margin-top: 10px">
+      <a href="/register">Зарегистрироваться</a>
+      <a href="/reset-password">Забыли пароль?</a>
+    </div>
+  </form>
+</div>
+{% endblock content %}
