@@ -1,5 +1,7 @@
 {% extends 'index.html' %}
-
+<head>
+  <link rel="stylesheet" href="/static/css/calendar.css" />
+</head>
 <!-- prettier-ignore -->
 {% block content %} {% load static %}
 <h1>Заказ банкета</h1>
@@ -8,10 +10,17 @@
   <!-- prettier-ignore -->
   {% for client in current_banquet.clients.all %}
   <h3 style="margin-left: 25px">{{client}}</h3>
+  {% if client.menu %}
+  <h4 style="margin-left: 55px">{{client.menu}}</h4>
+  {% for menu in client.menu.dishes.all %}
+  <h4 style="margin-left: 70px">{{menu}}</h4>
+  {% endfor %}{% endif %}
+  <!-- prettier-ignore -->
+  {% if client.dishes.all %}
+  <h5 style="margin-left: 40px">Дополнительно:</h5>
   {% for dishorder in client.dishes.all %}
-  <h5 style="margin-left: 50px">{{dishorder}}</h5>
-
-  {% endfor %} {% endfor %}
+  <h5 style="margin-left: 75px">{{dishorder}}</h5>
+  {% endfor %} {% endif %} {% endfor %}
 </h2>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -66,17 +75,13 @@
     border-color: #2c4733;
   }
 </style>
-<style>
-  /* Стиль для недоступных дат */
-  input[type="date"]:invalid {
-    border-color: red;
-  }
-</style>
 <div id="divToRemove">
   {% if current_banquet %}
   <h1>
     Мероприятие {{current_banquet}} стоимостью
-    {{current_banquet.total_price}}.00 руб.
+    {{current_banquet.total_price}}.00 руб. + {{current_banquet.workers}}
+    официантов x 400.00 руб. x <span id="hours_quantity">3</span> ч. =
+    <span id="total">{{total}}</span>.00 руб.
   </h1>
 
   {% for dish_order in dish_orders %}
@@ -85,14 +90,67 @@
   <form id="orderForm" method="POST" action="">
     {% csrf_token %}
     <!-- Delivery Address -->
-    <input type="hidden" name="banquet_id" value="{{current_banquet.id}}" />
-    <label for="delivery_address">Адрес проведения мероприятия:</label>
-    <input type="text" id="delivery_address" name="delivery_address" />
+    <input
+      type="hidden"
+      name="banquet_id"
+      value="{{current_banquet.id}}"
+      required
+    />
+    <label for="delivery_time">Время продолжительности мероприятия:</label>
+    <input
+      type="text"
+      id="duration_time"
+      name="duration_time"
+      value="3"
+      required
+    />
+    часов
+
+    <script>
+      const duration_time = document.getElementById("duration_time");
+      duration_time.addEventListener("input", function () {
+        var hours = $(this).val();
+
+        // Удаление всех символов, кроме цифр
+        hours = hours.replace(/\D/g, "");
+
+        const quantity = Math.min(24, Math.max(0, hours)); // Ограничиваем значение до 2000
+        $(this).val(quantity); // Обновляем значение поля ввода
+        const hours_quantity = document.getElementById("hours_quantity");
+        hours_quantity.textContent = quantity;
+        requestParams = {
+          hours: quantity,
+        };
+        $.ajax({
+          url: "http://127.0.0.1:8000/banquet/ordering/",
+          method: "GET",
+          data: requestParams,
+          dataType: "json",
+          success: function (data) {
+            data = JSON.parse(data);
+            console.log(data);
+
+            const total = document.getElementById("total");
+            total.textContent = data["total"];
+          },
+          error: function (xhr, status, error) {
+            console.error(error);
+          },
+        });
+      });
+    </script>
+
+    <br />
+    <label for="delivery_addres">Адрес проведения мероприятия:</label>
+    <input type="text" id="delivery_addres" name="delivery_addres" required />
     <br />
 
     <!-- Delivery Time -->
     <label for="delivery_time">Время начала мероприятия:</label>
-    <input type="time" id="delivery_time" name="delivery_time" />
+    <input type="number" id="start_hours" name="start_hours" required />
+    ч.
+    <input type="number" id="start_minutes" name="start_minutes" required />
+    мин.
     <br />
 
     <h1>Уже занятые даты: {{occupied_dates}}</h1>
@@ -106,8 +164,16 @@
       console.log(uniqueArray); // Вывод в консоль нового массива с уникальными элементами
     </script>
 
+    {% comment %}
+    <div class="calendar-wrapper">
+      <button id="btnPrev" type="button">Предыдущий</button>
+      <button id="btnNext" type="button">Следующий</button>
+      <div id="divCal"></div>
+    </div>
+    {% endcomment %}
+
     <label for="delivery_date">Дата начала:</label>
-    <input type="date" id="delivery_date" name="delivery_date" />
+    <input type="date" id="delivery_date" name="delivery_date" required />
     <script>
       const today = new Date(); // Текущая дата
       const disabledDays = 2; // Количество дней для блокировки
@@ -144,10 +210,6 @@
       });
     </script>
     <br />
-    <label for="delivery_time">Время продолжительности мероприятия:</label>
-    <input type="time" id="duration_time" name="duration_time" value="03:00" />
-
-    <br />
 
     <!-- Order Comments -->
     <label for="order_comments">Комментарий к заказу:</label>
@@ -161,7 +223,7 @@
 
     <!-- Submit Button -->
     <input type="submit" value="Оформить заказ" class="submit-btn" />
-    <input value="Отменить" class="cancel-btn" />
+    <button class="submit-btn"><a href="/banquet">Отменить</a></button>
   </form>
 
   {% else %}
@@ -222,31 +284,6 @@
     });
   });
 </script>
-
-<script>
-  var json_data;
-  var data;
-  $("#requestButton").on("click", function () {
-    $.ajax({
-      url: "http://127.0.0.1:8000/banquet/ordering/",
-      method: "GET",
-      dataType: "json",
-      success: function (data) {
-        // Обработка успешного ответа
-        $("#result").text(JSON.stringify(data));
-        data_1 = JSON.parse(data);
-
-        // Извлечение значений
-        if (data_1.length > 0) {
-          var banquetInfo = data_1;
-          console.log(banquetInfo);
-        }
-      },
-      error: function (xhr, status, error) {
-        console.error(error);
-      },
-    });
-  });
-</script>
-
-{% endblock content %}
+{% comment %}
+<script src="/static/js/banquet_calendar.js"></script>
+{% endcomment %} {% endblock content %}

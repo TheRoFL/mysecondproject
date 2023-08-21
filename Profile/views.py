@@ -6,6 +6,7 @@ import json
 from .models import ProfileData
 from .forms import ProfileForm
 from Cart.models import *
+from Banquet.models import *
 
 @login_required(login_url='/login/')
 def home(request):
@@ -57,7 +58,7 @@ def profile_creation(request):
 @login_required(login_url='/login/')
 def orders(request):
     currentprofile = ProfileData.objects.get(user=request.user)
-    all_orders = Order.objects.filter(owner=currentprofile, is_ordered=True)
+    all_orders = Banquet.objects.filter(owner=currentprofile, is_ordered=True)
     context = {
             'all_orders': all_orders,
         }

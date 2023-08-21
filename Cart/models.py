@@ -13,9 +13,9 @@ class DishOrder(models.Model):
 
     def __str__(self):
         if self.quantity == 1:
-            return f"{self.product.name} в количестве {self.quantity} единицы"
+            return f"{self.product.name} в количестве {self.quantity} шт."
         else:
-            return f"{self.product.name} в количестве {self.quantity} единиц"
+            return f"{self.product.name} в количестве {self.quantity} шт."
                 
     async def save_async(self):
         await self.asave()

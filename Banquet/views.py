@@ -6,6 +6,8 @@ from django.http import JsonResponse
 from django.core.serializers import serialize
 from django.core.mail import send_mail
 import json
+from datetime import timedelta
+from decimal import Decimal
 from Menu.models import *
 from .models import *
 
@@ -119,65 +121,80 @@ def ordering(request):
     except ProfileData.DoesNotExist:
         pass
 
-
-    try:
-        current_banquet = Banquet.objects.get(owner=current_user_profiledata, is_ordered=False)
-    except Banquet.DoesNotExist:
-         pass
+    current_banquet = Banquet.objects.get(owner=current_user_profiledata, is_ordered=False)
+    if "application/json" in request.META.get("HTTP_ACCEPT", ""):
+        hours_quantity = request.GET.get("hours")
+        if hours_quantity:
+            total = current_banquet.total_price() + current_banquet.calculate_waiters() * int(hours_quantity) * 400
+            response = {"total": total}
+        else: response = None
+        response = json.dumps(response)
+        return JsonResponse(response, safe=False)
     
     if request.method == "POST":
-        try:
-            current_user = User.objects.get(id=request.user.id)
-            current_user_profiledata = ProfileData.objects.get(user=current_user)
-        except ProfileData.DoesNotExist:
-            pass
-        delivery_address = request.POST.get("delivery_address")
+        current_user = User.objects.get(id=request.user.id)
+        current_user_profiledata = ProfileData.objects.get(user=current_user)
+
+        current_banquet = Banquet.objects.get(owner=current_user_profiledata, is_ordered=False)
+        delivery_addres = request.POST.get("delivery_addres")
         delivery_time = request.POST.get("delivery_time")  # Получение данных из формы
-        delivery_date = request.POST.get("delivery_date")  # Получение даты заказа
-        order_comments = request.POST.get("order_comments")  
-        duration_time = request.POST.get("duration_time")  
+        date = request.POST.get("delivery_date")  # Получение даты заказа
+        comment = request.POST.get("order_comments")  
+        duration = request.POST.get("duration_time")  
+        hours_quantity = request.POST.get("duration_time")  
 
-        current_banquet_id = request.POST.get("banquet_id")  
-
-        current_banquet = Banquet.objects.get(id=current_banquet_id)
-        # current_banquet.delivery_address = delivery_address
-        # current_banquet.delivery_time = delivery_time
-        current_banquet.ordered_date = delivery_date
+        current_banquet.addres = delivery_addres
+        current_banquet.delivery_time = delivery_time
+        current_banquet.comment = comment
+        current_banquet.duration = timedelta(hours=int(duration))
+        current_banquet.date = date
+        current_banquet.ordered_date = date
+        cost = current_banquet.total_price() + current_banquet.calculate_waiters()  * int(hours_quantity) * 400
+        current_banquet.cost = Decimal(cost)
         current_banquet.is_ordered = True
         current_banquet.save()
 
+        return render(request, 'Banquet/ordering.html')       
+    
 
-
-    param1 = request.GET.get('param1')
-    param2 = request.GET.get('param2')
-    
-    # Ваш код для обработки параметров
-    
-    # Пример: вернуть данные в формате JSON
-    response_data = {
-        'message': 'Параметры успешно обработаны.',
-        'param1': param1,
-        'param2': param2
-    }
-    
     occupied_dates = []
     current_banquet = Banquet.objects.get(owner=current_user_profiledata, is_ordered=False)
+    workers = int(current_banquet.quantity_count() / 20)
+    if workers == 0:
+        current_banquet.workers = 1
+    else: current_banquet.workers = workers
+
     all_banquets = Banquet.objects.filter(is_ordered=True)
     for banquet in all_banquets:
         occupied_dates.append(banquet.ordered_date.strftime('%Y-%m-%d'))
 
-    
+
+    for client in current_banquet.clients.all():
+        if client.menu is None and client.dishes.all().count() == 0:
+              current_banquet.clients.remove(client)
+
+    total = current_banquet.total_price()  + current_banquet.calculate_waiters() * 3 * 400
     contex = {
         'current_banquet':current_banquet,
-        'occupied_dates':occupied_dates
+        'occupied_dates':occupied_dates,
+        'total':total
         }
     
 
-    subject = 'Тестовое письмо'
-    message = 'Это тестовое письмо.'
+    subject = 'Банкет'
+    message = 'Вы заказали банкет'
     from_email = 'theroflx@yandex.ru'
-    recipient_list = ['gabellaoff@yandex.ru']
+    user_email = request.user.email
+    recipient_list = []
+    recipient_list.append(user_email)
 
-    # send_mail(subject, message, from_email, recipient_list)
+    send_mail(subject, message, from_email, recipient_list)
+
+    subject = 'Банкет'
+    message = 'Вам заказали банкет'
+    from_email = request.user.email
+    recipient_list = ['theroflx@yandex.ru']
+    send_mail(subject, message, from_email, recipient_list)
+
     return render(request, 'Banquet/ordering.html', contex)       
     

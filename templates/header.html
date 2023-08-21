@@ -16,7 +16,7 @@
         {% if request.user.is_authenticated %}
         <a href="/profile/orders">Мои заказы</a>
         {%else%}
-        <a href="/login">Мои заказы</a>
+        <a href="/login/?next=/profile/orders/">Мои заказы</a>
         {%endif%}
       </li>
       <li class="header_menu_li"><a href="/banquet">Заказ мероприятий</a></li>
