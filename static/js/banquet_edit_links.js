@@ -9,11 +9,21 @@ function ChangeChosenStatus() {
     all_dishes.push(dishId);
   });
 
-  const requestParams2 = {
-    action: "if_chosen",
-    dish_ids: all_dishes,
-    client_id: clientId,
-  };
+  const filter_ = localStorage.getItem("dish-filter");
+  var requestParams2 = {};
+  if (filter_ != "samples") {
+    requestParams2 = {
+      action: "dish",
+      dish_ids: all_dishes,
+      client_id: clientId,
+    };
+  } else {
+    requestParams2 = {
+      action: "menu",
+      dish_ids: all_dishes,
+      client_id: clientId,
+    };
+  }
   $.ajax({
     url: "http://127.0.0.1:8000/banquet/json/",
     method: "GET",
@@ -265,7 +275,6 @@ menuButtons.forEach((button) => {
                   handleDeleteDishButtonClick(button);
                   button.classList.remove("chosen");
                   button.textContent = `Добавить для "${clientName}"`;
-                  console.log(button);
                 } else {
                   if (is_menu) {
                     const new_data_to_send = {
@@ -279,7 +288,6 @@ menuButtons.forEach((button) => {
                   } else {
                     button.classList.add("chosen");
                     button.textContent = `Удалить для "${clientName}"`;
-                    console.log(button);
                     socket.send(JSON.stringify(data_to_send));
                   }
                 }

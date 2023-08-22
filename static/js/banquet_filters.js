@@ -9,11 +9,22 @@ function ChangeChosenStatus() {
     all_dishes.push(dishId);
   });
 
-  const requestParams2 = {
-    action: "if_chosen",
-    dish_ids: all_dishes,
-    client_id: clientId,
-  };
+  const filter_ = localStorage.getItem("dish-filter");
+  var requestParams2 = {};
+  if (filter_ != "samples") {
+    requestParams2 = {
+      action: "dish",
+      dish_ids: all_dishes,
+      client_id: clientId,
+    };
+  } else {
+    requestParams2 = {
+      action: "menu",
+      dish_ids: all_dishes,
+      client_id: clientId,
+    };
+  }
+
   $.ajax({
     url: "http://127.0.0.1:8000/banquet/json/",
     method: "GET",
@@ -52,6 +63,20 @@ function handleDeleteDishButtonClick(button) {
     JSON.stringify({
       action: "dish_order_delete_new",
       order_id: order_id,
+      current_user_id: username_id,
+      client_id: current_client_id,
+    })
+  );
+}
+
+function handleDeleteMenuButtonClick(button) {
+  const menu_id = button.dataset.id; // Получаем значение data-id из атрибута data-id
+  var username_id = localStorage.getItem("username_id");
+  var current_client_id = localStorage.getItem("current_client_id");
+  socket.send(
+    JSON.stringify({
+      action: "client_menu_delete",
+      menu_id: menu_id,
       current_user_id: username_id,
       client_id: current_client_id,
     })
@@ -243,9 +268,6 @@ $("button.dish-filter").on("click", function () {
 
         const orderButtons = document.querySelectorAll(".order-button");
         orderButtons.forEach((button) => {
-          if (button.innerText === "Выберите клиента") {
-            button.disabled = true;
-          }
           const dishId = button.dataset.id;
           const dishTittle = button.dataset.name;
 
@@ -267,10 +289,13 @@ $("button.dish-filter").on("click", function () {
               is_menu = true;
             }
             if (button.classList.contains("chosen")) {
-              handleDeleteDishButtonClick(button);
+              if (!is_menu) {
+                handleDeleteDishButtonClick(button);
+              } else {
+                handleDeleteMenuButtonClick(button);
+              }
               button.classList.remove("chosen");
               button.textContent = `Добавить для "${clientName}"`;
-              console.log(button);
             } else {
               if (is_menu) {
                 const new_data_to_send = {
@@ -280,11 +305,13 @@ $("button.dish-filter").on("click", function () {
                   current_user_id: username_id,
                   current_client_id: clientId,
                 };
+
+                button.classList.add("chosen");
+                button.textContent = `Удалить для "${clientName}"`;
                 socket.send(JSON.stringify(new_data_to_send));
               } else {
                 button.classList.add("chosen");
                 button.textContent = `Удалить для "${clientName}"`;
-                console.log(button);
                 socket.send(JSON.stringify(data_to_send));
               }
             }

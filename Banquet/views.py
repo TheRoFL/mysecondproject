@@ -205,17 +205,27 @@ def forJsonResopnses(request):
     dish_ids = list(dish_ids)   
     client_id = request.GET.get("client_id")
 
-    response = []
-    try:
-        current_client = Client.objects.get(id=client_id)
-        all_client_dishes = current_client.dishes.all()
-        for client_dish in all_client_dishes:
-            if client_dish.product.id in dish_ids:
-                response.append(client_dish.product.id)
-    except:
-        pass
     
-
+    filter_ = request.GET.get("action")
+    response = []
+    if filter_ == "dish":
+        try:
+            current_client = Client.objects.get(id=client_id)
+            all_client_dishes = current_client.dishes.all()
+            for client_dish in all_client_dishes:
+                if client_dish.product.id in dish_ids:
+                    response.append(client_dish.product.id)
+        except:
+            pass
+    elif filter_ == "menu": 
+        try:
+            current_client = Client.objects.get(id=client_id)
+            for dish_id in dish_ids:
+                if current_client.menu.id == dish_id:
+                    response.append(current_client.menu.id)
+        except:
+            pass
+    
     if response:
         response = json.dumps(response)
     else:
