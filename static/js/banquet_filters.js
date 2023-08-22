@@ -306,6 +306,11 @@ $("button.dish-filter").on("click", function () {
                   current_client_id: clientId,
                 };
 
+                orderButtons.forEach((button) => {
+                  button.classList.remove("chosen");
+                  button.textContent = `Добавить для "${clientName}"`;
+                });
+
                 button.classList.add("chosen");
                 button.textContent = `Удалить для "${clientName}"`;
                 socket.send(JSON.stringify(new_data_to_send));
