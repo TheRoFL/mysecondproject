@@ -173,6 +173,21 @@ $("button.dish-filter").on("click", function () {
                 "data-name": item.fields.type,
               }).text(`Добавить для "${current_client_name}"`);
 
+              var requestParams = {
+                action: availability_check,
+                dish_id: item.pk,
+              };
+              $.ajax({
+                url: "http://127.0.0.1:8000/banquet/",
+                method: "GET",
+                data: requestParams,
+                dataType: "json",
+                success: function (data) {},
+                error: function (xhr, status, error) {
+                  console.error(error);
+                },
+              });
+
               gridItem.append(dishDiv, $("<h2>").append(orderButton));
 
               gridContainer.append(gridItem);
@@ -182,47 +197,44 @@ $("button.dish-filter").on("click", function () {
         }
 
         const orderButtons = document.querySelectorAll(".order-button");
-        var clientId = localStorage.getItem("current_client_id");
-
         orderButtons.forEach((button) => {
           if (button.innerText === "Выберите клиента") {
             button.disabled = true;
           }
           const dishId = button.dataset.id;
           const dishTittle = button.dataset.name;
-          if (clientId != "") {
-            button.addEventListener("click", function () {
-              var username_id = localStorage.getItem("username_id");
-              var clientId = localStorage.getItem("current_client_id");
-              var current_dish_filter = localStorage.getItem("dish-filter");
-              const data_to_send = {
-                action: "added_dish",
-                message: `Заказ "${dishTittle}" добавлен`,
-                current_dish_id: dishId,
+
+          button.addEventListener("click", function () {
+            var username_id = localStorage.getItem("username_id");
+            var clientId = localStorage.getItem("current_client_id");
+            var current_dish_filter = localStorage.getItem("dish-filter");
+            const data_to_send = {
+              action: "added_dish",
+              message: `Заказ "${dishTittle}" добавлен`,
+              current_dish_id: dishId,
+              current_user_id: username_id,
+              current_client_id: clientId,
+            };
+            var currentUrl = window.location.href;
+            const urlObject = new URL(currentUrl);
+            dish_filter = current_dish_filter;
+            var is_menu = false;
+            if (dish_filter == "samples") {
+              is_menu = true;
+            }
+            if (is_menu) {
+              const new_data_to_send = {
+                action: "menu_add",
+                message: `Заказ "${button.dataset.name}" добавлен`,
+                current_menu_id: button.dataset.id,
                 current_user_id: username_id,
                 current_client_id: clientId,
               };
-              var currentUrl = window.location.href;
-              const urlObject = new URL(currentUrl);
-              dish_filter = current_dish_filter;
-              var is_menu = false;
-              if (dish_filter == "samples") {
-                is_menu = true;
-              }
-              if (is_menu) {
-                const new_data_to_send = {
-                  action: "menu_add",
-                  message: `Заказ "${button.dataset.name}" добавлен`,
-                  current_menu_id: button.dataset.id,
-                  current_user_id: username_id,
-                  current_client_id: clientId,
-                };
-                socket.send(JSON.stringify(new_data_to_send));
-              } else {
-                socket.send(JSON.stringify(data_to_send));
-              }
-            });
-          }
+              socket.send(JSON.stringify(new_data_to_send));
+            } else {
+              socket.send(JSON.stringify(data_to_send));
+            }
+          });
         });
 
         const ws = document.querySelectorAll(".dishes");
@@ -232,7 +244,7 @@ $("button.dish-filter").on("click", function () {
             "overflow" + i
           }"></div>
               <div class="modWind hidden" id="${"modWind" + i}">
-              <div ><img style = "width: 200px"
+              <div ><img style = "width: 250px"
               src="http://localhost:8000/media/menu_images/${ws[i].getAttribute(
                 "data-type"
               )}/${ws[i].getAttribute("data-tittle")}.png"
@@ -301,7 +313,6 @@ $("button.dish-filter").on("click", function () {
                   dishImage.classList.remove("disappear-shadow");
                 }, 1400);
               }
-              var originalText = button.textContent;
 
               button.disabled = true;
               var current_client_name = localStorage.getItem(
@@ -310,8 +321,10 @@ $("button.dish-filter").on("click", function () {
               button.textContent = `Выбрано для "${current_client_name}"`;
               setTimeout(function () {
                 button.disabled = false;
-                button.textContent = originalText;
+                button.textContent = `Удалить для "${current_client_name}"`;
               }, 1000);
+
+              button.classList.add("chosen");
             }
           });
         });

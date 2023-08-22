@@ -151,8 +151,23 @@ def ordering(request):
         current_banquet.ordered_date = date
         cost = current_banquet.total_price() + current_banquet.calculate_waiters()  * int(hours_quantity) * 400
         current_banquet.cost = Decimal(cost)
+        current_banquet.bonuses = cost * 0.01
         current_banquet.is_ordered = True
         current_banquet.save()
+        current_user_profiledata.bonuses += current_banquet.bonuses  
+        current_user_profiledata.save()
+
+        subject = 'Вам заказали банкет'
+        message = f'{request.user.email} заказал банкет'
+        from_email = 'theroflx@yandex.ru'
+        recipient_list = ['theroflx@yandex.ru']
+        send_mail(subject, message, from_email, recipient_list)
+
+        subject = 'Банкет'
+        message = 'Вы заказали банкет'
+        from_email = request.user.email
+        recipient_list = [request.user.email]
+        send_mail(subject, message, from_email, recipient_list)
 
         return render(request, 'Banquet/ordering.html')       
     
@@ -181,20 +196,35 @@ def ordering(request):
         }
     
 
-    subject = 'Банкет'
-    message = 'Вы заказали банкет'
-    from_email = 'theroflx@yandex.ru'
-    user_email = request.user.email
-    recipient_list = []
-    recipient_list.append(user_email)
-
-    send_mail(subject, message, from_email, recipient_list)
-
-    subject = 'Банкет'
-    message = 'Вам заказали банкет'
-    from_email = request.user.email
-    recipient_list = ['theroflx@yandex.ru']
-    send_mail(subject, message, from_email, recipient_list)
-
     return render(request, 'Banquet/ordering.html', contex)       
+
+
+def forJsonResopnses(request):
+    dish_ids = request.GET.getlist('dish_ids[]', []) 
+    dish_ids = map(int, dish_ids)
+    dish_ids = list(dish_ids)   
+    client_id = request.GET.get("client_id")
+
+    response = []
+    try:
+        current_client = Client.objects.get(id=client_id)
+        all_client_dishes = current_client.dishes.all()
+        for client_dish in all_client_dishes:
+            if client_dish.product.id in dish_ids:
+                response.append(client_dish.product.id)
+    except:
+        pass
+    
+
+    if response:
+        response = json.dumps(response)
+    else:
+        response = {'if_dish':False}
+        response = json.dumps(response)
+    
+
+
+    return JsonResponse(response, safe=False)
+
+    
     

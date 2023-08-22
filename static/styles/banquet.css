@@ -365,6 +365,7 @@ input[type="submit"]:active {
 .order-button {
   background-color: #4a644b;
   color: white;
+  scale: 0.95;
   border: none;
   border-radius: 10px;
   padding: 10px 20px;
@@ -389,6 +390,9 @@ input[type="submit"]:active {
   animation: fadeIn 0.25s ease-in-out forwards; /* Применяем анимацию при появлении */
 }
 
+.modWind img {
+  width: 400px;
+}
 .overflow {
   opacity: 0;
   animation: fadeIn 0.25s ease-in-out forwards; /* Применяем анимацию при появлении */

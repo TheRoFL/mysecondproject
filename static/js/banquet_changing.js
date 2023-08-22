@@ -367,7 +367,7 @@ socket.onmessage = function (e) {
                   "overflow" + i
                 }"></div>
     <div class="modWind hidden" id="${"modWind" + i}">
-    <div ><img style = "width: 200px"
+    <div ><img style = "width: 250px"
     src="http://localhost:8000/media/menu_images/${ws[i].getAttribute(
       "data-type"
     )}/${ws[i].getAttribute("data-tittle")}.png"
@@ -1186,7 +1186,7 @@ $(".quantity-input").on("input", function () {
   // Проверяем длину введенного текста
   if (currentValue.length > 4) {
     // Если длина больше максимальной, обрезаем текст до максимальной длины
-    currentValue = currentValue.slice(0, 4);
+    currentValue = 2000;
   }
 
   const quantity = Math.min(2000, Math.max(0, currentValue)); // Ограничиваем значение до 2000
@@ -1197,6 +1197,7 @@ $(".quantity-input").on("input", function () {
 $(".name-input").on("input", function () {
   const client_id = $(this).data("id");
   var currentValue = $(this).val();
+  $(this).val = currentValue.trim();
   // Проверяем длину введенного текста
   if (currentValue.length > 15) {
     // Если длина больше максимальной, обрезаем текст до максимальной длины
@@ -1212,6 +1213,27 @@ $(".name-input").on("input", function () {
       name: name,
     })
   );
+});
+
+$(".name-input").on("change", function () {
+  var currentValue = $(this).val();
+  const client_id = $(this).data("id");
+
+  if (currentValue.length == 0) {
+    $(this).val("Введите клиента");
+    const name = $(this).val();
+
+    username_id = localStorage.getItem("username_id");
+    $(this).val = currentValue.trim();
+    socket.send(
+      JSON.stringify({
+        action: "client_name_update",
+        client_id: client_id,
+        current_user_id: username_id,
+        name: name,
+      })
+    );
+  }
 });
 
 function updateQuantity(client_id, quantity) {
