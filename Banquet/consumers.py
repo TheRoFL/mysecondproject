@@ -225,6 +225,34 @@ class BanquetConsumer(WebsocketConsumer):
             
             self.send_response(response)
 
+        elif action == "dish_order_delete_new":
+            current_dish_id = data["order_id"]
+            current_dish = Dish.objects.get(id=current_dish_id)
+            all_dishorders = DishOrder.objects.filter(product=current_dish)
+            my_current_client_id = data["client_id"]
+            new_current_client = get_object_or_404(Client, id=my_current_client_id)
+
+            current_order_id = None
+            for dishorder in all_dishorders:
+                if dishorder in new_current_client.dishes.all():
+                    current_order_id = dishorder.id
+                    dishorder.delete()
+
+            current_banquet = Banquet.objects.get(owner=current_user_profiledata, is_ordered=False)
+            
+ 
+
+            response = {"action":"order_deleted", 
+                        "order_id": current_order_id,
+                        'order_total_price': new_current_client.total_client_price(),
+                        'client_total_price': new_current_client.menu_and_orders_price_count(),
+                        'client_id':my_current_client_id,
+                        'banqet_id':current_banquet.id,
+                        'total_banquet_price':current_banquet.total_price()
+                        }
+            
+            self.send_response(response)
+
         elif action == "client_name_update":
             type = data["name"] 
             current_user_id = data["current_user_id"]

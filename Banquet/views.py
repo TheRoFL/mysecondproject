@@ -222,8 +222,6 @@ def forJsonResopnses(request):
         response = {'if_dish':False}
         response = json.dumps(response)
     
-
-
     return JsonResponse(response, safe=False)
 
     

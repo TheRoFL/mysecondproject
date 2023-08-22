@@ -1,3 +1,49 @@
+function ChangeChosenStatus() {
+  var clientId = localStorage.getItem("current_client_id");
+  var clientName = localStorage.getItem("current_client_name");
+  var orderButtons_ = document.querySelectorAll(".order-button");
+
+  var all_dishes = [];
+  orderButtons_.forEach((button) => {
+    const dishId = button.dataset.id;
+    all_dishes.push(dishId);
+  });
+
+  const requestParams2 = {
+    action: "if_chosen",
+    dish_ids: all_dishes,
+    client_id: clientId,
+  };
+  $.ajax({
+    url: "http://127.0.0.1:8000/banquet/json/",
+    method: "GET",
+    data: requestParams2,
+    dataType: "json",
+    success: function (data) {
+      data = JSON.parse(data);
+      console.log(data);
+
+      orderButtons_.forEach((button) => {
+        const dishId = button.dataset.id;
+        if (Array.isArray(data)) {
+          if (data.includes(Number(dishId))) {
+            const button_to_delete = document.querySelector(
+              `.order-button[data-id="${dishId}"]`
+            );
+            if (button_to_delete) {
+              button_to_delete.textContent = `Удалить для "${clientName}"`;
+              button_to_delete.classList.add("chosen");
+            }
+          }
+        }
+      });
+    },
+    error: function (xhr, status, error) {
+      console.error(error);
+    },
+  });
+}
+
 // Получаем все кнопки с классом "menu-client-btn"
 const menuButtons = document.querySelectorAll(".vash_zakaz");
 const x1 = document.querySelector(".menuu");
@@ -89,25 +135,6 @@ menuButtons.forEach((button) => {
                   "data-name": item.fields.name,
                   id: "order-button" + item.pk,
                 }).text(`Добавить для "${current_client_name}"`);
-
-                // var clientId = localStorage.getItem("current_client_id");
-                // const requestParams = {
-                //   action: "if_chosen",
-                //   dish_id: item.pk,
-                //   client_id: clientId,
-                // };
-                // $.ajax({
-                //   url: "http://127.0.0.1:8000/banquet/json/",
-                //   method: "GET",
-                //   data: requestParams,
-                //   dataType: "json",
-                //   success: function (data) {
-                //     console.log(data);
-                //   },
-                //   error: function (xhr, status, error) {
-                //     console.error(error);
-                //   },
-                // });
 
                 dishDiv2.append(img, h3);
                 dishDiv.append(dishDiv2, orderButton);
@@ -220,6 +247,7 @@ menuButtons.forEach((button) => {
               button.addEventListener("click", function () {
                 var username_id = localStorage.getItem("username_id");
                 var clientId = localStorage.getItem("current_client_id");
+                var clientName = localStorage.getItem("current_client_name");
                 var current_dish_filter = localStorage.getItem("dish-filter");
                 const data_to_send = {
                   action: "added_dish",
@@ -228,24 +256,32 @@ menuButtons.forEach((button) => {
                   current_user_id: username_id,
                   current_client_id: clientId,
                 };
-                var currentUrl = window.location.href;
-                const urlObject = new URL(currentUrl);
                 dish_filter = current_dish_filter;
                 var is_menu = false;
                 if (dish_filter == "samples") {
                   is_menu = true;
                 }
-                if (is_menu) {
-                  const new_data_to_send = {
-                    action: "menu_add",
-                    message: `Заказ "${button.dataset.name}" добавлен`,
-                    current_menu_id: button.dataset.id,
-                    current_user_id: username_id,
-                    current_client_id: clientId,
-                  };
-                  socket.send(JSON.stringify(new_data_to_send));
+                if (button.classList.contains("chosen")) {
+                  handleDeleteDishButtonClick(button);
+                  button.classList.remove("chosen");
+                  button.textContent = `Добавить для "${clientName}"`;
+                  console.log(button);
                 } else {
-                  socket.send(JSON.stringify(data_to_send));
+                  if (is_menu) {
+                    const new_data_to_send = {
+                      action: "menu_add",
+                      message: `Заказ "${button.dataset.name}" добавлен`,
+                      current_menu_id: button.dataset.id,
+                      current_user_id: username_id,
+                      current_client_id: clientId,
+                    };
+                    socket.send(JSON.stringify(new_data_to_send));
+                  } else {
+                    button.classList.add("chosen");
+                    button.textContent = `Удалить для "${clientName}"`;
+                    console.log(button);
+                    socket.send(JSON.stringify(data_to_send));
+                  }
                 }
               });
             });
@@ -265,7 +301,6 @@ menuButtons.forEach((button) => {
               });
             });
             // Получаем ссылку на кнопку и изображение
-            // Получаем ссылку на кнопку и изображение
             var animate_orderButtons =
               document.querySelectorAll(".order-button");
             animate_orderButtons.forEach((button) => {
@@ -275,33 +310,42 @@ menuButtons.forEach((button) => {
                     `.grid-dish-img[data-id="${button.dataset.id}"]`
                   );
 
-                  dishImage.classList.add("appear-shadow");
+                  if (dishImage) {
+                    dishImage.classList.add("appear-shadow");
 
-                  // Убираем класс через секунду
-                  setTimeout(function () {
-                    dishImage.classList.remove("appear-shadow");
-                    dishImage.classList.add("disappear-shadow");
-                  }, 900);
-                  setTimeout(function () {
-                    dishImage.classList.remove("disappear-shadow");
-                  }, 1400);
-
-                  var originalText = button.textContent;
+                    // Убираем класс через секунду
+                    setTimeout(function () {
+                      dishImage.classList.remove("appear-shadow");
+                      dishImage.classList.add("disappear-shadow");
+                    }, 900);
+                    setTimeout(function () {
+                      dishImage.classList.remove("disappear-shadow");
+                    }, 1400);
+                  }
 
                   button.disabled = true;
                   var current_client_name = localStorage.getItem(
                     "current_client_name"
                   );
-                  button.textContent = `Выбрано для "${current_client_name}"`;
-
-                  setTimeout(function () {
-                    button.disabled = false;
-                    button.textContent = originalText;
-                  }, 1000);
+                  if (!button.classList.contains("chosen")) {
+                    button.textContent = `Удалено для "${current_client_name}"`;
+                    setTimeout(function () {
+                      button.disabled = false;
+                      button.textContent = `Добавить для "${current_client_name}"`;
+                    }, 1000);
+                  } else {
+                    button.textContent = `Выбрано для "${current_client_name}"`;
+                    setTimeout(function () {
+                      button.disabled = false;
+                      button.textContent = `Удалить для "${current_client_name}"`;
+                    }, 1000);
+                  }
                 }
               });
             });
           });
+
+          setTimeout(ChangeChosenStatus, 1);
         },
         error: function (xhr, status, error) {
           console.error(error);
@@ -358,49 +402,8 @@ menuButtons.forEach((button) => {
     orderButtons.forEach((button) => {
       // Remove the old event listener, if any
       button.removeEventListener("click", handleOrderButtonClick, true);
-      button.textContent = `Добавить бля "${current_client_name}"`;
+      button.textContent = `Добавить для "${current_client_name}"`;
       button.addEventListener("click", handleOrderButtonClick);
-    });
-    var clientId = localStorage.getItem("current_client_id");
-    var clientName = localStorage.getItem("current_client_name");
-    const orderButtons228 = document.querySelectorAll(".order-button");
-
-    var all_dishes = [];
-    orderButtons228.forEach((button) => {
-      const dishId = button.dataset.id;
-      all_dishes.push(dishId);
-    });
-
-    const requestParams2 = {
-      action: "if_chosen",
-      dish_ids: all_dishes,
-      client_id: clientId,
-    };
-    $.ajax({
-      url: "http://127.0.0.1:8000/banquet/json/",
-      method: "GET",
-      data: requestParams2,
-      dataType: "json",
-      success: function (data) {
-        data = JSON.parse(data);
-        console.log(data);
-
-        orderButtons.forEach((button) => {
-          const dishId = button.dataset.id;
-
-          // console.log(dishId, data.includes(Number(dishId)));
-          // if (data.includes(Number(dishId))) {
-          //   // const button_to_delete = document.getElementById(
-          //   //   "order-button" + dishId
-          //   // );
-          //   // button_to_delete.textContent = `Удалить для "${dishId}"`;
-          //   // console.log(button_to_delete);
-          // }
-        });
-      },
-      error: function (xhr, status, error) {
-        console.error(error);
-      },
     });
   });
 });
