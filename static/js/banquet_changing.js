@@ -986,21 +986,28 @@ showFormButton.addEventListener("click", () => {
   // Создаем input для количества
   const quantityInput = document.createElement("input");
   quantityInput.className = "quantity-input";
-  quantityInput.value = "1";
+  quantityInput.value = "0";
   quantityInput.classList.add("created");
-  quantityInput.setAttribute("pattern", "[A-Za-z]{3}");
 
   quantityInput.addEventListener("input", function () {
     const client_id = $(this).data("id");
     var currentValue = $(this).val();
-
+    var all_clients = document.querySelectorAll(".quantity-input");
     // Удаление всех символов, кроме цифр
     currentValue = currentValue.replace(/\D/g, "");
 
+    var sum = 0;
+    all_clients.forEach(function (input) {
+      sum += parseInt(input.value);
+    });
+
+    if (sum > 2000) {
+      currentValue = 2000 - (sum - parseInt(currentValue));
+    }
     // Проверяем длину введенного текста
     if (currentValue.length > 4) {
       // Если длина больше максимальной, обрезаем текст до максимальной длины
-      currentValue = currentValue.slice(0, 4);
+      currentValue = 2000;
     }
 
     const quantity = Math.min(2000, Math.max(0, currentValue)); // Ограничиваем значение до 2000
@@ -1128,7 +1135,7 @@ showFormButton.addEventListener("click", () => {
       JSON.stringify({
         action: "added_client",
         clientName: "Введите клиента",
-        clientCount: 1,
+        clientCount: 0,
         current_user_id: username_id,
       })
     );
@@ -1139,7 +1146,7 @@ showFormButton.addEventListener("click", () => {
     JSON.stringify({
       action: "added_client",
       clientName: "Введите клиента",
-      clientCount: 1,
+      clientCount: 0,
       current_user_id: username_id,
     })
   );
@@ -1179,9 +1186,18 @@ clientForm.addEventListener("submit", (event) => {
 $(".quantity-input").on("input", function () {
   const client_id = $(this).data("id");
   var currentValue = $(this).val();
-
+  var all_clients = document.querySelectorAll(".quantity-input");
   // Удаление всех символов, кроме цифр
   currentValue = currentValue.replace(/\D/g, "");
+
+  var sum = 0;
+  all_clients.forEach(function (input) {
+    sum += parseInt(input.value);
+  });
+
+  if (sum > 2000) {
+    currentValue = 2000 - (sum - parseInt(currentValue));
+  }
 
   // Проверяем длину введенного текста
   if (currentValue.length > 4) {

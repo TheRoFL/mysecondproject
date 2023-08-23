@@ -118,7 +118,8 @@ input[type="submit"]:active {
   max-width: 100%;
   margin: 15px;
   flex-wrap: wrap;
-  margin-left: 6%;
+  margin-left: 120px;
+  gap: 150px;
 }
 
 #showFormBtn {
@@ -129,11 +130,12 @@ input[type="submit"]:active {
 .formaClienta {
   width: 240px;
   height: 360px;
+  scale: 1.5;
   border-radius: 20px;
   border: 3px solid #4a644b;
   background-color: #fff;
   color: #4a644b;
-  margin: 15px 30px;
+  margin: 100px 45px;
   display: inline-block;
 }
 
