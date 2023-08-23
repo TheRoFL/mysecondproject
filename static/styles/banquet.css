@@ -261,7 +261,7 @@ input[type="submit"]:active {
   flex-direction: row-reverse;
 
   /* Добавляем анимацию */
-  opacity: 0; /* Начальное значение прозрачности */
+  opacity: 1; /* Начальное значение прозрачности */
   transition: opacity 100ms ease-in-out; /* Анимация для свойства opacity */
 }
 

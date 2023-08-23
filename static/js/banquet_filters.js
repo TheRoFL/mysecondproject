@@ -53,7 +53,7 @@ function ChangeChosenStatus() {
   });
 }
 
-function handleDeleteDishButtonClick(button) {
+function handleDeleteDishButtonClickFromMenu(button) {
   const order_id = button.dataset.id;
   var username_id = localStorage.getItem("username_id");
   var current_client_id = localStorage.getItem("current_client_id");
@@ -290,7 +290,7 @@ $("button.dish-filter").on("click", function () {
             }
             if (button.classList.contains("chosen")) {
               if (!is_menu) {
-                handleDeleteDishButtonClick(button);
+                handleDeleteDishButtonClickFromMenu(button);
               } else {
                 handleDeleteMenuButtonClick(button);
               }
