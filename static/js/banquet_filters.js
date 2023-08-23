@@ -128,7 +128,7 @@ $("button.dish-filter").on("click", function () {
               class: "order-button",
               "data-id": item.pk,
               "data-name": item.fields.type,
-            }).text(`Добавить для "${current_client_name}"`);
+            }).text(`Выбрать для "${current_client_name}"`);
 
             h1.append(header, orderButton);
             MenuGridContainer.append(h1);
@@ -224,7 +224,7 @@ $("button.dish-filter").on("click", function () {
                 class: "order-button",
                 "data-id": item.pk,
                 "data-name": item.fields.name,
-              }).text(`Добавить для "${current_client_name}"`);
+              }).text(`Выбрать для "${current_client_name}"`);
 
               dishDiv2.append(img, h3);
               dishDiv.append(dishDiv2, orderButton);
@@ -256,7 +256,7 @@ $("button.dish-filter").on("click", function () {
                 class: "order-button",
                 "data-id": item.pk,
                 "data-name": item.fields.type,
-              }).text(`Добавить для "${current_client_name}"`);
+              }).text(`Выбрать для "${current_client_name}"`);
 
               gridItem.append(dishDiv, $("<h2>").append(orderButton));
 
@@ -295,7 +295,7 @@ $("button.dish-filter").on("click", function () {
                 handleDeleteMenuButtonClick(button);
               }
               button.classList.remove("chosen");
-              button.textContent = `Добавить для "${clientName}"`;
+              button.textContent = `Выбрать для "${clientName}"`;
             } else {
               if (is_menu) {
                 const new_data_to_send = {
@@ -308,7 +308,7 @@ $("button.dish-filter").on("click", function () {
 
                 orderButtons.forEach((button) => {
                   button.classList.remove("chosen");
-                  button.textContent = `Добавить для "${clientName}"`;
+                  button.textContent = `Выбрать для "${clientName}"`;
                 });
 
                 button.classList.add("chosen");
@@ -378,6 +378,7 @@ $("button.dish-filter").on("click", function () {
           }
         });
 
+        // анимация добавления
         var animate_orderButtons = document.querySelectorAll(".order-button");
         animate_orderButtons.forEach((button) => {
           button.addEventListener("click", function () {
@@ -386,17 +387,32 @@ $("button.dish-filter").on("click", function () {
                 `.grid-dish-img[data-id="${button.dataset.id}"]`
               );
 
-              if (dishImage) {
-                dishImage.classList.add("appear-shadow");
+              if (button.classList.contains("chosen")) {
+                if (dishImage) {
+                  dishImage.classList.add("appear-shadow");
 
-                // Убираем класс через секунду
-                setTimeout(function () {
-                  dishImage.classList.remove("appear-shadow");
-                  dishImage.classList.add("disappear-shadow");
-                }, 900);
-                setTimeout(function () {
-                  dishImage.classList.remove("disappear-shadow");
-                }, 1400);
+                  // Убираем класс через секунду
+                  setTimeout(function () {
+                    dishImage.classList.remove("appear-shadow");
+                    dishImage.classList.add("disappear-shadow");
+                  }, 900);
+                  setTimeout(function () {
+                    dishImage.classList.remove("disappear-shadow");
+                  }, 1400);
+                }
+              } else {
+                if (dishImage) {
+                  dishImage.classList.add("appear-shadow-delete");
+
+                  // Убираем класс через секунду
+                  setTimeout(function () {
+                    dishImage.classList.remove("appear-shadow-delete");
+                    dishImage.classList.add("disappear-shadow-delete");
+                  }, 900);
+                  setTimeout(function () {
+                    dishImage.classList.remove("disappear-shadow-delete");
+                  }, 1400);
+                }
               }
 
               button.disabled = true;
@@ -407,7 +423,7 @@ $("button.dish-filter").on("click", function () {
                 button.textContent = `Удалено для "${current_client_name}"`;
                 setTimeout(function () {
                   button.disabled = false;
-                  button.textContent = `Добавить для "${current_client_name}"`;
+                  button.textContent = `Выбрать для "${current_client_name}"`;
                 }, 1000);
               } else {
                 button.textContent = `Выбрано для "${current_client_name}"`;
@@ -422,6 +438,30 @@ $("button.dish-filter").on("click", function () {
       });
 
       setTimeout(ChangeChosenStatus, 1);
+      const mainGrid = document.querySelector(".grid-container");
+
+      mainGrid.classList.add("disappear");
+
+      setTimeout(() => {
+        mainGrid.classList.remove("disappear");
+        mainGrid.classList.add("appear");
+      }, 250);
+      setTimeout(() => {
+        mainGrid.classList.remove("appear");
+      }, 1);
+
+      // setTimeout(function () {
+      //   const GridItems = document.querySelectorAll(".grid-item");
+      //   GridItems.forEach((item, index) => {
+      //     console.log(item);
+      //     setTimeout(() => {
+      //       item.classList.add("appear");
+      //     }, 250 * index);
+      //     setTimeout(() => {
+      //       item.classList.remove("appear");
+      //     }, 1);
+      //   });
+      // }, 1);
     },
     error: function (xhr, status, error) {
       console.error(error);

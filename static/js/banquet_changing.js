@@ -964,6 +964,10 @@ showFormButton.addEventListener("click", () => {
       // Если длина больше максимальной, обрезаем текст до максимальной длины
       $(this).val(currentValue.slice(0, 15));
     }
+    if (currentValue.length == 0) {
+      // Если длина больше максимальной, обрезаем текст до максимальной длины
+      $(this).val("Введите клиента");
+    }
     const name = $(this).val();
     username_id = localStorage.getItem("username_id");
     socket.send(

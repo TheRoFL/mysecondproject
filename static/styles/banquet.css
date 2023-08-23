@@ -252,6 +252,18 @@ input[type="submit"]:active {
   padding: 15px 30px;
   flex-wrap: wrap;
   flex-direction: row-reverse;
+
+  /* Добавляем анимацию */
+  opacity: 0; /* Начальное значение прозрачности */
+  transition: opacity 150ms ease-in-out; /* Анимация для свойства opacity */
+}
+
+.grid-container.appear {
+  opacity: 1;
+}
+.grid-container.disappear {
+  opacity: 0;
+  transition: opacity 0ms; /* Моментальное изменение прозрачности */
 }
 
 .grid-container.menu-mode {
@@ -486,6 +498,37 @@ input[type="submit"]:active {
     scale: 1;
   }
 }
+
+.appear-shadow-delete {
+  animation: appearDeleteAnimation 0.5s ease forwards;
+}
+
+.disappear-shadow-delete {
+  animation: disappearDeleteAnimation 0.5s ease forwards;
+}
+
+@keyframes appearDeleteAnimation {
+  from {
+    box-shadow: none;
+    scale: 1;
+  }
+  to {
+    box-shadow: 0 0 50px rgba(255, 80, 0, 2);
+    scale: 0.9;
+  }
+}
+
+@keyframes disappearDeleteAnimation {
+  from {
+    box-shadow: 0 0 50px rgba(255, 80, 0, 2);
+    scale: 0.9;
+  }
+  to {
+    box-shadow: none;
+    scale: 1;
+  }
+}
+
 .menu-container {
   display: grid;
   grid-template-columns: repeat(4, 1fr);

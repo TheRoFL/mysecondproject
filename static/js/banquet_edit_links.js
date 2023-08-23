@@ -144,7 +144,7 @@ menuButtons.forEach((button) => {
                   "data-id": item.pk,
                   "data-name": item.fields.name,
                   id: "order-button" + item.pk,
-                }).text(`Добавить для "${current_client_name}"`);
+                }).text(`Выбрать для "${current_client_name}"`);
 
                 dishDiv2.append(img, h3);
                 dishDiv.append(dishDiv2, orderButton);
@@ -174,7 +174,7 @@ menuButtons.forEach((button) => {
                   class: "order-button",
                   "data-id": item.pk,
                   "data-name": item.fields.type,
-                }).text(`Добавить для "${current_client_name}"`);
+                }).text(`Выбрать для "${current_client_name}"`);
 
                 gridItem.append(dishDiv, $("<h2>").append(orderButton));
 
@@ -274,7 +274,7 @@ menuButtons.forEach((button) => {
                 if (button.classList.contains("chosen")) {
                   handleDeleteDishButtonClick(button);
                   button.classList.remove("chosen");
-                  button.textContent = `Добавить для "${clientName}"`;
+                  button.textContent = `Выбрать для "${clientName}"`;
                 } else {
                   if (is_menu) {
                     const new_data_to_send = {
@@ -318,17 +318,32 @@ menuButtons.forEach((button) => {
                     `.grid-dish-img[data-id="${button.dataset.id}"]`
                   );
 
-                  if (dishImage) {
-                    dishImage.classList.add("appear-shadow");
+                  if (button.classList.contains("chosen")) {
+                    if (dishImage) {
+                      dishImage.classList.add("appear-shadow");
 
-                    // Убираем класс через секунду
-                    setTimeout(function () {
-                      dishImage.classList.remove("appear-shadow");
-                      dishImage.classList.add("disappear-shadow");
-                    }, 900);
-                    setTimeout(function () {
-                      dishImage.classList.remove("disappear-shadow");
-                    }, 1400);
+                      // Убираем класс через секунду
+                      setTimeout(function () {
+                        dishImage.classList.remove("appear-shadow");
+                        dishImage.classList.add("disappear-shadow");
+                      }, 900);
+                      setTimeout(function () {
+                        dishImage.classList.remove("disappear-shadow");
+                      }, 1400);
+                    }
+                  } else {
+                    if (dishImage) {
+                      dishImage.classList.add("appear-shadow-delete");
+
+                      // Убираем класс через секунду
+                      setTimeout(function () {
+                        dishImage.classList.remove("appear-shadow-delete");
+                        dishImage.classList.add("disappear-shadow-delete");
+                      }, 900);
+                      setTimeout(function () {
+                        dishImage.classList.remove("disappear-shadow-delete");
+                      }, 1400);
+                    }
                   }
 
                   button.disabled = true;
@@ -339,7 +354,7 @@ menuButtons.forEach((button) => {
                     button.textContent = `Удалено для "${current_client_name}"`;
                     setTimeout(function () {
                       button.disabled = false;
-                      button.textContent = `Добавить для "${current_client_name}"`;
+                      button.textContent = `Выбрать для "${current_client_name}"`;
                     }, 1000);
                   } else {
                     button.textContent = `Выбрано для "${current_client_name}"`;
@@ -354,6 +369,11 @@ menuButtons.forEach((button) => {
           });
 
           setTimeout(ChangeChosenStatus, 1);
+          const mainGrid = document.querySelector(".grid-container");
+
+          setTimeout(() => {
+            mainGrid.classList.add("appear");
+          }, 250);
         },
         error: function (xhr, status, error) {
           console.error(error);
@@ -410,7 +430,7 @@ menuButtons.forEach((button) => {
     orderButtons.forEach((button) => {
       // Remove the old event listener, if any
       button.removeEventListener("click", handleOrderButtonClick, true);
-      button.textContent = `Добавить для "${current_client_name}"`;
+      button.textContent = `Выбрать для "${current_client_name}"`;
       button.addEventListener("click", handleOrderButtonClick);
     });
   });
@@ -428,6 +448,10 @@ document.addEventListener("keydown", (e) => {
 y1.addEventListener("click", () => {
   var gridContainer = document.querySelector(".grid-container");
   gridContainer.classList.remove("menu-mode");
+
+  setTimeout(() => {
+    gridContainer.classList.remove("appear");
+  }, 1);
   x1.classList.add("hidden2");
   y1.classList.add("hidden2");
 });
