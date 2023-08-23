@@ -1,0 +1,59 @@
+body {
+  color: #4a644b;
+}
+.submit-btn,
+.cancel-btn {
+  background-color: #4a644b;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.1s;
+}
+
+/* Анимация при наведении на кнопку */
+.submit-btn:hover,
+.cancel-btn:hover {
+  background-color: #2f4030;
+  transform: scale(1.05);
+}
+
+/* Анимация при нажатии на кнопку */
+.submit-btn:active,
+.cancel-btn:active {
+  background-color: #2f4030;
+  transform: scale(0.95);
+}
+
+.delivery-label {
+  color: #4a644b;
+  font-weight: bold;
+  display: block;
+  margin-bottom: 10px;
+  transition: color 0.3s;
+}
+
+.delivery-input {
+  border: 1px solid #4a644b;
+  padding: 5px;
+  transition: border-color 0.3s;
+}
+
+.delivery-label:hover {
+  color: #2c4733;
+}
+
+.delivery-input:hover,
+.delivery-input:focus {
+  border-color: #2c4733;
+}
+
+.delete-btn {
+  position: absolute;
+  /* Укажите здесь нужные значения для top, left, right или bottom */
+}
+.client_dishOrder-element {
+  display: inline-block;
+}

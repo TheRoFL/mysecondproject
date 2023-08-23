@@ -1,9 +1,12 @@
 {% extends 'index.html' %}
 <head>
-  <link rel="stylesheet" href="/static/css/calendar.css" />
+  {% comment %} {% endcomment %}
 </head>
+
 <!-- prettier-ignore -->
 {% block content %} {% load static %}
+<link rel="stylesheet" href="/static/styles/ordering.css" />
+<link rel="stylesheet" href="/static/styles/calendar.css" />
 <h1>Заказ банкета</h1>
 <h2>
   Мероприятие {{current_banquet}}
@@ -25,59 +28,7 @@
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
-<style>
-  body {
-    color: #4a644b;
-  }
-  .submit-btn,
-  .cancel-btn {
-    background-color: #4a644b;
-    color: white;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 5px;
-    font-size: 16px;
-    cursor: pointer;
-    transition: background-color 0.3s, transform 0.1s;
-  }
-
-  /* Анимация при наведении на кнопку */
-  .submit-btn:hover,
-  .cancel-btn:hover {
-    background-color: #2f4030;
-    transform: scale(1.05);
-  }
-
-  /* Анимация при нажатии на кнопку */
-  .submit-btn:active,
-  .cancel-btn:active {
-    background-color: #2f4030;
-    transform: scale(0.95);
-  }
-
-  .delivery-label {
-    color: #4a644b;
-    font-weight: bold;
-    display: block;
-    margin-bottom: 10px;
-    transition: color 0.3s;
-  }
-
-  .delivery-input {
-    border: 1px solid #4a644b;
-    padding: 5px;
-    transition: border-color 0.3s;
-  }
-
-  .delivery-label:hover {
-    color: #2c4733;
-  }
-
-  .delivery-input:hover,
-  .delivery-input:focus {
-    border-color: #2c4733;
-  }
-</style>
+<style></style>
 <div id="divToRemove">
   {% if current_banquet %}
   <h1>
@@ -108,40 +59,6 @@
       required
     />
     часов
-
-    <script>
-      const duration_time = document.getElementById("duration_time");
-      duration_time.addEventListener("input", function () {
-        var hours = $(this).val();
-
-        // Удаление всех символов, кроме цифр
-        hours = hours.replace(/\D/g, "");
-
-        const quantity = Math.min(24, Math.max(0, hours)); // Ограничиваем значение до 2000
-        $(this).val(quantity); // Обновляем значение поля ввода
-        const hours_quantity = document.getElementById("hours_quantity");
-        hours_quantity.textContent = quantity;
-        requestParams = {
-          hours: quantity,
-        };
-        $.ajax({
-          url: "http://127.0.0.1:8000/banquet/ordering/",
-          method: "GET",
-          data: requestParams,
-          dataType: "json",
-          success: function (data) {
-            data = JSON.parse(data);
-            console.log(data);
-
-            const total = document.getElementById("total");
-            total.textContent = data["total"];
-          },
-          error: function (xhr, status, error) {
-            console.error(error);
-          },
-        });
-      });
-    </script>
 
     <br />
     <label for="delivery_addres">Адрес проведения мероприятия:</label>
@@ -236,57 +153,6 @@
   {% endif %}
 </div>
 
-<script>
-  const socket = new ReconnectingWebSocket(
-    "ws://" + window.location.host + "/ws/CartEditingSocket/"
-  );
-
-  socket.onopen = function () {
-    console.log("CartEditingSocket соединение открыто.");
-  };
-
-  socket.onmessage = function (e) {
-    const data = JSON.parse(e.data);
-    if (data.canceled === "canceled") {
-      var divToRemove = document.getElementById("divToRemove");
-      if (divToRemove) {
-        divToRemove.remove();
-        var h1Element = document.createElement("h1");
-        h1Element.textContent = "Заказ удален";
-        document.body.appendChild(h1Element);
-
-        var messageElement = document.createElement("p");
-        messageElement.textContent =
-          "Вы будете перенаправлены на главную страницу через 3 секунды.";
-        document.body.appendChild(messageElement);
-
-        // Redirect to /menu after 3 seconds
-        setTimeout(function () {
-          window.location.href = "/banquet";
-        }, 3000);
-      }
-    }
-  };
-
-  socket.onclose = function () {
-    console.log("CartEditingSocket соединение закрыто. Переподключение...");
-  };
-
-  const cancelButtons = document.querySelectorAll(".cancel-btn");
-
-  cancelButtons.forEach((cancel) => {
-    cancel.addEventListener("click", () => {
-      var username_id = "{{user.id}}";
-      socket.send(
-        JSON.stringify({
-          action: "canceled",
-          id: "{{current_order.id}}",
-          username_id: username_id,
-        })
-      );
-    });
-  });
-</script>
-{% comment %}
+<script src="/static/js/banquet_ordering_calchours.js"></script>
 <script src="/static/js/banquet_calendar.js"></script>
-{% endcomment %} {% endblock content %}
+{% endblock content %}

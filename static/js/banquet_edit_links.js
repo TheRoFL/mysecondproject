@@ -60,7 +60,8 @@ const x1 = document.querySelector(".menuu");
 const y1 = document.querySelector(".overflow2");
 
 menuButtons.forEach((button) => {
-  button.addEventListener("click", () => {
+  button.addEventListener("click", (event) => {
+    event.stopPropagation();
     // костыль, который прогружает заново меню и навешивает лисенеры, и более не навешивается более 1
     {
       var main = document.querySelectorAll(`.my_client`);

@@ -80,7 +80,124 @@
           class="vash_zakaz"
           data-id="{{client.id}}"
           data-name="{{client.type}}"
-        ></div>
+        >
+          {% if client.menu %}
+
+          <div class="client-menu" data-id="{{client.id}}-{{client.menu.id}}">
+            <div class="client-menu-btn">
+              <h1 style="display: inline-block">{{client.menu}}</h1>
+              <button
+                class="delete-menu-btn"
+                data-id="{{client.menu.id}}"
+                data-clientId="{{client.id}}"
+                style="margin-top: 0px"
+              >
+                Удалить
+              </button>
+            </div>
+            {% for dish in client.menu.dishes.all %}
+            <div class="client-menu-dish" data-id="{{dish.id}}">
+              <h1 style="margin-left: 25px">
+                -{{dish.product.name}} x {{dish.quantity}} шт. =
+                {{dish.price_count}}.00 руб.
+              </h1>
+            </div>
+            {% endfor %}
+            <h1 style="margin-left: 15px">
+              Итого:
+              <span class="menu-total" data-id="{{client.menu.id}}"
+                >{{client.menu.all_dishes_price}}</span
+              >.00 руб. с человека
+            </h1>
+            <h1>-----------------------------------------------</h1>
+          </div>
+
+          {%endif%} {% for client_dishOrder in client.dishes.all %}
+          <div>
+            <div
+              class="client-orders-{{client_dishOrder.id}}"
+              id="client-orders-{{client_dishOrder.id}}"
+            >
+              <h1>
+                <div
+                  class="client_dishOrder-element"
+                  data-id="{{client_dishOrder.id}}"
+                >
+                  <!-- prettier-ignore -->
+                  <h2 style="margin-left: 30px">
+                {{client_dishOrder.product.name}} x 
+                <span
+                  class="client_order_quantity"
+                  data-id="{{client.id}}"
+                  id="{{client_dishOrder.id}}"
+                  >{{client_dishOrder.quantity}} 
+                </span> шт. =
+               
+                <span
+                  class="client_order_price"
+                  data-id="{{client.id}}"
+                  id="{{client_dishOrder.id}}"
+                  >{{client_dishOrder.price_count}}</span
+                >.00 руб.
+              </h2>
+                </div>
+                <button
+                  class="delete-btn"
+                  data-id="{{client_dishOrder.id}}"
+                  data-clientId="{{client.id}}"
+                >
+                  X
+                </button>
+              </h1>
+            </div>
+          </div>
+          {% endfor %}
+          <h2
+            class="client-total-price"
+            style="margin-top: 50px; margin-left: 20px"
+          >
+            <!-- prettier-ignore -->
+            {% if client.menu %} 
+          Итого за всех клиентов:
+            <span
+              class="order-price-count"
+              data-id="{{client.id}}"
+              id="{{client.id}}"
+            >
+              {{client.total_client_price}}</span
+            >.00 руб. x
+            <span class="client-quantity-2" data-id="{{client.id}}"
+              >{{client.quantity}}</span
+            >
+            человек =
+            <span
+              class="client-price-count"
+              data-id="{{client.id}}"
+              id="{{client.id}}"
+              >{{client.menu_and_orders_price_count}}</span
+            >.00 руб.
+            <!-- prettier-ignore -->
+            {%else %} Итого за всех клиентов:
+            <span
+              class="order-price-count"
+              data-id="{{client.id}}"
+              id="{{client.id}}"
+            >
+              {{client.price_count}}</span
+            >.00 руб. x
+            <span class="client-quantity-2" data-id="{{client.id}}"
+              >{{client.quantity}}</span
+            >
+            человек =
+            <span
+              class="client-price-count"
+              data-id="{{client.id}}"
+              id="{{client.id}}"
+              >{{client.menu_and_orders_price_count}}</span
+            >.00 руб. {%endif%}
+          </h2>
+        </div>
+        <button class="details-button">Подробнее</button>
       </div>
 
       {% endfor %} {% endif %}
@@ -198,166 +315,8 @@
     <h1>&nbsp</h1>
     <hr style="width: 90%; height: 3px; background: #4a644b" />
     <h1>&nbsp</h1>
-    <style>
-      .delete-btn {
-        position: absolute;
-        /* Укажите здесь нужные значения для top, left, right или bottom */
-      }
-      .client_dishOrder-element {
-        display: inline-block;
-      }
-    </style>
     <!-- prettier-ignore -->
-    <div class="all_clients">
-    {% for client in banquet.clients.all %}
-    <div class="client-header" data-id="{{client.id}}">
-      <div class="client-info">
-        <h1 class="client-info-h1" data-id="{{client.id}}">
-          Меню для клиента типа "<span
-            class="client-name"
-            data-id="{{client.id}}"
-            >{{client.type}}</span
-          >" в количестве
-          <span class="client-quantity" data-id="{{client.id}}"
-            >{{client.quantity}}</span
-          >
-          человек
-        </h1>
-      </div>
-      <div
-        class="client-container-{{client.id}}"
-        id="client-container-{{client.id}}"
-      >
-        <!-- prettier-ignore -->
-        {% if client.menu %}
 
-        <div class="client-menu" data-id="{{client.id}}-{{client.menu.id}}">
-          <div class="client-menu-btn">
-            <h1 style="display: inline-block">{{client.menu}}</h1>
-            <button
-              class="delete-menu-btn"
-              data-id="{{client.menu.id}}"
-              data-clientId="{{client.id}}"
-              style="margin-top: 0px"
-            >
-              Удалить
-            </button>
-          </div>
-          {% for dish in client.menu.dishes.all %}
-          <div class="client-menu-dish" data-id="{{dish.id}}">
-            <h1 style="margin-left: 25px">
-              -{{dish.product.name}} x {{dish.quantity}} шт. =
-              {{dish.price_count}}.00 руб.
-            </h1>
-          </div>
-          {% endfor %}
-          <h1 style="margin-left: 15px">
-            Итого:
-            <span class="menu-total" data-id="{{client.menu.id}}"
-              >{{client.menu.all_dishes_price}}</span
-            >.00 руб. с человека
-          </h1>
-          <h1>--------------------------------------------------------</h1>
-        </div>
-
-        {%endif%}
-
-        <!-- prettier-ignore -->
-        {% comment %} {% else %} {% endcomment %}
-        {% for client_dishOrder in client.dishes.all %}
-        <div>
-          <div
-            class="client-orders-{{client_dishOrder.id}}"
-            id="client-orders-{{client_dishOrder.id}}"
-          >
-            <h1>
-              <div
-                class="client_dishOrder-element"
-                data-id="{{client_dishOrder.id}}"
-              >
-                <!-- prettier-ignore -->
-                <h2 style="margin-left: 30px">
-                {{client_dishOrder.product.name}} x 
-                <span
-                  class="client_order_quantity"
-                  data-id="{{client.id}}"
-                  id="{{client_dishOrder.id}}"
-                  >{{client_dishOrder.quantity}} 
-                </span> шт. =
-               
-                <span
-                  class="client_order_price"
-                  data-id="{{client.id}}"
-                  id="{{client_dishOrder.id}}"
-                  >{{client_dishOrder.price_count}}</span
-                >.00 руб.
-              </h2>
-              </div>
-              <button
-                class="delete-btn"
-                data-id="{{client_dishOrder.id}}"
-                data-clientId="{{client.id}}"
-              >
-                X
-              </button>
-            </h1>
-          </div>
-        </div>
-        <!-- prettier-ignore -->
-        {% endfor %}
-      </div>
-
-      <h2
-        class="client-total-price"
-        style="margin-top: 50px; margin-left: 20px"
-      >
-        <!-- prettier-ignore -->
-        {% if client.menu %} 
-        Итого за всех клиентов:
-        <span
-          class="order-price-count"
-          data-id="{{client.id}}"
-          id="{{client.id}}"
-        >
-          {{client.total_client_price}}</span
-        >.00 руб. x
-        <span class="client-quantity-2" data-id="{{client.id}}"
-          >{{client.quantity}}</span
-        >
-        человек =
-        <span
-          class="client-price-count"
-          data-id="{{client.id}}"
-          id="{{client.id}}"
-          >{{client.menu_and_orders_price_count}}</span
-        >.00 руб.
-        <!-- prettier-ignore -->
-        {%else %} Итого за всех клиентов:
-        <span
-          class="order-price-count"
-          data-id="{{client.id}}"
-          id="{{client.id}}"
-        >
-          {{client.price_count}}</span
-        >.00 руб. x
-        <span class="client-quantity-2" data-id="{{client.id}}"
-          >{{client.quantity}}</span
-        >
-        человек =
-        <span
-          class="client-price-count"
-          data-id="{{client.id}}"
-          id="{{client.id}}"
-          >{{client.menu_and_orders_price_count}}</span
-        >.00 руб. {%endif%}
-      </h2>
-      <h1>&nbsp</h1>
-    </div>
-
-  
-
-    {% endfor %}
-    </div>
     <h1>
       Сумма заказа:
       <span class="banquet-total-price" data-id="{{banquet.id}}"

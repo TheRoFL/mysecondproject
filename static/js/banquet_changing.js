@@ -111,14 +111,6 @@ function updateClientsList(data) {
   allClientsDiv.append(clientHeader);
 
   // Добавляем элемент <h1>&nbsp;</h1> как указано в вашем коде
-
-  const scrollTop =
-    window.pageYOffset ||
-    document.documentElement.scrollTop ||
-    document.body.scrollTop ||
-    0;
-
-  window.scrollTo(0, scrollTop);
 }
 
 function handleNewClientClick(button) {
@@ -755,8 +747,7 @@ socket.onmessage = function (e) {
 
     // Добавляем разделитель
     var separator = document.createElement("h1");
-    separator.textContent =
-      "--------------------------------------------------------";
+    separator.textContent = "-------------------------------------------";
     menuDiv.appendChild(separator);
 
     // Добавляем контейнер на страницу
@@ -769,6 +760,12 @@ socket.onmessage = function (e) {
     targetHeaders.forEach(function (header) {
       header.insertAdjacentElement("afterend", menuDiv.cloneNode(true));
     });
+
+    var current_client_id = localStorage.getItem("current_client_id");
+    var currnet_client = document.querySelector(
+      `.vash_zakaz[data-id="${current_client_id}"]`
+    );
+    currnet_client.append(menuDiv);
 
     // Определение функции обработчика события
     function handleDeleteDishButtonClick(event) {
@@ -831,13 +828,13 @@ socket.onmessage = function (e) {
     client_dishOrderElement.classList.add("client_dishOrder-element");
     client_dishOrderElement.dataset.id = data.current_dish_order_id;
     client_dishOrderElement.innerHTML = `
-    <h2 style="margin-left: 30px">
+    <span>
     ${client_dishOrder_product_name} x <span class="client_order_quantity" data-id="${data.client_id}" 
     id="${data.current_dish_order_id}">
     ${client_dishOrder_quantity}</span> шт. =
      <span class="client_order_price" data-id="${data.client_id}" id="${data.current_dish_order_id}">
       ${client_dishOrder_price_count}</span>.00 руб.
-    </h2>
+    </span>
   `;
     // Создаем кнопку для удаления
     var deleteButton = document.createElement("button");
@@ -849,38 +846,16 @@ socket.onmessage = function (e) {
     deleteButton.innerText = "X";
 
     // Добавляем кнопку удаления в div
+    client_dishOrderElement.append(deleteButton);
     newDiv.appendChild(client_dishOrderElement);
-    newDiv.appendChild(deleteButton);
-    var current_client = data.client_id;
-    var div_name = "client-container-" + current_client;
-    document.getElementById(div_name).appendChild(newDiv);
 
-    function handleDeleteDishButtonClick(event) {
-      const mybutton = event.target; // Получаем элемент, на котором произошло событие (в данном случае, кнопка)
-      const order_id = mybutton.dataset.id; // Получаем значение data-id из атрибута data-id
-      current_client_id = mybutton.dataset.clientid;
-      var username_id = localStorage.getItem("username_id");
+    var current_client_id = localStorage.getItem("current_client_id");
+    var currnet_client = document.querySelector(
+      `.vash_zakaz[data-id="${current_client_id}"]`
+    );
 
-      socket.send(
-        JSON.stringify({
-          action: "dish_order_delete",
-          order_id: order_id,
-          current_user_id: username_id,
-          client_id: current_client_id,
-        })
-      );
-      var orderElement = document.querySelector(
-        `div.client-orders[data-id="${order_id}"]`
-      );
-
-      // Если элемент найден, удаляем его
-      if (orderElement) {
-        orderElement.remove();
-        mybutton.remove();
-      }
-    }
+    currnet_client.append(newDiv);
   } else if (action == "dish_added") {
-    var dataId = data.current_dish_order_id;
     var newQuantity = data.client_dishOrder_quantity;
     var client_dishOrder_price_count = data.client_dishOrder_price_count;
     var current_dish_order_id = data.current_dish_order_id;
@@ -918,15 +893,6 @@ socket.onmessage = function (e) {
       `.banquet-total-price[data-id="${data.current_banquet_id}"]`
     );
     total_banquet_price.textContent = data["total_banquet_price"] + ".00 руб.";
-  }
-
-  if (action == "new_dish_added") {
-    const unique_id = data.current_dish_order_id + "-" + data.client_id;
-    const OrderDeleteButton = document.querySelector(
-      `.delete-btn[data-unique_id='${unique_id}']`
-    );
-
-    OrderDeleteButton.addEventListener("click", handleDeleteDishButtonClick);
   }
 };
 
@@ -1042,6 +1008,15 @@ showFormButton.addEventListener("click", () => {
   vashZakazDiv.className = "vash_zakaz";
   vashZakazDiv.classList.add("created");
   divElement.appendChild(vashZakazDiv); // Пустой div для vash_zakaz
+
+  var buttonDetails = document.createElement("button");
+  buttonDetails.className = "details-button";
+  buttonDetails.textContent = "Подробнее";
+
+  // Добавление обработчика события для растяжения влево
+  buttonDetails.addEventListener("click", function () {});
+
+  divElement.appendChild(buttonDetails);
   // Добавляем созданный элемент в DOM
   const container = document.getElementById("all_clients"); // Замените "container" на ID родительского контейнера, куда вы хотите добавить элемент
   container.appendChild(divElement);
