@@ -112,7 +112,9 @@
             <h1>-----------------------------------------------</h1>
           </div>
 
-          {%endif%} {% for client_dishOrder in client.dishes.all %}
+          {%endif%} {% if client.dishes.all %}
+          <h1 style="margin-left: 15px">Дополнительно:</h1>
+          {% for client_dishOrder in client.dishes.all %}
           <div>
             <div
               class="client-orders-{{client_dishOrder.id}}"
@@ -151,7 +153,7 @@
               </h1>
             </div>
           </div>
-          {% endfor %}
+          {% endfor %} {% endif %}
           <h2
             class="client-total-price"
             style="margin-top: 50px; margin-left: 20px"
@@ -166,7 +168,7 @@
             >
               {{client.total_client_price}}</span
             >.00 руб. x
-            <span class="client-quantity-2" data-id="{{client.id}}"
+            <span class="client-quantity" data-id="{{client.id}}"
               >{{client.quantity}}</span
             >
             человек =
@@ -185,7 +187,7 @@
             >
               {{client.price_count}}</span
             >.00 руб. x
-            <span class="client-quantity-2" data-id="{{client.id}}"
+            <span class="client-quantity" data-id="{{client.id}}"
               >{{client.quantity}}</span
             >
             человек =
@@ -197,7 +199,9 @@
             >.00 руб. {%endif%}
           </h2>
         </div>
-        <button class="details-button">Подробнее</button>
+        <button class="details-button" data-id="{{client.id}}">
+          Подробнее
+        </button>
       </div>
 
       {% endfor %} {% endif %}

@@ -201,6 +201,62 @@ function handleNewClientClick(button) {
   y1.classList.remove("hidden2");
 }
 
+function updateQuantity(client_id, quantity) {
+  username_id = localStorage.getItem("username_id");
+  socket.send(
+    JSON.stringify({
+      action: "client_quantity_update",
+      client_id: client_id,
+      current_user_id: username_id,
+      quantity: quantity,
+    })
+  );
+}
+
+function handleDeleteClientButtonClick(event) {
+  const client_id = event.target.dataset.id; // Получаем id клиента из атрибута data-id
+  username_id = localStorage.getItem("username_id");
+  current_client_id = localStorage.getItem("current_client_id");
+  socket.send(
+    JSON.stringify({
+      action: "client_delete",
+      client_id: client_id,
+      current_user_id: username_id,
+      current_client_id: current_client_id,
+    })
+  );
+}
+
+function handleDeleteDishButtonClick(event) {
+  const mybutton = event.target; // Получаем элемент, на котором произошло событие (в данном случае, кнопка)
+  const order_id = mybutton.dataset.id; // Получаем значение data-id из атрибута data-id
+  var username_id = localStorage.getItem("username_id");
+  var current_client_id = localStorage.getItem("current_client_id");
+  socket.send(
+    JSON.stringify({
+      action: "dish_order_delete",
+      order_id: order_id,
+      current_user_id: username_id,
+      client_id: current_client_id,
+    })
+  );
+}
+
+function handleDeleteMenuButtonClick(event) {
+  const mybutton = event.target; // Получаем элемент, на котором произошло событие (в данном случае, кнопка)
+  const menu_id = mybutton.dataset.id; // Получаем значение data-id из атрибута data-id
+  var username_id = localStorage.getItem("username_id");
+  var current_client_id = mybutton.dataset.clientid;
+  socket.send(
+    JSON.stringify({
+      action: "client_menu_delete",
+      menu_id: menu_id,
+      current_user_id: username_id,
+      client_id: current_client_id,
+    })
+  );
+}
+
 const socket = new ReconnectingWebSocket(
   "ws://" + window.location.host + "/ws/BanquetEditingSocket/"
 );
@@ -225,6 +281,7 @@ socket.onmessage = function (e) {
     button.setAttribute("data-id", client_id);
     button.setAttribute("data-name", client_name);
     button.classList.remove("created");
+
     button.addEventListener("click", () => {
       // костыль, который прогружает заново меню и навешивает лисенеры, и более не навешивается более 1
       {
@@ -566,7 +623,6 @@ socket.onmessage = function (e) {
     banqet_id_element.textContent = data["total_banquet_price"] + ".00 руб.";
     if (clientElement) {
       clientElement.remove();
-      clientHeaderElement.remove();
     }
   } else if (action === "order_deleted") {
     orderId = data.order_id;
@@ -614,9 +670,13 @@ socket.onmessage = function (e) {
       `.banquet-total-price[data-id="${data.banquet_id}"]`
     );
 
-    client_quantity.textContent = data["new_quantity"];
-    client_quantity_two.textContent = data["new_quantity"];
-    client_price.textContent = data["client_total_price"];
+    if (client_quantity) {
+      client_quantity.textContent = data["new_quantity"];
+    }
+    // client_quantity_two.textContent = data["new_quantity"]
+    if (client_price) {
+      client_price.textContent = data["client_total_price"];
+    }
     total_banquet_price.textContent = data["total_banquet_price"] + ".00 руб.";
   } else if (action === "client_name_changed") {
     client_id = data["client_id"];
@@ -767,24 +827,6 @@ socket.onmessage = function (e) {
     );
     currnet_client.append(menuDiv);
 
-    // Определение функции обработчика события
-    function handleDeleteDishButtonClick(event) {
-      // Получаем данные из атрибутов кнопки
-      const menu_id = event.target.getAttribute("data-id");
-      var username_id = localStorage.getItem("username_id");
-      var current_client_id = event.target.getAttribute("data-clientid");
-
-      // Выполняем необходимые действия с полученными данными
-      socket.send(
-        JSON.stringify({
-          action: "client_menu_delete",
-          menu_id: menu_id,
-          current_user_id: username_id,
-          client_id: current_client_id,
-        })
-      );
-    }
-
     // Находим элемент <span> с соответствующим data-id
     var client_menu_total_price = document.querySelector(
       'span.order-price-count[data-id="' + data.client_id + '"]'
@@ -922,7 +964,7 @@ showFormButton.addEventListener("click", () => {
   nameInput.className = "name-input";
   nameInput.value = "Введите клиента";
   nameInput.classList.add("created");
-  nameInput.addEventListener("input", function () {
+  nameInput.addEventListener("change", function () {
     const client_id = $(this).data("id");
     var currentValue = $(this).val();
     // Проверяем длину введенного текста
@@ -934,6 +976,27 @@ showFormButton.addEventListener("click", () => {
       // Если длина больше максимальной, обрезаем текст до максимальной длины
       $(this).val("Введите клиента");
     }
+    const name = $(this).val();
+    username_id = localStorage.getItem("username_id");
+    socket.send(
+      JSON.stringify({
+        action: "client_name_update",
+        client_id: client_id,
+        current_user_id: username_id,
+        name: name,
+      })
+    );
+  });
+
+  nameInput.addEventListener("input", function () {
+    const client_id = $(this).data("id");
+    var currentValue = $(this).val();
+    // Проверяем длину введенного текста
+    if (currentValue.length > 15) {
+      // Если длина больше максимальной, обрезаем текст до максимальной длины
+      $(this).val(currentValue.slice(0, 15));
+    }
+
     const name = $(this).val();
     username_id = localStorage.getItem("username_id");
     socket.send(
@@ -1011,10 +1074,8 @@ showFormButton.addEventListener("click", () => {
 
   var buttonDetails = document.createElement("button");
   buttonDetails.className = "details-button";
+  buttonDetails.classList.add("created");
   buttonDetails.textContent = "Подробнее";
-
-  // Добавление обработчика события для растяжения влево
-  buttonDetails.addEventListener("click", function () {});
 
   divElement.appendChild(buttonDetails);
   // Добавляем созданный элемент в DOM
@@ -1231,62 +1292,6 @@ $(".name-input").on("change", function () {
   }
 });
 
-function updateQuantity(client_id, quantity) {
-  username_id = localStorage.getItem("username_id");
-  socket.send(
-    JSON.stringify({
-      action: "client_quantity_update",
-      client_id: client_id,
-      current_user_id: username_id,
-      quantity: quantity,
-    })
-  );
-}
-
-function handleDeleteClientButtonClick(event) {
-  const client_id = event.target.dataset.id; // Получаем id клиента из атрибута data-id
-  username_id = localStorage.getItem("username_id");
-  current_client_id = localStorage.getItem("current_client_id");
-  socket.send(
-    JSON.stringify({
-      action: "client_delete",
-      client_id: client_id,
-      current_user_id: username_id,
-      current_client_id: current_client_id,
-    })
-  );
-}
-
-function handleDeleteDishButtonClick(event) {
-  const mybutton = event.target; // Получаем элемент, на котором произошло событие (в данном случае, кнопка)
-  const order_id = mybutton.dataset.id; // Получаем значение data-id из атрибута data-id
-  var username_id = localStorage.getItem("username_id");
-  var current_client_id = localStorage.getItem("current_client_id");
-  socket.send(
-    JSON.stringify({
-      action: "dish_order_delete",
-      order_id: order_id,
-      current_user_id: username_id,
-      client_id: current_client_id,
-    })
-  );
-}
-
-function handleDeleteMenuButtonClick(event) {
-  const mybutton = event.target; // Получаем элемент, на котором произошло событие (в данном случае, кнопка)
-  const menu_id = mybutton.dataset.id; // Получаем значение data-id из атрибута data-id
-  var username_id = localStorage.getItem("username_id");
-  var current_client_id = mybutton.dataset.clientid;
-  socket.send(
-    JSON.stringify({
-      action: "client_menu_delete",
-      menu_id: menu_id,
-      current_user_id: username_id,
-      client_id: current_client_id,
-    })
-  );
-}
-
 const deleteMenuButtons = document.querySelectorAll(".delete-menu-btn");
 deleteMenuButtons.forEach((button) => {
   button.addEventListener("click", handleDeleteMenuButtonClick);
@@ -1334,31 +1339,6 @@ orderButtons.forEach((button) => {
     });
   }
 });
-
-function handleDeleteDishButtonClick(event) {
-  const mybutton = event.target; // Получаем элемент, на котором произошло событие (в данном случае, кнопка)
-  const order_id = mybutton.dataset.id; // Получаем значение data-id из атрибута data-id
-  current_client_id = mybutton.dataset.clientid;
-  var username_id = localStorage.getItem("username_id");
-
-  socket.send(
-    JSON.stringify({
-      action: "dish_order_delete",
-      order_id: order_id,
-      current_user_id: username_id,
-      client_id: current_client_id,
-    })
-  );
-  var orderElement = document.querySelector(
-    `div.client-orders[data-id="${order_id}"]`
-  );
-
-  // Если элемент найден, удаляем его
-  if (orderElement) {
-    orderElement.remove();
-    mybutton.remove();
-  }
-}
 
 const OrderDeleteButtons = document.querySelectorAll(".delete-btn");
 OrderDeleteButtons.forEach(function (button) {

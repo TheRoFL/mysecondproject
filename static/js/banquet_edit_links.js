@@ -56,6 +56,7 @@ function ChangeChosenStatus() {
 
 // Получаем все кнопки с классом "menu-client-btn"
 const menuButtons = document.querySelectorAll(".vash_zakaz");
+const detailsButtons = document.querySelectorAll(".details-button ");
 const x1 = document.querySelector(".menuu");
 const y1 = document.querySelector(".overflow2");
 
