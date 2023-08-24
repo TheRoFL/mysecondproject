@@ -214,8 +214,14 @@ class BanquetConsumer(WebsocketConsumer):
             
             current_order.delete()
 
+            orders_left = new_current_client.dishes.all()
+            if not orders_left:
+                orders_left = json.dumps(False)
+            else: orders_left = json.dumps(True)
+
             response = {"action":"order_deleted", 
                         "order_id": current_order_id,
+                        'orders_left':orders_left,
                         'order_total_price': new_current_client.total_client_price(),
                         'client_total_price': new_current_client.menu_and_orders_price_count(),
                         'client_id':my_current_client_id,

@@ -109,77 +109,57 @@
                 >{{client.menu.all_dishes_price}}</span
               >.00 руб. с человека
             </h1>
-            <h1>-----------------------------------------------</h1>
+            <h1>-------------------------------------------</h1>
           </div>
 
           {%endif%} {% if client.dishes.all %}
-          <h1 style="margin-left: 15px">Дополнительно:</h1>
-          {% for client_dishOrder in client.dishes.all %}
-          <div>
-            <div
-              class="client-orders-{{client_dishOrder.id}}"
-              id="client-orders-{{client_dishOrder.id}}"
-            >
-              <h1>
-                <div
-                  class="client_dishOrder-element"
-                  data-id="{{client_dishOrder.id}}"
-                >
-                  <!-- prettier-ignore -->
-                  <h2 style="margin-left: 30px">
-                {{client_dishOrder.product.name}} x 
-                <span
-                  class="client_order_quantity"
-                  data-id="{{client.id}}"
-                  id="{{client_dishOrder.id}}"
-                  >{{client_dishOrder.quantity}} 
-                </span> шт. =
-               
-                <span
-                  class="client_order_price"
-                  data-id="{{client.id}}"
-                  id="{{client_dishOrder.id}}"
-                  >{{client_dishOrder.price_count}}</span
-                >.00 руб.
-              </h2>
-                </div>
+
+          <div class="additional-dishes" data-id="{{client.id}}">
+            <h1 style="margin-left: 15px">Дополнительно:</h1>
+            {% for client_dish in client.dishes.all %}
+            <div class="adittional-dish" data-id="{{client_dish.id}}">
+              <div class="adittional-dish-item">
+                <h2 style="margin-left: 30px">
+                  {{client_dish.product.name}} x
+                  <span
+                    class="client_order_quantity"
+                    data-id="{{client.id}}"
+                    id="{{client_dish.id}}"
+                    >{{client_dish.quantity}}
+                  </span>
+                  шт. =
+
+                  <span
+                    class="client_order_price"
+                    data-id="{{client.id}}"
+                    id="{{client_dish.id}}"
+                    >{{client_dish.price_count}}</span
+                  >.00 руб.
+                </h2>
+              </div>
+              <div class="adittional-dish-item-button">
                 <button
                   class="delete-btn"
-                  data-id="{{client_dishOrder.id}}"
+                  data-id="{{client_dish.id}}"
                   data-clientId="{{client.id}}"
                 >
                   X
                 </button>
-              </h1>
+              </div>
             </div>
+
+            {% endfor %}
+            <h1>-------------------------------------------</h1>
           </div>
-          {% endfor %} {% endif %}
+
+          {% endif %}
+
           <h2
             class="client-total-price"
-            style="margin-top: 50px; margin-left: 20px"
+            style="margin-top: 15px; margin-left: 20px"
           >
             <!-- prettier-ignore -->
-            {% if client.menu %} 
-          Итого за всех клиентов:
-            <span
-              class="order-price-count"
-              data-id="{{client.id}}"
-              id="{{client.id}}"
-            >
-              {{client.total_client_price}}</span
-            >.00 руб. x
-            <span class="client-quantity" data-id="{{client.id}}"
-              >{{client.quantity}}</span
-            >
-            человек =
-            <span
-              class="client-price-count"
-              data-id="{{client.id}}"
-              id="{{client.id}}"
-              >{{client.menu_and_orders_price_count}}</span
-            >.00 руб.
-            <!-- prettier-ignore -->
-            {%else %} Итого за всех клиентов:
+            Итого за всех клиентов:
             <span
               class="order-price-count"
               data-id="{{client.id}}"
@@ -196,7 +176,7 @@
               data-id="{{client.id}}"
               id="{{client.id}}"
               >{{client.menu_and_orders_price_count}}</span
-            >.00 руб. {%endif%}
+            >.00 руб.
           </h2>
         </div>
         <button class="details-button" data-id="{{client.id}}">

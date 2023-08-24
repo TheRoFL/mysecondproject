@@ -62,7 +62,10 @@ const y1 = document.querySelector(".overflow2");
 
 menuButtons.forEach((button) => {
   button.addEventListener("click", function (event) {
-    if (!event.target.classList.contains("delete-btn")) {
+    if (
+      !event.target.classList.contains("delete-btn") &&
+      !event.target.classList.contains("delete-menu-btn")
+    ) {
       event.stopPropagation();
       // костыль, который прогружает заново меню и навешивает лисенеры, и более не навешивается более 1
       {

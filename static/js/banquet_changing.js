@@ -303,7 +303,10 @@ socket.onmessage = function (e) {
     button.classList.remove("created");
 
     button.addEventListener("click", function (event) {
-      if (!event.target.classList.contains("delete-btn")) {
+      if (
+        !event.target.classList.contains("delete-btn") &&
+        !event.target.classList.contains("delete-menu-btn")
+      ) {
         event.stopPropagation();
         // костыль, который прогружает заново меню и навешивает лисенеры, и более не навешивается более 1
         {
@@ -429,7 +432,6 @@ socket.onmessage = function (e) {
                 });
 
                 const orderButtons = document.querySelectorAll(".order-button");
-                var clientId = localStorage.getItem("current_client_id");
 
                 const ws = document.querySelectorAll(".dishes");
                 var x, y;
@@ -732,13 +734,21 @@ socket.onmessage = function (e) {
       clientElement.remove();
     }
   } else if (action === "order_deleted") {
-    orderId = data.order_id;
-    to_delete = ".client-orders-" + orderId;
-    var clientOrdersElement = document.querySelector(to_delete);
+    var orderId = data.order_id;
+    var client_id = data.client_id;
+    var clientOrdersElement = document.querySelector(
+      `.adittional-dish[data-id="${orderId}"]`
+    );
 
     // Если элемент найден, удаляем его
     if (clientOrdersElement) {
       clientOrdersElement.remove();
+      if (data.orders_left == "false") {
+        var clientAdditional = document.querySelector(
+          `.additional-dishes[data-id="${client_id}"]`
+        );
+        clientAdditional.remove();
+      }
     }
 
     const new_OrderTotalPrice = document.querySelector(
@@ -795,7 +805,9 @@ socket.onmessage = function (e) {
     const client_name = document.querySelector(
       `.client-name[data-id="${client_id}"]`
     );
-    client_name.textContent = new_name;
+    if (client_name) {
+      client_name.textContent = new_name;
+    }
 
     current_client_id = localStorage.getItem("current_client_id");
     if (client_id == current_client_id) {
