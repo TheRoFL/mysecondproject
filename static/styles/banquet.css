@@ -169,7 +169,9 @@ input[type="submit"]:active {
   scrollbar-width: none;
   -ms-overflow-style: none;
 }
-
+.vash_zakaz::-webkit-scrollbar {
+  width: 0; /* Вы можете настроить толщину */
+}
 .name-input {
   width: 140px;
   height: 25px;

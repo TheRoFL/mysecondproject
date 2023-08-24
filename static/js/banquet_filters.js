@@ -83,8 +83,7 @@ function handleDeleteMenuButtonClick(button) {
   );
 }
 
-$("button.dish-filter").on("click", function () {
-  var filter = $(this).data("filter"); // Получаем значение data-filter
+function LoadMenu(filter) {
   localStorage.setItem("dish-filter", filter);
   var requestParams = {
     "dish-filter": filter, // Используем полученное значение для параметра запроса
@@ -467,4 +466,11 @@ $("button.dish-filter").on("click", function () {
       console.error(error);
     },
   });
+}
+
+$("button.dish-filter").on("click", function () {
+  var filter = $(this).data("filter"); // Получаем значение data-filter
+  localStorage.setItem("dish-filter", filter);
+
+  LoadMenu(filter);
 });
