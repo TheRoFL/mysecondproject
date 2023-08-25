@@ -17,8 +17,10 @@ def home(request):
             currentuser = None  
         currentprofile = ProfileData.objects.get(user=currentuser)
     except ProfileData.DoesNotExist:
-        currentprofile = None
-        return redirect("profile_creation/")
+        current_user = User.objects.get(id=request.user.id)
+        current_user_profiledata = ProfileData.objects.create(user=current_user, name="Введите имя", surname="Введите фамилию",
+                                                 patronymic="Введите отчество", sex='m', 
+                                                 birthdate = None, number="Введите номер")
 
     if "application/json" in request.META.get("HTTP_ACCEPT", ""):
         name = request.GET.get("name")
@@ -40,27 +42,35 @@ def home(request):
 
 def profile_creation(request):
     Profile_form = ProfileForm()
-    currentuserid = request.user.id
+    currentuser = request.user
     if request.method == 'GET':
         contex = {'Profile_form': Profile_form}
     if request.method == 'POST':
-        form = ProfileForm(request.POST, request.FILES)
-          
-        if form.is_valid():
-            profile = form.save(commit=False)
-            profile.user_id = currentuserid
-            profile.save()
-            return redirect("/profile")
-        else: return HttpResponse("Форма не валидна1")
+        form = ProfileForm(request.POST)
+        profile = form.save(commit=False)
+        profile.user = currentuser
+        profile.save()
+        return redirect("/profile")
+
 
     return render(request, 'Profile/profile_creation.html', contex)
 
 @login_required(login_url='/login/')
 def orders(request):
-    currentprofile = ProfileData.objects.get(user=request.user)
-    all_orders = Banquet.objects.filter(owner=currentprofile, is_ordered=True)
-    context = {
-            'all_orders': all_orders,
+    if request.user.is_staff:
+        all_banquets_unapproved = Banquet.objects.filter(is_ordered=True, is_approved=False)
+        all_banquets_approved = Banquet.objects.filter(is_ordered=True, is_approved=True)
+
+        context = {
+            'all_banquets_unapproved': all_banquets_unapproved,
+            'all_banquets_approved': all_banquets_approved
         }
+
+    else:
+        currentprofile = ProfileData.objects.get(user=request.user)
+        all_banquets = Banquet.objects.filter(owner=currentprofile, is_ordered=True)
+        context = {
+                'all_banquets': all_banquets,
+            }
 
     return render(request, 'Profile/orders.html', context)

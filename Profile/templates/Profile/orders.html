@@ -3,8 +3,81 @@
 <!-- prettier-ignore -->
 {% block content %} {% load static %}
 
+<link rel="stylesheet" href="/static/styles/banquet.css" />
 <h1>My orders</h1>
-{% for order in all_orders.all %}
-<h1>{{order}}, статус заказа: {{order.status}}</h1>
+{% if not user.is_staff %}
+<h2>
+  <!-- prettier-ignore -->
+  {% for current_banquet in all_banquets %}
+  Мероприятие {{current_banquet}}
+  {% for client in current_banquet.clients.all %}
+  <h3 style="margin-left: 25px">{{client}}</h3>
+  {% if client.menu %}
+  <h4 style="margin-left: 55px">{{client.menu}}</h4>
+  {% for menu in client.menu.dishes.all %}
+  <h4 style="margin-left: 70px">{{menu}}</h4>
+  {% endfor %}{% endif %}
+  <!-- prettier-ignore -->
+  {% if client.dishes.all %}
+  <h5 style="margin-left: 40px">Дополнительно:</h5>
+  {% for dishorder in client.dishes.all %}
+  <h5 style="margin-left: 75px">{{dishorder}}</h5>
+  {% endfor %} {% endif %} {% endfor %}
+  <button class="order-button" style="margin-right: 20px; margin-left: 10px">
+    Одобрить
+  </button>
+  <button class="order-button">Отклонить</button>
+  <h2>
+    ----------------------------------------------------------------------------
+  </h2>
+  {% endfor %}
+</h2>
+{% else %}
+<div class="all_banquets">
+  <div class="all_banquets_unapproved">
+    {% for current_banquet in all_banquets_unapproved %} Мероприятие
+    {{current_banquet}} {% for client in current_banquet.clients.all %}
+    <h3 style="margin-left: 25px">{{client}}</h3>
+    {% if client.menu %}
+    <h4 style="margin-left: 55px">{{client.menu}}</h4>
+    {% for menu in client.menu.dishes.all %}
+    <h4 style="margin-left: 70px">{{menu}}</h4>
+    {% endfor %}{% endif %} {% if client.dishes.all %}
+    <h5 style="margin-left: 40px">Дополнительно:</h5>
+    {% for dishorder in client.dishes.all %}
+    <h5 style="margin-left: 75px">{{dishorder}}</h5>
+    {% endfor %} {% endif %} {% endfor %}
+    <button class="order-button" style="margin-right: 20px; margin-left: 10px">
+      Одобрить
+    </button>
+    <button class="order-button">Отклонить</button>
+    <button class="order-button">Подробнее</button>
+    <h2>
+      ----------------------------------------------------------------------------
+    </h2>
+    {% endfor %}
+  </div>
+  <div class="all_banquets_approved">
+    {% for current_banquet in all_banquets_approved %} Мероприятие
+    {{current_banquet}} {% for client in current_banquet.clients.all %}
+    <h3 style="margin-left: 25px">{{client}}</h3>
+    {% if client.menu %}
+    <h4 style="margin-left: 55px">{{client.menu}}</h4>
+    {% for menu in client.menu.dishes.all %}
+    <h4 style="margin-left: 70px">{{menu}}</h4>
+    {% endfor %}{% endif %} {% if client.dishes.all %}
+    <h5 style="margin-left: 40px">Дополнительно:</h5>
+    {% for dishorder in client.dishes.all %}
+    <h5 style="margin-left: 75px">{{dishorder}}</h5>
+    {% endfor %} {% endif %} {% endfor %}
+    <button class="order-button" style="margin-right: 20px; margin-left: 10px">
+      Подробнее
+    </button>
 
-{% endfor %} {% endblock content %}
+    <h2>
+      ----------------------------------------------------------------------------
+    </h2>
+    {% endfor %}
+  </div>
+</div>
+{% endif %} {% endblock content %}

@@ -93,6 +93,8 @@ class Banquet(models.Model):
     bonuses = models.IntegerField(default=None, null=True, blank=True)
 
     is_ordered = models.BooleanField(default=False)
+    is_approved = models.BooleanField(default=False)
+    is_finished = models.BooleanField(default=False)
 
     quantity = 0
     def quantity_count(self):

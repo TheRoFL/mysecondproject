@@ -23,7 +23,11 @@ def home(request, dish_type=None, clientId=None):
         current_user = User.objects.get(id=request.user.id)
         current_user_profiledata = ProfileData.objects.get(user=current_user)
     except ProfileData.DoesNotExist:
-        return redirect("/profile")
+        current_user = User.objects.get(id=request.user.id)
+        current_user_profiledata = ProfileData.objects.create(user=current_user, name="Введите имя", surname="Введите фамилию",
+                                                 patronymic="Введите отчество", sex='m', 
+                                                 birthdate = None, number="Введите номер")
+        
     
     try:
         banquet = Banquet.objects.get(owner=current_user_profiledata, is_ordered=False)

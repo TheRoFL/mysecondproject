@@ -13,9 +13,11 @@
     <ul class="header_menu">
       <li class="header_menu_li"><a href="/menu">Меню</a></li>
       <li class="header_menu_li">
-        {% if request.user.is_authenticated %}
+        {% if request.user.is_authenticated %} {% if request.user.is_staff %}
+        <a href="/profile/orders">Заказы пользователей</a>
+        {% else %}
         <a href="/profile/orders">Мои заказы</a>
-        {%else%}
+        {% endif %} {%else%}
         <a href="/login/?next=/profile/orders/">Мои заказы</a>
         {%endif%}
       </li>

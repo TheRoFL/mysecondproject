@@ -74,11 +74,11 @@ menuButtons.forEach((button) => {
       localStorage.setItem("current_client_name", button.dataset.name);
       menuButtons.forEach((button) => {
         var current_client_id = localStorage.getItem("current_client_id");
-        if (button.dataset.id == current_client_id) {
-          button.classList.add("active");
-        } else {
-          button.classList.remove("active");
-        }
+        var my_client_form = document.querySelector(
+          `.my_client[data-id="${current_client_id}"]`
+        );
+        my_client_form.classList.add("active");
+        button.classList.add("active");
       });
       x1.classList.remove("hidden2");
       y1.classList.remove("hidden2");
@@ -137,6 +137,10 @@ document.addEventListener("keydown", (e) => {
 
 y1.addEventListener("click", () => {
   var gridContainer = document.querySelector(".grid-container");
+  var chosenClient = document.querySelector(".my_client.active");
+  if (chosenClient) {
+    chosenClient.classList.remove("active");
+  }
   gridContainer.classList.remove("menu-mode");
 
   setTimeout(() => {

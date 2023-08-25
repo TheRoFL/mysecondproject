@@ -36,7 +36,7 @@ def login_user(request):
                 if (redirect_to):
                     return redirect(redirect_to)
                 else:
-                    return redirect("/profile")
+                    return redirect("/")
             else:
                 return HttpResponse('Disabled account')
         else:
@@ -67,7 +67,7 @@ def register(request):
         user = authenticate(username=current_login, password=password)
         if user is not None:
             login(request, user)
-            return redirect("/profile")
+            return redirect("/")
     
             
     else:
