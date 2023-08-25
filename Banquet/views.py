@@ -24,9 +24,10 @@ def home(request, dish_type=None, clientId=None):
         current_user_profiledata = ProfileData.objects.get(user=current_user)
     except ProfileData.DoesNotExist:
         current_user = User.objects.get(id=request.user.id)
-        current_user_profiledata = ProfileData.objects.create(user=current_user, name="Введите имя", surname="Введите фамилию",
-                                                 patronymic="Введите отчество", sex='m', 
-                                                 birthdate = None, number="Введите номер")
+        current_user_profiledata = ProfileData.objects.create(user=current_user, name="Введите имя",
+                                                                surname="Введите фамилию", sex='m', 
+                                                                patronymic="Введите отчество",
+                                                                birthdate = None, number="Введите номер")
         
     
     try:
