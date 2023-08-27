@@ -53,6 +53,27 @@ function ChangeChosenStatus() {
   });
 }
 
+function formatInteger(integer) {
+  if (typeof integer === "number" && Number.isInteger(integer)) {
+    const integerStr = integer.toLocaleString("en-US"); // Преобразование числа в строку с разделением тысяч
+    const parts = integerStr.split(",");
+
+    // Разделение на разряды
+    let formattedInteger = "";
+    while (parts.length > 0) {
+      if (formattedInteger.length > 0) {
+        formattedInteger = " " + formattedInteger;
+      }
+      formattedInteger = parts[parts.length - 1] + formattedInteger;
+      parts.pop();
+    }
+
+    return formattedInteger;
+  } else {
+    return "Invalid input";
+  }
+}
+
 function handleDeleteDishButtonClickFromMenu(button) {
   const order_id = button.dataset.id;
   var username_id = localStorage.getItem("username_id");

@@ -81,9 +81,8 @@
           data-id="{{client.id}}"
           data-name="{{client.type}}"
         >
-          {% if client.menu %}
-
-          <div class="client-menu" data-id="{{client.id}}-{{client.menu.id}}">
+          <div class="client-menu" data-id="{{client.id}}">
+            {% if client.menu %}
             <div class="client-menu-btn">
               <h1 style="display: inline-block">{{client.menu}}</h1>
               <button
@@ -109,14 +108,16 @@
                 >{{client.menu.all_dishes_price}}</span
               >.00 руб. с человека
             </h1>
-            <h1>-----------------------------------------------</h1>
+            <h1>----------------------------------------------</h1>
+            {%endif%}
           </div>
 
-          {%endif%} {% if client.dishes.all %}
-
           <div class="additional-dishes" data-id="{{client.id}}">
+            {% if client.dishes.all %} {% if client.menu %}
             <h1 style="margin-left: 15px">Дополнительно:</h1>
-            {% for client_dish in client.dishes.all %}
+            {% else %}
+            <h1 style="margin-left: 15px">Выбранные блюда:</h1>
+            {% endif %} {% for client_dish in client.dishes.all %}
             <div class="adittional-dish" data-id="{{client_dish.id}}">
               <div class="adittional-dish-item">
                 <h2 style="margin-left: 30px">
@@ -149,23 +150,21 @@
             </div>
 
             {% endfor %}
-            <h1>-----------------------------------------------</h1>
+            <h1>----------------------------------------------</h1>
+            {% endif %}
           </div>
-
-          {% endif %}
 
           <h2
             class="client-total-price"
             style="margin-top: 15px; margin-left: 20px"
           >
-            <!-- prettier-ignore -->
-            Итого за всех клиентов:
+            Итого:
             <span
               class="order-price-count"
               data-id="{{client.id}}"
               id="{{client.id}}"
             >
-              {{client.price_count}}</span
+              {{client.total_client_price}}</span
             >.00 руб. x
             <span class="client-quantity" data-id="{{client.id}}"
               >{{client.quantity}}</span
@@ -330,6 +329,36 @@
       }
     });
   </script>
-  <script></script>
+  <script>
+    function formatInteger(integer) {
+      if (typeof integer === "number" && Number.isInteger(integer)) {
+        const integerStr = integer.toLocaleString("en-US"); // Преобразование числа в строку с разделением тысяч
+        const parts = integerStr.split(",");
+
+        // Разделение на разряды
+        let formattedInteger = "";
+        while (parts.length > 0) {
+          if (formattedInteger.length > 0) {
+            formattedInteger = " " + formattedInteger;
+          }
+          formattedInteger = parts[parts.length - 1] + formattedInteger;
+          parts.pop();
+        }
+
+        return formattedInteger;
+      } else {
+        return "Invalid input";
+      }
+    }
+
+    let clientPriceCount = document.querySelectorAll(".client-price-count");
+    clientPriceCount.forEach((button) => {
+      let value = parseInt(button.textContent);
+      if (!isNaN(value)) {
+        let formattedValue = formatInteger(value);
+        button.textContent = formattedValue;
+      }
+    });
+  </script>
 </body>
 {% endblock content %}

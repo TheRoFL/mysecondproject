@@ -310,7 +310,7 @@ socket.onmessage = function (e) {
         event.stopPropagation();
         // костыль, который прогружает заново меню и навешивает лисенеры, и более не навешивается более 1
         var filter = $(this).data("filter"); // Получаем значение data-filter
-        LoadMenu(filter);
+        LoadMenu("all");
 
         localStorage.setItem("current_client_id", button.dataset.id);
         localStorage.setItem("current_client_name", button.dataset.name);
@@ -412,6 +412,25 @@ socket.onmessage = function (e) {
     newClientDeleteImg.setAttribute("data-id", client_id);
     newClientDeleteImg.dataset.id = client_id;
     newClientDeleteImg.classList.remove("created");
+
+    const NewClientMenu = document.querySelector(".client-menu.created");
+    NewClientMenu.setAttribute("data-id", client_id);
+    NewClientMenu.dataset.id = client_id;
+    NewClientMenu.classList.remove("created");
+
+    const NewAdditionalDishes = document.querySelector(
+      ".additional-dishes.created"
+    );
+    NewAdditionalDishes.setAttribute("data-id", client_id);
+    NewAdditionalDishes.dataset.id = client_id;
+    NewAdditionalDishes.classList.remove("created");
+
+    const NewClientTotalPrice = document.querySelector(
+      ".client-total-price.created"
+    );
+    NewClientTotalPrice.setAttribute("data-id", client_id);
+    NewClientTotalPrice.dataset.id = client_id;
+    NewClientTotalPrice.classList.remove("created");
 
     localStorage.setItem("current_client_id", client_id);
   } else if (action === "client_deleted") {
@@ -527,14 +546,15 @@ socket.onmessage = function (e) {
     client_id = data["client_id"];
     menu_id = data["menu_id"];
 
-    var MenuDivToRemove = document.querySelectorAll(
-      'div[data-id="' + client_id + "-" + menu_id + '"]'
+    var MenuDivToRemove = document.querySelector(
+      `.client-menu[data-id="${client_id}"]`
     );
 
-    // Перебираем найденные элементы и удаляем каждый из них
-    MenuDivToRemove.forEach(function (element) {
-      element.parentNode.removeChild(element);
-    });
+    if (MenuDivToRemove) {
+      while (MenuDivToRemove.firstChild) {
+        MenuDivToRemove.removeChild(MenuDivToRemove.firstChild);
+      }
+    }
 
     const OrderTotalPrice = document.querySelector(
       `span.order-price-count[data-id="${data.client_id}"]`
@@ -557,22 +577,23 @@ socket.onmessage = function (e) {
     client_id = data["client_id"];
     previous_menu_id = data["previous_menu_id"];
     current_menu_id = data["current_menu_id"];
-    // Перебираем найденные элементы и удаляем следующий элемент (menuDiv)
-    var targetDataId = client_id + "-" + previous_menu_id; // Здесь укажите нужное значение data-id
 
     var menuToRemove = document.querySelector(
-      `div.client-menu[data-id="${targetDataId}"]`
+      `div.client-menu[data-id="${client_id}"]`
     );
     // Проверяем, найден ли элемент, и удаляем его, если он найден
     if (menuToRemove) {
-      menuToRemove.remove();
+      while (menuToRemove.firstChild) {
+        menuToRemove.removeChild(menuToRemove.firstChild);
+      }
     }
 
-    // Создаем основной контейнер div
-    var menuDiv = document.createElement("div");
-    menuDiv.className = "client-menu";
-    data_id = client_id + "-" + current_menu_id;
-    menuDiv.setAttribute("data-id", data_id);
+    var menuDiv = document.querySelector(
+      `.client-menu[data-id="${client_id}"]`
+    );
+    if (menuDiv) {
+      menuDiv.setAttribute("data-id", client_id);
+    }
 
     // Создаем контейнер с кнопкой и заголовком
     var btnDiv = document.createElement("div");
@@ -587,12 +608,6 @@ socket.onmessage = function (e) {
 
     deleteButton.setAttribute("data-id", current_menu_id);
     deleteButton.setAttribute("data-clientid", client_id);
-    deleteButton.setAttribute(
-      "data-unique_id",
-      client_id + "-" + current_menu_id
-    );
-    deleteButton.style.marginTop = "0px";
-    deleteButton.style.marginLeft = "18px";
     deleteButton.textContent = "Удалить";
 
     btnDiv.appendChild(menuHeader);
@@ -633,22 +648,7 @@ socket.onmessage = function (e) {
     separator.textContent = "-------------------------------------------";
     menuDiv.appendChild(separator);
 
-    // Добавляем контейнер на страницу
-    // Получаем элемент, после которого хотим вставить меню
-    var targetHeaders = document.querySelectorAll(
-      `h1.client-info-h1[data-id="${client_id}"]`
-    );
-
-    // Вставляем menuDiv после referenceDiv
-    targetHeaders.forEach(function (header) {
-      header.insertAdjacentElement("afterend", menuDiv.cloneNode(true));
-    });
-
     var current_client_id = localStorage.getItem("current_client_id");
-    var currnet_client = document.querySelector(
-      `.vash_zakaz[data-id="${current_client_id}"]`
-    );
-    currnet_client.append(menuDiv);
 
     var client_menu_total_price = document.querySelector(
       'span.order-price-count[data-id="' + data.client_id + '"]'
@@ -683,30 +683,52 @@ socket.onmessage = function (e) {
     );
     total_banquet_price.textContent = data["total_banquet_price"] + ".00 руб.";
 
+    function handleDeleteMenuButtonClick2(button) {
+      const menu_id = button.dataset.id; // Получаем значение data-id из атрибута data-id
+      var username_id = localStorage.getItem("username_id");
+      var current_client_id = localStorage.getItem("current_client_id");
+      socket.send(
+        JSON.stringify({
+          action: "client_menu_delete",
+          menu_id: menu_id,
+          current_user_id: username_id,
+          client_id: current_client_id,
+        })
+      );
+    }
+
     const menuDeleteButton = document.querySelector(
-      `.delete-menu-btn[data-unique_id="${client_id + "-" + current_menu_id}"]`
+      `.delete-menu-btn[data-clientid="${client_id}"]`
     );
-    menuDeleteButton.addEventListener("click", handleDeleteMenuButtonClick);
+    menuDeleteButton.addEventListener("click", function (event) {
+      handleDeleteMenuButtonClick2(event.target); // Передаем кнопку как аргумент
+    });
   } else if (action == "new_dish_added") {
+    var client_id = localStorage.getItem("current_client_id");
     var newDiv = document.createElement("div");
     div_name = "client-orders-" + data.current_dish_order_id;
     newDiv.classList.add(div_name);
 
-    // Формируем содержимое для нового div
-    var client_dishOrderElement = document.createElement("div");
+    const additional_dishes = document.querySelector(
+      `.additional-dishes[data-id="${client_id}"]`
+    );
+
+    var adittional_dish = document.createElement("div");
     var client_dishOrder_product_name = data.current_dish_order_name;
     var client_dishOrder_quantity = data.client_dishOrder_quantity;
     var client_dishOrder_price_count = data.client_dishOrder_price_count;
-    client_dishOrderElement.classList.add("client_dishOrder-element");
-    client_dishOrderElement.dataset.id = data.current_dish_order_id;
-    client_dishOrderElement.innerHTML = `
-    <span>
+    adittional_dish.classList.add("adittional-dish");
+    adittional_dish.dataset.id = data.current_dish_order_id;
+
+    var adittional_dish_item = document.createElement("div");
+    adittional_dish_item.innerHTML = `
+    <div class="adittional-dish-item">
     ${client_dishOrder_product_name} x <span class="client_order_quantity" data-id="${data.client_id}" 
     id="${data.current_dish_order_id}">
     ${client_dishOrder_quantity}</span> шт. =
      <span class="client_order_price" data-id="${data.client_id}" id="${data.current_dish_order_id}">
       ${client_dishOrder_price_count}</span>.00 руб.
-    </span>
+    </div>
   `;
     // Создаем кнопку для удаления
     var deleteButton = document.createElement("button");
@@ -716,17 +738,11 @@ socket.onmessage = function (e) {
     deleteButton.dataset.unique_id =
       data.current_dish_order_id + "-" + data.client_id;
     deleteButton.innerText = "X";
-    // Добавляем кнопку удаления в div
-    client_dishOrderElement.append(deleteButton);
+
+    adittional_dish.append(adittional_dish_item);
+    adittional_dish.append(deleteButton);
     deleteButton.addEventListener("click", handleDeleteDishButtonClick);
-    newDiv.appendChild(client_dishOrderElement);
-
-    var current_client_id = localStorage.getItem("current_client_id");
-    var currnet_client = document.querySelector(
-      `.vash_zakaz[data-id="${current_client_id}"]`
-    );
-
-    currnet_client.append(newDiv);
+    additional_dishes.appendChild(adittional_dish);
   } else if (action == "dish_added") {
     var newQuantity = data.client_dishOrder_quantity;
     var client_dishOrder_price_count = data.client_dishOrder_price_count;
@@ -904,6 +920,23 @@ showFormButton.addEventListener("click", () => {
   vashZakazDiv.className = "vash_zakaz";
   vashZakazDiv.classList.add("created");
   divElement.appendChild(vashZakazDiv); // Пустой div для vash_zakaz
+
+  const client_menu = document.createElement("div");
+  client_menu.className = "client-menu";
+  client_menu.classList.add("created");
+  vashZakazDiv.appendChild(client_menu);
+
+  const additional_dishes = document.createElement("div");
+  additional_dishes.className = "additional-dishes";
+  additional_dishes.classList.add("created");
+  vashZakazDiv.appendChild(additional_dishes);
+
+  const client_total_price = document.createElement("h2");
+  client_total_price.className = "client-total-price";
+  client_total_price.classList.add("created");
+  client_total_price.style.marginTop = "15px";
+  client_total_price.style.marginLeft = "20px";
+  vashZakazDiv.appendChild(client_total_price);
 
   var buttonDetails = document.createElement("button");
   buttonDetails.className = "details-button";
