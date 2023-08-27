@@ -2,14 +2,28 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
 from django.db.models import Q
 from django.contrib.auth.decorators import login_required
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.core.serializers import serialize
 from django.core.mail import send_mail
+from django.core.mail import EmailMessage
 import json
 from datetime import timedelta
 from decimal import Decimal
 from Menu.models import *
 from .models import *
+
+from reportlab.lib.enums import *
+from reportlab.lib.pagesizes import letter
+from reportlab.platypus import *
+from reportlab.lib.styles import *
+from reportlab.lib.units import cm
+
+from reportlab.pdfbase import pdfmetrics
+from reportlab.pdfbase.ttfonts import TTFont
+
+
+
+
 
 @login_required(login_url='/login/')
 def home(request, dish_type=None, clientId=None):
@@ -101,7 +115,49 @@ def home(request, dish_type=None, clientId=None):
 
         serialized_menu_dishes = json.dumps(menu_dishes)
         
+
+
+    client_data = []
+    for client in banquet.clients.all():
+        client_dishes = {}
+        total = 0
+        if client.menu:
+            for menu_dish in client.menu.dishes.all():
+                total += int(menu_dish.product.price)
+        if client.dishes.all():
+            for dish in client.dishes.all():
+                client_dishes[dish.product.id] = dish.quantity
+                total += int(dish.product.price) * dish.quantity
+        if client.menu: menu = client.menu.id
+        else: menu=None
+        client_type = client.type
+        client_data.append({
+            client_type: {
+                'quantity': client.quantity,
+                'menu': menu,
+                'additional': client_dishes,
+                'total': total
+            }
+        })
+    print(client_data)
+
+    banquet_cost = banquet.total_price()
+
+    dishes = {}
+    for dish in Dish.objects.all():
+        dishes[dish.id] = dict(name=dish.name, price=int(dish.price), qauntity=1)
+
+    print(dishes)
+    order = {
+    'type':'Банкет',
+    'clients':client_data,
+    'price': banquet_cost,
+    'waiters': int(banquet.quantity_count() / 20),
+    'client_quantity' : banquet.quantity_count()
+    }
            
+    generate_pdf(order, dishes)
+
     if "application/json" in request.META.get("HTTP_ACCEPT", ""):
         serialized_data = serialize('json', current_dishes)
 
@@ -162,18 +218,59 @@ def ordering(request):
         current_user_profiledata.bonuses += current_banquet.bonuses  
         current_user_profiledata.save()
 
-        subject = 'Вам заказали банкет'
-        message = f'{request.user.email} заказал банкет'
-        from_email = 'theroflx@yandex.ru'
-        recipient_list = ['theroflx@yandex.ru']
-        send_mail(subject, message, from_email, recipient_list)
+        # subject = 'Вам заказали банкет'
+        # message = f'{request.user.email} заказал банкет'
+        # from_email = 'theroflx@yandex.ru'
+        # recipient_list = ['theroflx@yandex.ru']
+        # send_mail(subject, message, from_email, recipient_list)
 
-        subject = 'Банкет'
-        message = 'Вы заказали банкет'
-        from_email = request.user.email
-        recipient_list = [request.user.email]
-        send_mail(subject, message, from_email, recipient_list)
+        # subject = 'Банкет'
+        # message = 'Вы заказали банкет'
+        # from_email = request.user.email
+        # recipient_list = [request.user.email]
+        # send_mail(subject, message, from_email, recipient_list)
 
+
+        client_data = []
+        for client in current_banquet.clients.all():
+            client_dishes = {}
+            total = 0
+            if client.menu:
+                for menu_dish in client.menu.dishes.all():
+                    total += int(menu_dish.product.price)
+            if client.dishes.all():
+                for dish in client.dishes.all():
+                    client_dishes[dish.product.id] = dish.quantity
+                    total += int(dish.product.price) * dish.quantity
+            if client.menu: menu = client.menu.id
+            else: menu=None
+            client_type = client.type
+            client_data.append({
+                client_type: {
+                    'quantity': client.quantity,
+                    'menu': menu,
+                    'additional': client_dishes,
+                    'total': total
+                }
+            })
+        print(client_data)
+
+        banquet_cost = current_banquet.total_price()
+
+        dishes = {}
+        for dish in Dish.objects.all():
+            dishes[dish.id] = dict(name=dish.name, price=int(dish.price), qauntity=1)
+
+        print(dishes)
+        order = {
+        'type':'Банкет',
+        'clients':client_data,
+        'price': banquet_cost,
+        'waiters': int(current_banquet.quantity_count() / 20),
+        'client_quantity' : current_banquet.quantity_count()
+        }
+            
+        generate_pdf(order, dishes)
         return render(request, 'Banquet/ordering.html')       
     
 
@@ -200,7 +297,6 @@ def ordering(request):
         'total':total
         }
     
-
     return render(request, 'Banquet/ordering.html', contex)       
 
 
@@ -240,4 +336,118 @@ def forJsonResopnses(request):
     return JsonResponse(response, safe=False)
 
     
+def generate_pdf(order, dishes):
+    def format_integer(integer):
+        if isinstance(integer, int):
+            integer_str = "{:,}".format(integer)  # Преобразование числа в строку с разделением тысяч
+            parts = integer_str.split(",")
+
+            # Разделение на разряды
+            formatted_integer = ""
+            while len(parts) > 0:
+                if len(formatted_integer) > 0:
+                    formatted_integer = " " + formatted_integer
+                formatted_integer = parts[-1] + formatted_integer
+                parts = parts[:-1]
+
+            return formatted_integer
+        else:
+            return "Invalid input"
+        
+    styles = getSampleStyleSheet() 
+    styles['Normal'].fontName='DejaVuSerif'
+    styles['Normal'].alignment = TA_LEFT
+    styles['Normal'].fontSize=10
+    styles['Normal'].leftIndent=20
+    styles['Heading1'].fontName='DejaVuSerif'
+    styles['Heading1'].alignment = TA_CENTER
+    styles['Heading1'].fontSize=36
+    pdfmetrics.registerFont(TTFont('DejaVuSerif','test/DejaVuSerif.ttf', 'UTF-8'))
+
+
+    menus = {
+        4: [1, 2, 3, 4, 5], 
+        5: [1, 2, 3, 4, 5],
+    }
+
+    def AddOrder(doc):
+        doc = AddTittle(doc)
+        doc = AddParagraph(doc)
+        doc = AddClient(doc, order["clients"])
+        return doc
+
+    def AddTittle(doc):
+        doc.append(Spacer(1, 20))
+        doc.append(Paragraph(f'Ваш {order["type"]} на {order["client_quantity"]} человек:', styles["Heading1"]))
+        doc.append(Spacer(1, 5))
     
+        return doc
+
+
+    def AddParagraph(doc):
+        doc.append(Spacer(1, 20))
+
+        return doc
+
+
+    def AddClient(doc, clients):
+        doc.append(Spacer(1, 20))
+        styles.add(ParagraphStyle(name='Client', fontSize=20, alignment=TA_LEFT, leftIndent=15))
+        styles['Client'].fontName='DejaVuSerif'
+        styles.add(ParagraphStyle(name='Menu', fontSize=15, alignment=TA_LEFT, leftIndent=20))
+        styles['Menu'].fontName='DejaVuSerif'
+        styles.add(ParagraphStyle(name='AdditionalDishes', fontSize=15, alignment=TA_LEFT, leftIndent=20))
+        styles['AdditionalDishes'].fontName='DejaVuSerif'
+        styles.add(ParagraphStyle(name='ClientDish', fontSize=10, alignment=TA_LEFT, leftIndent=25))
+        styles['ClientDish'].fontName='DejaVuSerif'
+
+        price_style = ParagraphStyle(name='Price', fontSize=10, alignment=TA_LEFT, leftIndent=25)
+        price_style.fontName = 'DejaVuSerif'
+        styles.add(price_style)
+
+        for client in clients:
+            for client_id, client_data in client.items():
+                template = "без названия" if client_id == "Введите клиента" else client_id
+                doc.append(Spacer(1, 10))
+                doc.append(Paragraph(f'Шаблон "{template}" на {client_data["quantity"]} человек', styles["Client"]))
+                doc.append(Spacer(1, 10))
+                if client_data["menu"]:
+                    doc.append(Paragraph(f'Меню №{client_data["menu"]}', styles["Menu"]))
+                    doc.append(Spacer(1, 5))
+                    for menu_dish in menus[client_data["menu"]]:
+                        menu_dish_data = dishes[menu_dish]
+                        menu_dish = f'{menu_dish_data["name"]}'  + ' x '
+                        menu_dish += f'{menu_dish_data["qauntity"]}' + ' шт. = '
+                        menu_dish += f'{menu_dish_data["price"] * menu_dish_data["qauntity"]}' + ".00 руб."
+                        doc.append(Paragraph(menu_dish, styles["ClientDish"]))
+
+
+                if client_data["additional"]:
+                    if client_data["menu"]:
+                        doc.append(Paragraph(f'Дополнительные блюда:', styles["AdditionalDishes"]))
+                        doc.append(Spacer(1, 5))
+                
+                    for additional_dish in client_data["additional"]:
+                        dish = f'{dishes[additional_dish]["name"]}'  + ' x '
+                        dish += f'{client_data["additional"][additional_dish]}' + ' шт. = '
+                        dish += f'{dishes[additional_dish]["price"] * client_data["additional"][additional_dish]}' + ".00 руб."
+                        doc.append(Paragraph(dish, styles["ClientDish"]))
+                        doc.append(Spacer(1, 2))
+
+                total = client_data["total"]
+                subtotal = f'Подытог: {client_data["total"]}.00 руб. x {client_data["quantity"]} шт. = {format_integer(total * client_data["quantity"])}.00 руб.'
+                doc.append(Paragraph(subtotal, styles["AdditionalDishes"]))
+                    
+                doc.append(Spacer(1, 5))
+
+        doc.append(Spacer(1, 20))
+        doc.append(Paragraph(f'Итого: {format_integer(order["price"])}.00 руб.', styles["Client"]))
+        return doc
+
+    document = []   
+    document.append(Image('test/logo.png', 5*cm * 2, 5*cm))
+    document = AddOrder(document)
+
+
+    SimpleDocTemplate('test/test.pdf', pagesize=letter, rightMargin=12, leftMargin=12, topMargin=12, bottomMargin=6).build(document)
+

@@ -40,8 +40,7 @@ class MenuSample(models.Model):
         for dish in self.dishes.all():
             self.total += int(dish.price_count())
         return self.total
-    
-    
+       
 class Client(models.Model):
     dishes = models.ManyToManyField(DishOrder, blank=True)
     menu = models.ForeignKey(MenuSample, null=True, blank=True, default=None, on_delete=models.CASCADE)

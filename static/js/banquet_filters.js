@@ -352,6 +352,11 @@ function LoadMenu(filter) {
             current_dish.classList.add("active");
             x = document.getElementById("overflow" + i);
             y = document.getElementById("modWind" + i);
+
+            const gridContainer = document.querySelector(".menuu");
+            const overflowElement = document.querySelector(".overflow");
+            overflowElement.style.height = `${gridContainer.offsetHeight}px`;
+
             x.classList.remove("hidden");
             y.classList.remove("hidden");
           });
