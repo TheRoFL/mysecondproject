@@ -156,7 +156,7 @@ def home(request, dish_type=None, clientId=None):
     'client_quantity' : banquet.quantity_count()
     }
            
-    generate_pdf(order, dishes)
+    # generate_pdf(order, dishes)
 
     if "application/json" in request.META.get("HTTP_ACCEPT", ""):
         serialized_data = serialize('json', current_dishes)
@@ -253,24 +253,34 @@ def ordering(request):
                     'total': total
                 }
             })
-        print(client_data)
+
+        
+        menus = {}
+        for mune in MenuSample.objects.all():
+            all_mune_dishes = []
+            for mune_dish in mune.dishes.all():
+                all_mune_dishes.append(mune_dish.id)
+            menus[mune.id] = all_mune_dishes
+
 
         banquet_cost = current_banquet.total_price()
-
         dishes = {}
         for dish in Dish.objects.all():
             dishes[dish.id] = dict(name=dish.name, price=int(dish.price), qauntity=1)
 
-        print(dishes)
+        if int(current_banquet.quantity_count() / 20) == 0:
+            waiters = 1
+        else: waiters = int(current_banquet.quantity_count() / 20)
         order = {
         'type':'Банкет',
         'clients':client_data,
         'price': banquet_cost,
-        'waiters': int(current_banquet.quantity_count() / 20),
+        'waiters':  waiters,
         'client_quantity' : current_banquet.quantity_count()
         }
-            
-        generate_pdf(order, dishes)
+
+        
+        generate_pdf(order, dishes, menus, int(hours_quantity))
         return render(request, 'Banquet/ordering.html')       
     
 
@@ -336,7 +346,7 @@ def forJsonResopnses(request):
     return JsonResponse(response, safe=False)
 
     
-def generate_pdf(order, dishes):
+def generate_pdf(order, dishes, menus, duration):
     def format_integer(integer):
         if isinstance(integer, int):
             integer_str = "{:,}".format(integer)  # Преобразование числа в строку с разделением тысяч
@@ -365,14 +375,8 @@ def generate_pdf(order, dishes):
     pdfmetrics.registerFont(TTFont('DejaVuSerif','test/DejaVuSerif.ttf', 'UTF-8'))
 
 
-    menus = {
-        4: [1, 2, 3, 4, 5], 
-        5: [1, 2, 3, 4, 5],
-    }
-
     def AddOrder(doc):
         doc = AddTittle(doc)
-        doc = AddParagraph(doc)
         doc = AddClient(doc, order["clients"])
         return doc
 
@@ -381,12 +385,6 @@ def generate_pdf(order, dishes):
         doc.append(Paragraph(f'Ваш {order["type"]} на {order["client_quantity"]} человек:', styles["Heading1"]))
         doc.append(Spacer(1, 5))
     
-        return doc
-
-
-    def AddParagraph(doc):
-        doc.append(Spacer(1, 20))
-
         return doc
 
 
@@ -400,6 +398,8 @@ def generate_pdf(order, dishes):
         styles['AdditionalDishes'].fontName='DejaVuSerif'
         styles.add(ParagraphStyle(name='ClientDish', fontSize=10, alignment=TA_LEFT, leftIndent=25))
         styles['ClientDish'].fontName='DejaVuSerif'
+        styles.add(ParagraphStyle(name='Waiters', fontSize=12.5, alignment=TA_LEFT, leftIndent=15))
+        styles['Waiters'].fontName='DejaVuSerif'
 
         price_style = ParagraphStyle(name='Price', fontSize=10, alignment=TA_LEFT, leftIndent=25)
         price_style.fontName = 'DejaVuSerif'
@@ -441,7 +441,13 @@ def generate_pdf(order, dishes):
                 doc.append(Spacer(1, 5))
 
         doc.append(Spacer(1, 20))
-        doc.append(Paragraph(f'Итого: {format_integer(order["price"])}.00 руб.', styles["Client"]))
+        waiters = order['waiters']
+        waiter_salary = 400
+        service = waiters * waiter_salary * duration
+        doc.append(Paragraph(f'Обслуживаение: {waiters} официантов x {waiter_salary}.00 руб./час * {duration} ч. = {format_integer(service)}.00 руб.',
+                            styles["Waiters"]))
+        doc.append(Spacer(1, 10))
+        doc.append(Paragraph(f'Итого: {format_integer(int(order["price"]) + int(service))}.00 руб.', styles["Client"]))
         return doc
 
     document = []   
@@ -449,5 +455,5 @@ def generate_pdf(order, dishes):
     document = AddOrder(document)
 
 
-    SimpleDocTemplate('test/test.pdf', pagesize=letter, rightMargin=12, leftMargin=12, topMargin=12, bottomMargin=6).build(document)
+    SimpleDocTemplate('test/test.pdf', pagesize=letter, rightMargin=12, leftMargin=12, topMargin=0, bottomMargin=6).build(document)
 
