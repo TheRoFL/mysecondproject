@@ -720,17 +720,21 @@ socket.onmessage = function (e) {
     adittional_dish.classList.add("adittional-dish");
     adittional_dish.dataset.id = data.current_dish_order_id;
 
+    var extra_sign = document.createElement("h1");
+    extra_sign.value = "Дополнительно:";
     var adittional_dish_item = document.createElement("div");
+    adittional_dish_item.classList.add("adittional-dish-item");
     adittional_dish_item.innerHTML = `
-    <div class="adittional-dish-item">
+    <h2 style="margin-left: 30px">
     ${client_dishOrder_product_name} x <span class="client_order_quantity" data-id="${data.client_id}" 
     id="${data.current_dish_order_id}">
     ${client_dishOrder_quantity}</span> шт. =
      <span class="client_order_price" data-id="${data.client_id}" id="${data.current_dish_order_id}">
-      ${client_dishOrder_price_count}</span>.00 руб.
-    </div>
+      ${client_dishOrder_price_count}</span>.00 руб.</h2>
   `;
     // Создаем кнопку для удаления
+    var adittional_dish_item_button = document.createElement("div");
+    adittional_dish_item_button.classList.add("adittional-dish-item-button");
     var deleteButton = document.createElement("button");
     deleteButton.classList.add("delete-btn");
     deleteButton.dataset.id = data.current_dish_order_id;
@@ -739,8 +743,9 @@ socket.onmessage = function (e) {
       data.current_dish_order_id + "-" + data.client_id;
     deleteButton.innerText = "X";
 
+    adittional_dish_item_button.append(deleteButton);
     adittional_dish.append(adittional_dish_item);
-    adittional_dish.append(deleteButton);
+    adittional_dish.append(adittional_dish_item_button);
     deleteButton.addEventListener("click", handleDeleteDishButtonClick);
     additional_dishes.appendChild(adittional_dish);
   } else if (action == "dish_added") {
@@ -931,11 +936,9 @@ showFormButton.addEventListener("click", () => {
   additional_dishes.classList.add("created");
   vashZakazDiv.appendChild(additional_dishes);
 
-  const client_total_price = document.createElement("h2");
+  const client_total_price = document.createElement("div");
   client_total_price.className = "client-total-price";
   client_total_price.classList.add("created");
-  client_total_price.style.marginTop = "15px";
-  client_total_price.style.marginLeft = "20px";
   vashZakazDiv.appendChild(client_total_price);
 
   var buttonDetails = document.createElement("button");

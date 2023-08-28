@@ -154,10 +154,7 @@
             {% endif %}
           </div>
 
-          <h2
-            class="client-total-price"
-            style="margin-top: 15px; margin-left: 20px"
-          >
+          <div class="client-total-price">
             Итого:
             <span
               class="order-price-count"
@@ -176,7 +173,7 @@
               id="{{client.id}}"
               >{{client.menu_and_orders_price_count}}</span
             >.00 руб.
-          </h2>
+          </div>
         </div>
         <button class="details-button" data-id="{{client.id}}">
           Подробнее

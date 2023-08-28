@@ -104,6 +104,82 @@ function handleDeleteMenuButtonClick(button) {
   );
 }
 
+function handleButtonClick(button) {
+  var username_id = localStorage.getItem("username_id");
+  var clientId = localStorage.getItem("current_client_id");
+  var clientName = localStorage.getItem("current_client_name");
+  var current_dish_filter = localStorage.getItem("dish-filter");
+
+  var dishId = button.dataset.id;
+  var dishTitle = button.dataset.name;
+
+  const data_to_send = {
+    action: "added_dish",
+    message: `Заказ "${dishTitle}" добавлен`,
+    current_dish_id: dishId,
+    current_user_id: username_id,
+    current_client_id: clientId,
+  };
+
+  var dish_filter = current_dish_filter;
+  var is_menu = false;
+
+  if (dish_filter == "samples") {
+    is_menu = true;
+  }
+
+  if (button.classList.contains("chosen")) {
+    if (!is_menu) {
+      handleDeleteDishButtonClickFromMenu(button);
+    } else {
+      handleDeleteMenuButtonClick(button);
+    }
+    button.classList.remove("chosen");
+    button.textContent = `Выбрать для "${clientName}"`;
+  } else {
+    if (is_menu) {
+      const new_data_to_send = {
+        action: "menu_add",
+        message: `Заказ "${dishTitle}" добавлен`,
+        current_menu_id: dishId,
+        current_user_id: username_id,
+        current_client_id: clientId,
+      };
+
+      orderButtons.forEach((orderButton) => {
+        orderButton.classList.remove("chosen");
+        orderButton.textContent = `Выбрать для "${clientName}"`;
+      });
+
+      button.classList.add("chosen");
+      button.textContent = `Удалить для "${clientName}"`;
+      socket.send(JSON.stringify(new_data_to_send));
+    } else {
+      button.classList.add("chosen");
+      button.textContent = `Удалить для "${clientName}"`;
+      socket.send(JSON.stringify(data_to_send));
+    }
+  }
+}
+
+function handleSepOrderClick(button) {
+  var username_id = localStorage.getItem("username_id");
+  var clientId = localStorage.getItem("current_client_id");
+  var clientName = localStorage.getItem("current_client_name");
+
+  var dishId = button.dataset.id;
+  var dishTitle = button.dataset.name;
+
+  const data_to_send = {
+    action: "menu_add_sep",
+    message: `Заказ "${dishTitle}" добавлен`,
+    current_menu_id: dishId,
+    current_user_id: username_id,
+    current_client_id: clientId,
+  };
+
+  socket.send(JSON.stringify(data_to_send));
+}
 function LoadMenu(filter) {
   localStorage.setItem("dish-filter", filter);
   var requestParams = {
@@ -150,7 +226,21 @@ function LoadMenu(filter) {
               "data-name": item.fields.type,
             }).text(`Выбрать для "${current_client_name}"`);
 
-            h1.append(header, orderButton);
+            var orderSepButton = $("<button>", {
+              class: "order-sep-button",
+              "data-id": item.pk,
+              "data-name": item.fields.type,
+            }).text(`Выбрать по отдельности для "${current_client_name}"`);
+
+            var ButtonsFlex = $("<div>", {
+              class: "buttons-flex",
+              style: "display: flex;",
+            });
+
+            ButtonsFlex.append(orderButton);
+            ButtonsFlex.append(orderSepButton);
+            h1.append(header);
+            h1.append(ButtonsFlex);
             MenuGridContainer.append(h1);
             $(".grid-container").append(MenuGridContainer);
             var jsonDishesData = data;
@@ -288,58 +378,15 @@ function LoadMenu(filter) {
 
         const orderButtons = document.querySelectorAll(".order-button");
         orderButtons.forEach((button) => {
-          const dishId = button.dataset.id;
-          const dishTittle = button.dataset.name;
-
           button.addEventListener("click", function () {
-            var username_id = localStorage.getItem("username_id");
-            var clientId = localStorage.getItem("current_client_id");
-            var clientName = localStorage.getItem("current_client_name");
-            var current_dish_filter = localStorage.getItem("dish-filter");
-            const data_to_send = {
-              action: "added_dish",
-              message: `Заказ "${dishTittle}" добавлен`,
-              current_dish_id: dishId,
-              current_user_id: username_id,
-              current_client_id: clientId,
-            };
-            dish_filter = current_dish_filter;
-            var is_menu = false;
-            if (dish_filter == "samples") {
-              is_menu = true;
-            }
-            if (button.classList.contains("chosen")) {
-              if (!is_menu) {
-                handleDeleteDishButtonClickFromMenu(button);
-              } else {
-                handleDeleteMenuButtonClick(button);
-              }
-              button.classList.remove("chosen");
-              button.textContent = `Выбрать для "${clientName}"`;
-            } else {
-              if (is_menu) {
-                const new_data_to_send = {
-                  action: "menu_add",
-                  message: `Заказ "${button.dataset.name}" добавлен`,
-                  current_menu_id: button.dataset.id,
-                  current_user_id: username_id,
-                  current_client_id: clientId,
-                };
+            handleButtonClick(this);
+          });
+        });
 
-                orderButtons.forEach((button) => {
-                  button.classList.remove("chosen");
-                  button.textContent = `Выбрать для "${clientName}"`;
-                });
-
-                button.classList.add("chosen");
-                button.textContent = `Удалить для "${clientName}"`;
-                socket.send(JSON.stringify(new_data_to_send));
-              } else {
-                button.classList.add("chosen");
-                button.textContent = `Удалить для "${clientName}"`;
-                socket.send(JSON.stringify(data_to_send));
-              }
-            }
+        const orderSepButtons = document.querySelectorAll(".order-sep-button");
+        orderSepButtons.forEach((button) => {
+          button.addEventListener("click", function () {
+            handleSepOrderClick(this);
           });
         });
 
@@ -361,9 +408,7 @@ function LoadMenu(filter) {
                 <div class="sostav">${ws[i].getAttribute("data-sostav")}</div>
             </div>
             `;
-          document
-            .querySelector(".dishes")
-            .insertAdjacentHTML("beforebegin", div);
+          document.querySelector("body").insertAdjacentHTML("beforeend", div);
 
           ws[i].addEventListener("click", () => {
             const button_id = ws[i].dataset.id;
@@ -376,7 +421,7 @@ function LoadMenu(filter) {
 
             const gridContainer = document.querySelector(".menuu");
             const overflowElement = document.querySelector(".overflow");
-            overflowElement.style.height = `${gridContainer.offsetHeight}px`;
+            // overflowElement.style.height = `${gridContainer.offsetHeight}px`;
 
             x.classList.remove("hidden");
             y.classList.remove("hidden");

@@ -205,6 +205,42 @@ class BanquetConsumer(WebsocketConsumer):
             
             self.send_response(response)
 
+        elif action == "menu_add_sep":
+            current_client_id = data["current_client_id"]
+            current_menu_id = data["current_menu_id"]
+
+            current_menu = get_object_or_404(MenuSample, id=current_menu_id)
+            current_client = get_object_or_404(Client, id=current_client_id)
+
+            for menu_dish in current_menu.dishes.all():
+                current_dish_order = DishOrder.objects.create(product=menu_dish.product,
+                                                                 quantity=1,
+                                                                 is_for_banquet=True, 
+                                                                 owner=current_user_profiledata)
+                 
+                if_current_dish_order = current_client.dishes.all().filter(product=current_dish_order.product)
+                if if_current_dish_order:
+                    if_current_dish_order[0].quantity += 1
+                    if_current_dish_order[0].save()
+                else: 
+                    current_client.dishes.add(current_dish_order)
+
+
+            current_banquet = Banquet.objects.get(owner=current_user_profiledata, is_ordered=False)
+            
+            response = {
+                        'action': "menu_added_sep",
+                        'client_id': current_client_id,
+                        'current_banquet_id': current_banquet.id,
+                        'menu_total_price_count':current_menu.all_dishes_price(),
+                        'order_total_price': current_client.total_client_price(),
+                        'client_total_price': current_client.menu_and_orders_price_count(),
+                        'total_banquet_price': current_banquet.total_price()
+                    }
+            
+            
+            self.send_response(response)
+        
         elif action == "dish_order_delete":
             current_order_id = data["order_id"]
             current_order = get_object_or_404(DishOrder, id=current_order_id)
