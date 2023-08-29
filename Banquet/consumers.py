@@ -219,11 +219,7 @@ class BanquetConsumer(WebsocketConsumer):
                                                                  is_for_banquet=True, 
                                                                  owner=current_user_profiledata)
                  
-                if_current_dish_order = current_client.dishes.all().filter(product=current_dish_order.product)
-                if if_current_dish_order:
-                    all_dishorders.append(current_dish_order)
-                else: 
-                    all_dishorders.append(current_dish_order)
+                all_dishorders.append(current_dish_order)
 
 
             current_banquet = Banquet.objects.get(owner=current_user_profiledata, is_ordered=False)
@@ -273,6 +269,9 @@ class BanquetConsumer(WebsocketConsumer):
                     response.update(additional_response)
                     self.send_response(response)
             
+            for dish_to_del in all_dishorders:
+                dish_to_del.delete()
+                
             response = {
                 'action': 'recalc_after_menu_adding_sep',
                 'current_banquet_id':current_banquet.id,

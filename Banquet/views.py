@@ -373,7 +373,7 @@ def generate_pdf(order, dishes, menus, duration):
     styles['Heading1'].alignment = TA_CENTER
     styles['Heading1'].fontSize=36
     pdfmetrics.registerFont(TTFont('DejaVuSerif','test/DejaVuSerif.ttf', 'UTF-8'))
-
+    pdfmetrics.registerFont(TTFont('TIMES','test/TIMES.TTF', 'UTF-8'))
 
     def AddOrder(doc):
         doc = AddTittle(doc)
@@ -391,19 +391,20 @@ def generate_pdf(order, dishes, menus, duration):
     def AddClient(doc, clients):
         doc.append(Spacer(1, 20))
         styles.add(ParagraphStyle(name='Client', fontSize=20, alignment=TA_LEFT, leftIndent=15))
-        styles['Client'].fontName='DejaVuSerif'
+        styles['Client'].fontName='TIMES'
         styles.add(ParagraphStyle(name='Menu', fontSize=15, alignment=TA_LEFT, leftIndent=20))
-        styles['Menu'].fontName='DejaVuSerif'
+        styles['Menu'].fontName='TIMES'
         styles.add(ParagraphStyle(name='AdditionalDishes', fontSize=15, alignment=TA_LEFT, leftIndent=20))
-        styles['AdditionalDishes'].fontName='DejaVuSerif'
+        styles['AdditionalDishes'].fontName='TIMES'
         styles.add(ParagraphStyle(name='ClientDish', fontSize=10, alignment=TA_LEFT, leftIndent=25))
-        styles['ClientDish'].fontName='DejaVuSerif'
+        styles['ClientDish'].fontName='TIMES'
         styles.add(ParagraphStyle(name='Waiters', fontSize=12.5, alignment=TA_LEFT, leftIndent=15))
-        styles['Waiters'].fontName='DejaVuSerif'
-
+        styles['Waiters'].fontName='TIMES'
         price_style = ParagraphStyle(name='Price', fontSize=10, alignment=TA_LEFT, leftIndent=25)
-        price_style.fontName = 'DejaVuSerif'
+        price_style.fontName = 'TIMES'
         styles.add(price_style)
+        
+        price_style = ParagraphStyle(name='Price', fontSize=10, alignment=TA_LEFT, leftIndent=25)
 
         for client in clients:
             for client_id, client_data in client.items():

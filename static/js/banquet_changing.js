@@ -308,8 +308,6 @@ socket.onmessage = function (e) {
         !event.target.classList.contains("delete-menu-btn")
       ) {
         event.stopPropagation();
-        // костыль, который прогружает заново меню и навешивает лисенеры, и более не навешивается более 1
-        var filter = $(this).data("filter"); // Получаем значение data-filter
         LoadMenu("all");
 
         localStorage.setItem("current_client_id", button.dataset.id);
@@ -432,6 +430,28 @@ socket.onmessage = function (e) {
     NewClientTotalPrice.dataset.id = client_id;
     NewClientTotalPrice.classList.remove("created");
 
+    const OrderPriceCount = document.querySelector(
+      ".order-price-count.created"
+    );
+    OrderPriceCount.text = "0";
+    OrderPriceCount.setAttribute("data-id", client_id);
+    OrderPriceCount.id = client_id;
+    OrderPriceCount.classList.remove("created");
+
+    const clientPriceCount = document.querySelector(
+      ".client-price-count.created"
+    );
+    clientPriceCount.text = "0";
+    clientPriceCount.setAttribute("data-id", client_id);
+    clientPriceCount.id = client_id;
+    clientPriceCount.classList.remove("created");
+
+    const clientQuantity = document.querySelector(".client-quantity.created");
+    clientQuantity.text = "0";
+    clientQuantity.setAttribute("data-id", client_id);
+    clientQuantity.id = client_id;
+    clientQuantity.classList.remove("created");
+
     localStorage.setItem("current_client_id", client_id);
   } else if (action === "client_deleted") {
     var client_id = data["client_id"];
@@ -439,13 +459,11 @@ socket.onmessage = function (e) {
     const clientElement = document.querySelector(
       `.my_client[data-id="${client_id}"]`
     );
-    const clientHeaderElement = document.querySelector(
-      `.client-header[data-id="${client_id}"]`
-    );
     const banqet_id_element = document.querySelector(
       `.banquet-total-price[data-id="${banqet_id}"]`
     );
-    banqet_id_element.textContent = data["total_banquet_price"] + ".00 руб.";
+    banqet_id_element.textContent =
+      formatInteger(parseInt(data["total_banquet_price"])) + ".00 руб.";
     if (clientElement) {
       clientElement.remove();
     }
@@ -480,26 +498,22 @@ socket.onmessage = function (e) {
       `span.client-price-count[data-id="${data.client_id}"]`
     );
     if (new_client_total_price) {
-      new_client_total_price.textContent = data.client_total_price;
+      new_client_total_price.textContent = formatInteger(
+        parseInt(data.client_total_price)
+      );
     }
 
     const total_banquet_price = document.querySelector(
       `.banquet-total-price[data-id="${data.banqet_id}"]`
     );
-    total_banquet_price.textContent = data["total_banquet_price"] + ".00 руб.";
+    total_banquet_price.textContent =
+      formatInteger(parseInt(data["total_banquet_price"])) + ".00 руб.";
   } else if (action === "client_quantity_changed") {
     client_id = data["client_id"];
     banquet_id = data["banquet_id"];
 
-    const quantity_input = document.querySelector(
-      `.quantity-input[data-id="${client_id}"]`
-    );
     const client_quantity = document.querySelector(
       `.client-quantity[data-id="${client_id}"]`
-    );
-
-    const client_quantity_two = document.querySelector(
-      `.client-quantity-2[data-id="${client_id}"]`
     );
 
     const client_price = document.querySelector(
@@ -514,9 +528,12 @@ socket.onmessage = function (e) {
     }
     // client_quantity_two.textContent = data["new_quantity"]
     if (client_price) {
-      client_price.textContent = data["client_total_price"];
+      client_price.textContent = formatInteger(
+        parseInt(data["client_total_price"])
+      );
     }
-    total_banquet_price.textContent = data["total_banquet_price"] + ".00 руб.";
+    total_banquet_price.textContent =
+      formatInteger(parseInt(data["total_banquet_price"])) + ".00 руб.";
   } else if (action === "client_name_changed") {
     client_id = data["client_id"];
     new_name = data["new_name"];
@@ -569,12 +586,15 @@ socket.onmessage = function (e) {
       `span.client-price-count[data-id="${data.client_id}"]`
     );
     if (client_total_price) {
-      client_total_price.textContent = data.client_total_price;
+      client_total_price.textContent = formatInteger(
+        parseInt(data.client_total_price)
+      );
     }
     const total_banquet_price = document.querySelector(
       `.banquet-total-price[data-id="${data.current_banquet_id}"]`
     );
-    total_banquet_price.textContent = data["total_banquet_price"] + ".00 руб.";
+    total_banquet_price.textContent =
+      formatInteger(parseInt(data["total_banquet_price"])) + ".00 руб.";
   } else if (action === "menu_added") {
     client_id = data["client_id"];
     previous_menu_id = data["previous_menu_id"];
@@ -646,8 +666,9 @@ socket.onmessage = function (e) {
     menuDiv.appendChild(totalCostHeader);
 
     // Добавляем разделитель
-    var separator = document.createElement("h1");
-    separator.textContent = "-------------------------------------------";
+
+    var separator = document.createElement("div");
+    separator.classList.add("dotted-line");
     menuDiv.appendChild(separator);
 
     var current_client_id = localStorage.getItem("current_client_id");
@@ -663,7 +684,9 @@ socket.onmessage = function (e) {
       'span.client-price-count[data-id="' + data.client_id + '"]'
     );
     if (client_price_count) {
-      client_price_count.textContent = data.client_total_price;
+      client_price_count.textContent = formatInteger(
+        parseInt(data.client_total_price)
+      );
     }
 
     const OrderTotalPrice = document.querySelector(
@@ -677,13 +700,16 @@ socket.onmessage = function (e) {
       `span.client-price-count[data-id="${data.client_id}"]`
     );
     if (client_total_price) {
-      client_total_price.textContent = data.client_total_price;
+      client_total_price.textContent = formatInteger(
+        parseInt(data.client_total_price)
+      );
     }
 
     const total_banquet_price = document.querySelector(
       `.banquet-total-price[data-id="${data.current_banquet_id}"]`
     );
-    total_banquet_price.textContent = data["total_banquet_price"] + ".00 руб.";
+    total_banquet_price.textContent =
+      formatInteger(parseInt(data["total_banquet_price"])) + ".00 руб.";
 
     function handleDeleteMenuButtonClick2(button) {
       const menu_id = button.dataset.id; // Получаем значение data-id из атрибута data-id
@@ -804,12 +830,15 @@ socket.onmessage = function (e) {
     const client_price_count = document.querySelector(
       `span.client-price-count[data-id="${data.client_id}"]`
     );
-    client_price_count.textContent = data.client_total_price;
+    client_price_count.textContent = formatInteger(
+      parseInt(data.client_total_price)
+    );
 
     const total_banquet_price = document.querySelector(
       `.banquet-total-price[data-id="${data.current_banquet_id}"]`
     );
-    total_banquet_price.textContent = data["total_banquet_price"] + ".00 руб.";
+    total_banquet_price.textContent =
+      formatInteger(parseInt(data["total_banquet_price"])) + ".00 руб.";
   }
 };
 
@@ -959,6 +988,12 @@ showFormButton.addEventListener("click", () => {
   const client_total_price = document.createElement("div");
   client_total_price.className = "client-total-price";
   client_total_price.classList.add("created");
+  var ClientTotalPrice = `Итого:
+              <span class="order-price-count created">0</span>.00 руб. x
+              <span class="client-quantity created">0</span> человек =
+              <span class="client-price-count created">0</span>.00 руб.`;
+
+  client_total_price.innerHTML = ClientTotalPrice;
   vashZakazDiv.appendChild(client_total_price);
 
   var buttonDetails = document.createElement("button");
@@ -1048,9 +1083,10 @@ showFormButton.addEventListener("click", () => {
     const vashZakazDiv = document.createElement("div");
     vashZakazDiv.className = "vash_zakaz";
     vashZakazDiv.classList.add("created");
-    divElement.appendChild(vashZakazDiv); // Пустой div для vash_zakaz
-    // Добавляем созданный элемент в DOM
-    const container = document.getElementById("all_clients"); // Замените "container" на ID родительского контейнера, куда вы хотите добавить элемент
+
+    vashZakazDiv.appendChild(ClientTotalPrice);
+    divElement.appendChild(vashZakazDiv);
+    const container = document.getElementById("all_clients");
     container.appendChild(divElement);
 
     const showFormButton2 = document.createElement("button");

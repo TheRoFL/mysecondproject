@@ -108,7 +108,7 @@
                 >{{client.menu.all_dishes_price}}</span
               >.00 руб. с человека
             </h1>
-            <h1>----------------------------------------------</h1>
+            <div class="dotted-line"></div>
             {%endif%}
           </div>
 
@@ -150,7 +150,7 @@
             </div>
 
             {% endfor %}
-            <h1>----------------------------------------------</h1>
+            <div class="dotted-line"></div>
             {% endif %}
           </div>
 
@@ -285,7 +285,7 @@
           <h3>{{dish.product.name}} / {{dish.product.weight}} гр. / {{dish.product.price}} руб.</h3>
         </div>
       {% endfor %}
-      <h1>--------------------------------------------------------------------------------</h1>
+      <div class="dotted-line"></div>
       
       {% endfor %}
     </div>
@@ -300,8 +300,7 @@
     <h1>
       Сумма заказа:
       <span class="banquet-total-price" data-id="{{banquet.id}}"
-        >{{banquet.total_price}}.00 руб.
-      </span>
+        >{{banquet.total_price}}.00 руб.</span>
       <button class="confirm-order">
         <a href="/banquet/ordering/">Оформить заказ</a>
       </button>
@@ -356,6 +355,12 @@
         button.textContent = formattedValue;
       }
     });
+    let banquetTotalPrice = document.querySelector(".banquet-total-price");
+    let value = parseInt(banquetTotalPrice.textContent);
+    if (!isNaN(value)) {
+      let formattedValue = formatInteger(value);
+      banquetTotalPrice.textContent = formattedValue + ".00 руб.";
+    }
   </script>
 </body>
 {% endblock content %}

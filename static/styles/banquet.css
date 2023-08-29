@@ -581,6 +581,9 @@ input[type="submit"]:active {
 }
 
 .menu-item {
+  display: flex;
+  gap: 10px;
+  flex-direction: column;
   padding: 10px;
   text-align: center;
   border-radius: 10px;
@@ -589,7 +592,7 @@ input[type="submit"]:active {
   font-size: 17px;
 
   width: 250px;
-  height: 230px;
+  height: 250px;
 }
 
 .menu-item1 {
@@ -678,4 +681,10 @@ input[type="submit"]:active {
   margin-left: -54px;
 
   margin-top: -30px;
+}
+
+.dotted-line {
+  margin-top: 5px;
+  margin-bottom: 10px;
+  border-top: 1px dotted black;
 }

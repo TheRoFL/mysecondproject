@@ -146,6 +146,7 @@ function handleButtonClick(button) {
         current_client_id: clientId,
       };
 
+      var orderButtons = document.querySelectorAll(`.order-button`);
       orderButtons.forEach((orderButton) => {
         orderButton.classList.remove("chosen");
         orderButton.textContent = `Выбрать для "${clientName}"`;
@@ -179,6 +180,13 @@ function handleSepOrderClick(button) {
   };
 
   socket.send(JSON.stringify(data_to_send));
+
+  var menu_id = button.dataset.id;
+  var order_sep_button = document.querySelector(
+    `.order-sep-button[data-id="${menu_id}"]`
+  );
+  order_sep_button.textContent = `Выбрано по отдельности для "${clientName}"`;
+  order_sep_button.disabled = true;
 }
 
 function LoadMenu(filter) {
@@ -279,6 +287,7 @@ function LoadMenu(filter) {
                 }" src="http://localhost:8000/media/${dish.fields.image}"></h1>
                   <h1>${dish.fields.name}</h1>
                   <h2>Цена: ${dish.fields.price} руб.</h2>
+                  
                 </div>
               `;
 
@@ -420,8 +429,16 @@ function LoadMenu(filter) {
             </div>
             <div class="mod-dish-decription">
             <div class="decription">Тут будет описание...</div> 
+            
             </div>
             `;
+
+          //   <button class="order-button mod" data-id="${ws[i].getAttribute(
+          //     "data-id"
+          //   )}" data-name="${ws[i].getAttribute(
+          //   "data-name"
+          // )}">Выбрать для "${ws[i].getAttribute("data-name")}"</button>
+
           document.querySelector("body").insertAdjacentHTML("beforeend", div);
 
           ws[i].addEventListener("click", () => {
