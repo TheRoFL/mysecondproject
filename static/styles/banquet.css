@@ -659,3 +659,23 @@ input[type="submit"]:active {
   margin-top: 10px;
   width: 220px;
 }
+
+.flex-mod-dish {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-content: stretch;
+  justify-content: center;
+  align-items: stretch;
+
+  height: 250px;
+}
+.dish-img-mod {
+  scale: 0.7;
+  margin: 4%;
+  border-radius: 10px;
+  object-fit: cover;
+  margin-left: -54px;
+
+  margin-top: -30px;
+}

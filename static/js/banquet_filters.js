@@ -180,6 +180,7 @@ function handleSepOrderClick(button) {
 
   socket.send(JSON.stringify(data_to_send));
 }
+
 function LoadMenu(filter) {
   localStorage.setItem("dish-filter", filter);
   var requestParams = {
@@ -394,18 +395,31 @@ function LoadMenu(filter) {
         var x, y;
         for (let i = 0; i < ws.length; i++) {
           var div = `<div class = "overflow hidden" id="${
-            "overflow" + i
+            "overflow" + ws[i].getAttribute("data-id")
           }"></div>
-              <div class="modWind hidden" id="${"modWind" + i}">
-              <div ><img style = "width: 250px"
-              src="http://localhost:8000/media/menu_images/${ws[i].getAttribute(
-                "data-type"
-              )}/${ws[i].getAttribute("data-tittle")}.png"
-              /> </div>
-                <div class="name">${ws[i].getAttribute("data-name")}</div>
-                <div class="grams">${ws[i].getAttribute("data-weight")} гр</div>
-                <div class="price">${ws[i].getAttribute("data-price")} руб</div>
-                <div class="sostav">${ws[i].getAttribute("data-sostav")}</div>
+              <div class="modWind hidden" id="${
+                "modWind" + ws[i].getAttribute("data-id")
+              }">
+                <div class="flex-mod-dish"><img class="dish-img-mod"
+                src="http://localhost:8000/media/menu_images/${ws[
+                  i
+                ].getAttribute("data-type")}/${ws[i].getAttribute(
+            "data-tittle"
+          )}.png"
+                </div>
+                <div class="mod-dish-info">
+                  <div class="name">${ws[i].getAttribute("data-name")}</div>
+                  <div class="grams">${ws[i].getAttribute(
+                    "data-weight"
+                  )} гр</div>
+                  <div class="price">${ws[i].getAttribute(
+                    "data-price"
+                  )} руб</div>
+                  <div class="sostav">${ws[i].getAttribute("data-sostav")}</div>
+                </div>
+            </div>
+            <div class="mod-dish-decription">
+            <div class="decription">Тут будет описание...</div> 
             </div>
             `;
           document.querySelector("body").insertAdjacentHTML("beforeend", div);
@@ -416,8 +430,12 @@ function LoadMenu(filter) {
               `.grid-dish-img[data-id="${button_id}"]`
             );
             current_dish.classList.add("active");
-            x = document.getElementById("overflow" + i);
-            y = document.getElementById("modWind" + i);
+            x = document.getElementById(
+              "overflow" + ws[i].getAttribute("data-id")
+            );
+            y = document.getElementById(
+              "modWind" + ws[i].getAttribute("data-id")
+            );
 
             const gridContainer = document.querySelector(".menuu");
             const overflowElement = document.querySelector(".overflow");
@@ -427,15 +445,21 @@ function LoadMenu(filter) {
             y.classList.remove("hidden");
           });
 
-          const exit = document.getElementById("overflow" + i);
+          const exit = document.getElementById(
+            "overflow" + ws[i].getAttribute("data-id")
+          );
 
           exit.addEventListener("click", () => {
             const current_dishes = document.querySelectorAll(`.grid-dish-img`);
             current_dishes.forEach((button) => {
               button.classList.remove("active");
             });
-            x = document.getElementById("overflow" + i);
-            y = document.getElementById("modWind" + i);
+            x = document.getElementById(
+              "overflow" + ws[i].getAttribute("data-id")
+            );
+            y = document.getElementById(
+              "modWind" + ws[i].getAttribute("data-id")
+            );
             x.classList.add("hidden");
             y.classList.add("hidden");
           });

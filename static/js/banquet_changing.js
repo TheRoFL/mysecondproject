@@ -463,7 +463,9 @@ socket.onmessage = function (e) {
         var clientAdditional = document.querySelector(
           `.additional-dishes[data-id="${client_id}"]`
         );
-        clientAdditional.remove();
+        while (clientAdditional.firstChild) {
+          clientAdditional.removeChild(clientAdditional.firstChild);
+        }
       }
     }
 
@@ -767,9 +769,22 @@ socket.onmessage = function (e) {
 
       clientOrderQuantity.textContent = newQuantity;
     }
+  } else if (action == "menu_added_sep") {
+    var client_id = localStorage.getItem("current_client_id");
+    var newDiv = document.createElement("div");
+    div_name = "client-orders-" + data.current_dish_order_id;
+    newDiv.classList.add(div_name);
+
+    const additional_dishes = document.querySelector(
+      `.additional-dishes[data-id="${client_id}"]`
+    );
   }
 
-  if (action == "dish_added" || action == "new_dish_added") {
+  if (
+    action == "dish_added" ||
+    action == "new_dish_added" ||
+    action == "recalc_after_menu_adding_sep"
+  ) {
     const OrderTotalPrice = document.querySelector(
       `span.order-price-count[data-id="${data.client_id}"]`
     );
@@ -778,13 +793,18 @@ socket.onmessage = function (e) {
       OrderTotalPrice.textContent = data.order_total_price;
     }
 
-    const client_total_price = document.querySelector(
-      `span.client-price-count[data-id="${data.client_id}"]`
+    const order_total_price = document.querySelector(
+      `span.order-price-count[data-id="${data.client_id}"]`
     );
 
-    if (client_total_price) {
-      client_total_price.textContent = data.client_total_price;
+    if (order_total_price) {
+      order_total_price.textContent = data.order_total_price;
     }
+
+    const client_price_count = document.querySelector(
+      `span.client-price-count[data-id="${data.client_id}"]`
+    );
+    client_price_count.textContent = data.client_total_price;
 
     const total_banquet_price = document.querySelector(
       `.banquet-total-price[data-id="${data.current_banquet_id}"]`

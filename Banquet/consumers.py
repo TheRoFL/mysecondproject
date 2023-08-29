@@ -6,7 +6,7 @@ from django.db.models import Q
 from .views import *
 from .models import *
 import uuid
-
+from django.core import serializers
 class BanquetConsumer(WebsocketConsumer):
     def connect(self):
         self.accept()
@@ -212,6 +212,7 @@ class BanquetConsumer(WebsocketConsumer):
             current_menu = get_object_or_404(MenuSample, id=current_menu_id)
             current_client = get_object_or_404(Client, id=current_client_id)
 
+            all_dishorders = []
             for menu_dish in current_menu.dishes.all():
                 current_dish_order = DishOrder.objects.create(product=menu_dish.product,
                                                                  quantity=1,
@@ -220,25 +221,66 @@ class BanquetConsumer(WebsocketConsumer):
                  
                 if_current_dish_order = current_client.dishes.all().filter(product=current_dish_order.product)
                 if if_current_dish_order:
-                    if_current_dish_order[0].quantity += 1
-                    if_current_dish_order[0].save()
+                    all_dishorders.append(current_dish_order)
                 else: 
-                    current_client.dishes.add(current_dish_order)
+                    all_dishorders.append(current_dish_order)
 
 
             current_banquet = Banquet.objects.get(owner=current_user_profiledata, is_ordered=False)
+
+
+            if all_dishorders:
+                for dishorder in all_dishorders:
+                    current_dishorder = None
+                    current_dish = get_object_or_404(Dish, id=dishorder.product.id)
+                    for current_client_dish_order in current_client.dishes.all():      
+                        if current_client_dish_order.product.id == current_dish.id:
+                            current_dishorder = current_client_dish_order
+                            
+
+                    try:
+                        if not current_dishorder:
+                            current_dishorder = DishOrder.objects.create(
+                            product=current_dish,
+                            quantity=1,
+                            owner=current_user_profiledata
+                            )
+                            additional_response['action'] = "new_dish_added"
+                        else:
+                            current_dishorder.quantity += 1
+                            current_dishorder.save()
+                            additional_response['action'] = "dish_added"
+                    except Exception as e:
+                        print(e)
+
+                    current_banquet = Banquet.objects.get(owner=current_user_profiledata, is_ordered=False)
+                    current_client.dishes.add(current_dishorder)
+                    current_client.save()
+                    current_client_id = current_client.id
+                    current_dish_id = current_dish.id
+                    response = {'client_id': current_client_id,
+                                'current_dish_id': current_dish_id,
+                                'current_dish_order_id': current_dishorder.id,
+                                'current_dish_order_name': current_dishorder.product.name,
+                                'current_banquet_id': current_banquet.id,
+                                'client_dishOrder_quantity': current_dishorder.quantity,
+                                'client_dishOrder_price_count':current_dishorder.price_count(),
+                                'order_total_price': current_client.total_client_price(),
+                                'client_total_price': current_client.menu_and_orders_price_count(), #считает сумму клиента без меню
+                                'total_banquet_price': current_banquet.total_price()
+                            }
+                    
+                    response.update(additional_response)
+                    self.send_response(response)
             
             response = {
-                        'action': "menu_added_sep",
-                        'client_id': current_client_id,
-                        'current_banquet_id': current_banquet.id,
-                        'menu_total_price_count':current_menu.all_dishes_price(),
-                        'order_total_price': current_client.total_client_price(),
-                        'client_total_price': current_client.menu_and_orders_price_count(),
-                        'total_banquet_price': current_banquet.total_price()
-                    }
-            
-            
+                'action': 'recalc_after_menu_adding_sep',
+                'current_banquet_id':current_banquet.id,
+                'client_id':current_client.id,
+                'order_total_price': current_client.total_client_price() / 2,
+                'client_total_price': current_client.menu_and_orders_price_count(), #считает сумму клиента без меню
+                'total_banquet_price': current_banquet.total_price()
+            }
             self.send_response(response)
         
         elif action == "dish_order_delete":
@@ -320,5 +362,4 @@ class BanquetConsumer(WebsocketConsumer):
 
 
     def send_response(self, response):
-        # Отправка ответа пользователю через WebSocket
         self.send(text_data=json.dumps(response))
