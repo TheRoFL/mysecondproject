@@ -94,12 +94,38 @@
                 Удалить
               </button>
             </div>
-            {% for dish in client.menu.dishes.all %}
-            <div class="client-menu-dish" data-id="{{dish.id}}">
-              <h1 style="margin-left: 25px">
-                -{{dish.product.name}} x {{dish.quantity}} шт. =
-                {{dish.price_count}}.00 руб.
-              </h1>
+            {% for client_dish in client.menu.dishes.all %}
+            <div class="client-menu-dish">
+              <div class="adittional-dish-item-img">
+                <img
+                  class="client-img"
+                  data-id="{{client_dish.product.id}}"
+                  data-name="{{client_dish.product.name}}"
+                  data-tittle="{{client_dish.product.create_tittle2}}"
+                  data-weight="{{client_dish.product.weight}}"
+                  data-price="{{client_dish.product.price}}"
+                  data-sostav="{{client_dish.product.ingredients}}"
+                  data-type="{{client_dish.product.type}}"
+                  src="http://localhost:8000/media/{{client_dish.product.image}}"
+                />
+              </div>
+              <div class="adittional-menu-dish-item">
+                {{client_dish.product.name}} x
+                <span
+                  class="client_order_quantity"
+                  data-id="{{client.id}}"
+                  id="{{client_dish.id}}"
+                  >{{client_dish.quantity}}
+                </span>
+                шт. =
+
+                <span
+                  class="client_order_price"
+                  data-id="{{client.id}}"
+                  data-order-id="{{client_dish.id}}"
+                  >{{client_dish.price_count}}</span
+                >.00 руб.
+              </div>
             </div>
             {% endfor %}
             <h1 style="margin-left: 15px">
@@ -113,39 +139,91 @@
           </div>
 
           <div class="additional-dishes" data-id="{{client.id}}">
-            {% if client.dishes.all %} {% if client.menu %}
-            <h1 style="margin-left: 15px">Дополнительно:</h1>
-            {% else %}
-            <h1 style="margin-left: 15px">Выбранные блюда:</h1>
-            {% endif %} {% for client_dish in client.dishes.all %}
+            {% if client.dishes.all %}
+            <h1 style="margin-left: 15px; margin-bottom: 10px">
+              Выбранные отдельно блюда:
+            </h1>
+            {% for client_dish in client.dishes.all %}
             <div class="adittional-dish" data-id="{{client_dish.id}}">
+              <div class="adittional-dish-item-img">
+                <img
+                  class="client-img"
+                  data-id="{{client_dish.product.id}}"
+                  src="http://localhost:8000/media/{{client_dish.product.image}}"
+                />
+              </div>
               <div class="adittional-dish-item">
-                <h2 style="margin-left: 30px">
-                  {{client_dish.product.name}} x
-                  <span
-                    class="client_order_quantity"
-                    data-id="{{client.id}}"
-                    id="{{client_dish.id}}"
-                    >{{client_dish.quantity}}
-                  </span>
-                  шт. =
+                {{client_dish.product.name}} x
+                <span
+                  class="client_order_quantity"
+                  data-id="{{client.id}}"
+                  id="{{client_dish.id}}"
+                  >{{client_dish.quantity}}
+                </span>
+                шт. =
 
-                  <span
-                    class="client_order_price"
-                    data-id="{{client.id}}"
-                    id="{{client_dish.id}}"
-                    >{{client_dish.price_count}}</span
-                  >.00 руб.
-                </h2>
+                <span
+                  class="client_order_price"
+                  data-id="{{client.id}}"
+                  data-order-id="{{client_dish.id}}"
+                  id="{{client_dish.id}}"
+                  >{{client_dish.price_count}}</span
+                >.00 руб.
               </div>
               <div class="adittional-dish-item-button">
-                <button
-                  class="delete-btn"
-                  data-id="{{client_dish.id}}"
-                  data-clientId="{{client.id}}"
-                >
-                  X
-                </button>
+                <div class="delete-btn-wrapper">
+                  <div class="delete-btn-wrapper2">
+                    <button
+                      class="decrease-btn"
+                      data-id="{{client_dish.id}}"
+                      data-clientId="{{client.id}}"
+                    >
+                      <svg
+                        width="1em"
+                        height="1em"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                        class="decrease-btn-svg"
+                      >
+                        <path
+                          fill-rule="evenodd"
+                          clip-rule="evenodd"
+                          d="M6 12a1 1 0 0 0 1 1h10a1 1 0 1 0 0-2H7a1 1 0 0 0-1 1Z"
+                          fill="currentColor"
+                        ></path>
+                      </svg>
+                    </button>
+                    <input
+                      class="dish-number-input"
+                      data-id="{{client.id}}"
+                      data-dish-id="{{client_dish.id}}"
+                      type="text"
+                      value="{{client_dish.quantity}}"
+                    />
+                    <button
+                      class="increase-btn"
+                      data-id="{{client_dish.id}}"
+                      data-clientId="{{client.id}}"
+                    >
+                      <svg
+                        width="1em"
+                        height="1em"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                        class="increase-btn-svg"
+                      >
+                        <path
+                          fill-rule="evenodd"
+                          clip-rule="evenodd"
+                          d="M12 6a1 1 0 0 0-1 1v4H7a1 1 0 1 0 0 2h4v4a1 1 0 1 0 2 0v-4h4a1 1 0 1 0 0-2h-4V7a1 1 0 0 0-1-1Z"
+                          fill="currentColor"
+                        ></path>
+                      </svg>
+                    </button>
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -174,10 +252,14 @@
               >{{client.menu_and_orders_price_count}}</span
             >.00 руб.
           </div>
+          <button
+            class="details-button"
+            data-id="{{client.id}}"
+            data-name="{{client.type}}"
+          >
+            Меню
+          </button>
         </div>
-        <button class="details-button" data-id="{{client.id}}">
-          Подробнее
-        </button>
       </div>
 
       {% endfor %} {% endif %}
@@ -299,7 +381,7 @@
 
     <h1>
       Сумма заказа:
-      <span class="banquet-total-price" data-id="{{banquet.id}}"
+      <span class="banquet-total-price" data-id="{{banquet.id}}" id="{{banquet.id}}"
         >{{banquet.total_price}}.00 руб.</span>
       <button class="confirm-order">
         <a href="/banquet/ordering/">Оформить заказ</a>

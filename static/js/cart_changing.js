@@ -30,19 +30,17 @@ function updateQuantity(orderId, quantity) {
     })
   );
 }
-// Отправляем данные на сервер при нажатии на кнопку "+" или "-"
-const increaseButtons = document.querySelectorAll(".increase-btn");
-const decreaseButtons = document.querySelectorAll(".decrease-btn");
-const deleteButtons = document.querySelectorAll(".delete-btn");
 
-const dishes = document.querySelectorAll(".main-div");
-
-// Quantity input change handler
 $(".quantity-input").on("change", function () {
   const orderId = $(this).data("id");
   const newQuantity = Math.max(1, $(this).val()); // Ensure the quantity is not less than 1
   updateQuantity(orderId, newQuantity);
 });
+const dishes = document.querySelectorAll(".main-div");
+// Отправляем данные на сервер при нажатии на кнопку "+" или "-"
+const deleteButtons = document.querySelectorAll(".delete-btn");
+const increaseButtons = document.querySelectorAll(".increase-btn");
+const decreaseButtons = document.querySelectorAll(".decrease-btn");
 
 increaseButtons.forEach((button) => {
   button.addEventListener("click", () => {
@@ -136,7 +134,6 @@ socket.addEventListener("message", function (event) {
       gridItemElementDetail.remove();
     }
 
-    const quantitySpan = document.querySelector(`.quantity[data-id="${id}"]`);
     const int_quantity = quantity_input.value;
     const int_order_price = parseInt(order_price.textContent);
     const sum = int_quantity * int_order_price;

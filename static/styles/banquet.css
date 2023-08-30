@@ -80,8 +80,38 @@ input[type="submit"]:active {
 }
 
 /* Styles for the buttons */
-.increase-btn,
-.decrease-btn,
+.delete-btn-wrapper {
+  display: flex;
+  min-width: 100px;
+  align-self: center;
+  flex-shrink: 0;
+  margin-left: 8px;
+  margin-right: -25px;
+  flex-direction: column;
+
+  height: 25px;
+  width: 75px;
+}
+
+.delete-btn-wrapper2 {
+  display: flex;
+  overflow: hidden;
+  position: relative;
+  font-size: 13px;
+  align-items: center;
+  font-family: YSText, sans-serif;
+  line-height: 14px;
+  white-space: nowrap;
+  border-radius: 16px;
+  justify-content: center;
+  background-color: #f5f4f2;
+  font-feature-settings: "pnum" on, "lnum" on;
+
+  height: 25px;
+  width: 75px;
+  border-color: #4a644b;
+}
+
 .delete-menu-btn,
 .delete-btn {
   scale: 0.7;
@@ -94,18 +124,41 @@ input[type="submit"]:active {
   transition: background-color 0.3s ease; /* Add a transition effect */
   border-radius: 10px;
 }
-
+.dish-number-input {
+  border-color: #4a644b;
+  background-color: #f5f4f2;
+  width: 25px;
+  height: 20px;
+  margin-top: 11px;
+  text-align: center;
+}
 .delete-menu-btn {
   scale: 1;
   width: 150px;
   height: 25px;
 }
+
+.increase-btn {
+  background-color: #f5f4f2;
+  margin-left: 10px;
+}
+.decrease-btn {
+  background-color: #f5f4f2;
+  margin-right: 10px;
+}
 /* Change button background color to a darker shade of red when hovered */
+.increase-btn,
+.decrease-btn,
+.delete-menu-btn,
+.delete-btn {
+  transition: transform 0.15s ease-in-out; /* Добавляем плавную анимацию */
+}
+
 .increase-btn:hover,
 .decrease-btn:hover,
 .delete-menu-btn:hover,
 .delete-btn:hover {
-  background-color: #bf3a2b; /* Darker shade of red */
+  transform: scale(1.5); /* Увеличиваем элемент при наведении */
 }
 
 .delete-menu-btn:active,
@@ -114,6 +167,11 @@ input[type="submit"]:active {
 .dish-filter:active {
   transform: scale(0.85);
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+}
+
+.increase-btn:active,
+.decrease-btn:active {
+  transform: scale(0.85);
 }
 /*----------------------------------------------------------------*/
 .body {
@@ -141,7 +199,7 @@ input[type="submit"]:active {
   border-radius: 20px;
   border: 3px solid #4a644b;
   background-color: #fff;
-  color: #4a644b;
+  color: #000000;
   margin: 100px 45px;
   display: inline-block;
 }
@@ -159,13 +217,12 @@ input[type="submit"]:active {
 
 .vash_zakaz {
   width: 100%;
-  height: 360px;
+  height: 400px;
   background-color: #fff;
   border-radius: 0 0 20px 20px;
   display: flex;
   flex-direction: column;
   font-size: 15px;
-  cursor: pointer;
   overflow: auto;
   scrollbar-width: none;
   -ms-overflow-style: none;
@@ -174,7 +231,7 @@ input[type="submit"]:active {
   width: 0; /* Вы можете настроить толщину */
 }
 .name-input {
-  width: 140px;
+  width: 170px;
   height: 25px;
   font-size: 14px;
   border-radius: 10px;
@@ -182,7 +239,7 @@ input[type="submit"]:active {
 }
 
 .quantity-input {
-  width: 43px;
+  width: 70px;
   height: 25px;
   font-size: 14px;
   border-radius: 10px;
@@ -423,24 +480,30 @@ input[type="submit"]:active {
   text-align: center;
 }
 
-.modWind {
+.modWind,
+.modWind3 {
   text-align: left;
   overflow: auto;
   opacity: 0;
   animation: fadeIn 0.25s ease-in-out forwards; /* Применяем анимацию при появлении */
-
+  color: black;
+  background-color: #fff;
+  display: inline-block;
   position: fixed;
   top: 50%;
   left: 50%;
   z-index: 15;
   width: 600px;
   height: 500px;
+  border-radius: 30px;
   margin: -250px 0 0 -300px;
 }
 
-.modWind img {
+.modWind img,
+.modWind3 img {
   width: 400px;
 }
+.overflow3,
 .overflow {
   position: fixed;
   top: 0;
@@ -626,6 +689,7 @@ input[type="submit"]:active {
 .formaClienta {
   transition: transform 0.3s ease;
   transform: scale(1);
+  width: 300px;
 }
 
 .my_client:hover,
@@ -637,12 +701,18 @@ input[type="submit"]:active {
   font-style: italic;
 }
 
+.client-menu-dish,
 .adittional-dish {
   display: flex;
+  margin-bottom: 10px;
+  margin-left: 5px;
+  margin-right: 5px;
+  gap: 5px;
+  align-items: center;
 }
 
-.adittional-dish-item-button {
-  flex-shrink: 0;
+.adittional-dish-item {
+  width: 175px;
 }
 .client-menu-btn {
   display: flex;
@@ -687,4 +757,34 @@ input[type="submit"]:active {
   margin-top: 5px;
   margin-bottom: 10px;
   border-top: 1px dotted black;
+}
+
+.client-img {
+  width: 50px;
+  cursor: pointer;
+  border-radius: 10px;
+  object-fit: cover;
+}
+
+.client-img {
+  transition: transform 0.15s cubic-bezier(0.59, 0.3, 0.17, 1.47);
+}
+
+.client-img:hover {
+  transform: scale(1.1);
+}
+
+.client-img:hover,
+.client-img:focus {
+  transform: scale(1.1);
+}
+
+.client-img:not(:hover) {
+  transition: transform 0.15s cubic-bezier(0.59, 0.3, 0.17, 1.47);
+  transform: scale(1);
+}
+.increase-btn-svg,
+.decrease-btn-svg {
+  margin-top: 5px;
+  margin-left: 0px;
 }

@@ -302,7 +302,8 @@ socket.onmessage = function (e) {
     button.setAttribute("data-name", client_name);
     button.classList.remove("created");
 
-    button.addEventListener("click", function (event) {
+    const detailsButton = document.querySelector(".details-button.created");
+    detailsButton.addEventListener("click", function (event) {
       if (
         !event.target.classList.contains("delete-btn") &&
         !event.target.classList.contains("delete-menu-btn")
@@ -597,7 +598,6 @@ socket.onmessage = function (e) {
       formatInteger(parseInt(data["total_banquet_price"])) + ".00 руб.";
   } else if (action === "menu_added") {
     client_id = data["client_id"];
-    previous_menu_id = data["previous_menu_id"];
     current_menu_id = data["current_menu_id"];
 
     var menuToRemove = document.querySelector(
@@ -804,6 +804,39 @@ socket.onmessage = function (e) {
     const additional_dishes = document.querySelector(
       `.additional-dishes[data-id="${client_id}"]`
     );
+  } else if (
+    action == "additional_order_increased" ||
+    action == "additional_order_decreased"
+  ) {
+    client_id = data["client_id"];
+    dishOrder_id = data["current_dish_order_id"];
+    new_quantity = data["new_quantity"];
+    banqet_id = data["banqet_id"];
+    const DishNumberInput = document.querySelector(
+      `.dish-number-input[data-dish-id="${dishOrder_id}"]`
+    );
+    const clientOrderQuantity = document.getElementById(dishOrder_id);
+    clientOrderQuantity.textContent = new_quantity;
+    DishNumberInput.value = new_quantity;
+
+    const dish_order_price = document.querySelector(
+      `.client_order_price[data-order-id="${dishOrder_id}"]`
+    );
+    dish_order_price.textContent = data["current_dish_order_price_count"];
+
+    const orderPriceCount = document.getElementById(client_id);
+    orderPriceCount.textContent = data["order_total_price"];
+
+    const clientPriceCount = document.querySelector(
+      `.client-price-count[data-id="${client_id}"]`
+    );
+    clientPriceCount.textContent = formatInteger(
+      parseInt(data["client_total_price"])
+    );
+
+    const banquetTotalPrice = document.getElementById(banqet_id);
+    banquetTotalPrice.textContent =
+      formatInteger(parseInt(data["total_banquet_price"])) + ".00 руб.";
   }
 
   if (
@@ -999,7 +1032,7 @@ showFormButton.addEventListener("click", () => {
   var buttonDetails = document.createElement("button");
   buttonDetails.className = "details-button";
   buttonDetails.classList.add("created");
-  buttonDetails.textContent = "Подробнее";
+  buttonDetails.textContent = "Меню";
 
   divElement.appendChild(buttonDetails);
   // Добавляем созданный элемент в DOM
@@ -1282,3 +1315,107 @@ const deleteButtons = document.querySelectorAll(".delete-client-btn");
 deleteButtons.forEach((button) => {
   button.addEventListener("click", handleDeleteClientButtonClick);
 });
+
+const increaseButtons = document.querySelectorAll(".increase-btn");
+const decreaseButtons = document.querySelectorAll(".decrease-btn");
+const current_user_id = localStorage.getItem("username_id");
+increaseButtons.forEach((button) => {
+  button.addEventListener("click", () => {
+    const order_id = button.dataset.id;
+    const client_id = button.dataset.clientid;
+    socket.send(
+      JSON.stringify({
+        action: "additional_order_increase",
+        order_id: order_id,
+        client_id: client_id,
+        current_client_id: client_id,
+        current_user_id: current_user_id,
+      })
+    );
+  });
+});
+decreaseButtons.forEach((button) => {
+  button.addEventListener("click", () => {
+    const order_id = button.dataset.id;
+    const client_id = button.dataset.clientid;
+    socket.send(
+      JSON.stringify({
+        action: "additional_order_decrease",
+        order_id: order_id,
+        client_id: client_id,
+        current_client_id: client_id,
+        current_user_id: current_user_id,
+      })
+    );
+  });
+});
+
+const client_imges = document.querySelectorAll(".client-img");
+var x, y;
+for (let i = 0; i < client_imges.length; i++) {
+  var div = `<div class = "overflow3 hidden" id="${
+    "overflow3" + client_imges[i].getAttribute("data-id")
+  }"></div>
+      <div class="modWind3 hidden" id="${
+        "modWind3" + client_imges[i].getAttribute("data-id")
+      }">
+        <div class="flex-mod-dish"><img class="dish-img-mod"
+        src="http://localhost:8000/media/menu_images/${client_imges[
+          i
+        ].getAttribute("data-type")}/${client_imges[i].getAttribute(
+    "data-tittle"
+  )}.png"
+        </div>
+        <div class="mod-dish-info3">
+          <div class="name">${client_imges[i].getAttribute("data-name")}</div>
+          <div class="grams">${client_imges[i].getAttribute(
+            "data-weight"
+          )} гр</div>
+          <div class="price">${client_imges[i].getAttribute(
+            "data-price"
+          )} руб</div>
+          <div class="sostav">${client_imges[i].getAttribute(
+            "data-sostav"
+          )}</div>
+        </div>
+    </div>
+    <div class="mod-dish-decription">
+    <div class="decription">Тут будет описание...</div> 
+    
+    </div>
+    `;
+
+  document.querySelector("body").insertAdjacentHTML("beforeend", div);
+
+  client_imges[i].addEventListener("click", () => {
+    client_imges[i].classList.add("active");
+    x = document.getElementById(
+      "overflow3" + client_imges[i].getAttribute("data-id")
+    );
+    y = document.getElementById(
+      "modWind3" + client_imges[i].getAttribute("data-id")
+    );
+
+    x.classList.remove("hidden");
+    y.classList.remove("hidden");
+  });
+
+  var exit = document.getElementById(
+    "overflow3" + client_imges[i].getAttribute("data-id")
+  );
+
+  exit.addEventListener("click", () => {
+    const current_dishes = document.querySelectorAll(`.grid-dish-img`);
+    current_dishes.forEach((button) => {
+      button.classList.remove("active");
+    });
+    x = document.getElementById(
+      "overflow3" + client_imges[i].getAttribute("data-id")
+    );
+    y = document.getElementById(
+      "modWind3" + client_imges[i].getAttribute("data-id")
+    );
+    x.classList.add("hidden");
+    y.classList.add("hidden");
+  });
+}

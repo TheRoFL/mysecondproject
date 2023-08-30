@@ -56,15 +56,19 @@ function ChangeChosenStatus() {
 
 // Получаем все кнопки с классом "menu-client-btn"
 const menuButtons = document.querySelectorAll(".vash_zakaz");
-const detailsButtons = document.querySelectorAll(".details-button ");
+const detailsButtons = document.querySelectorAll(".details-button");
 const x1 = document.querySelector(".menuu");
 const y1 = document.querySelector(".overflow2");
 
-menuButtons.forEach((button) => {
+detailsButtons.forEach((button) => {
   button.addEventListener("click", function (event) {
     if (
       !event.target.classList.contains("delete-btn") &&
-      !event.target.classList.contains("delete-menu-btn")
+      !event.target.classList.contains("delete-menu-btn") &&
+      !event.target.classList.contains("delete-btn-wrapper2") &&
+      !event.target.classList.contains("dish-number-input") &&
+      !event.target.classList.contains("increase-btn-svg") &&
+      !event.target.classList.contains("decrease-btn-svg")
     ) {
       event.stopPropagation();
       // костыль, который прогружает заново меню и навешивает лисенеры, и более не навешивается более 1
