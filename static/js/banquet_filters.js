@@ -504,61 +504,10 @@ function LoadMenu(filter) {
           }
         });
 
-        // анимация добавления
         var animate_orderButtons = document.querySelectorAll(".order-button");
         animate_orderButtons.forEach((button) => {
           button.addEventListener("click", function () {
-            if (button.disabled != true) {
-              var dishImage = document.querySelector(
-                `.grid-dish-img[data-id="${button.dataset.id}"]`
-              );
-
-              if (button.classList.contains("chosen")) {
-                if (dishImage) {
-                  dishImage.classList.add("appear-shadow");
-
-                  // Убираем класс через секунду
-                  setTimeout(function () {
-                    dishImage.classList.remove("appear-shadow");
-                    dishImage.classList.add("disappear-shadow");
-                  }, 900);
-                  setTimeout(function () {
-                    dishImage.classList.remove("disappear-shadow");
-                  }, 1400);
-                }
-              } else {
-                if (dishImage) {
-                  dishImage.classList.add("appear-shadow-delete");
-
-                  // Убираем класс через секунду
-                  setTimeout(function () {
-                    dishImage.classList.remove("appear-shadow-delete");
-                    dishImage.classList.add("disappear-shadow-delete");
-                  }, 900);
-                  setTimeout(function () {
-                    dishImage.classList.remove("disappear-shadow-delete");
-                  }, 1400);
-                }
-              }
-
-              button.disabled = true;
-              var current_client_name = localStorage.getItem(
-                "current_client_name"
-              );
-              if (!button.classList.contains("chosen")) {
-                button.textContent = `Удалено для "${current_client_name}"`;
-                setTimeout(function () {
-                  button.disabled = false;
-                  button.textContent = `Выбрать для "${current_client_name}"`;
-                }, 1000);
-              } else {
-                button.textContent = `Выбрано для "${current_client_name}"`;
-                setTimeout(function () {
-                  button.disabled = false;
-                  button.textContent = `Удалить для "${current_client_name}"`;
-                }, 1000);
-              }
-            }
+            AddBtnAnimation(this);
           });
         });
       });
@@ -593,6 +542,58 @@ function LoadMenu(filter) {
       console.error(error);
     },
   });
+}
+
+function AddBtnAnimation(button) {
+  if (button.disabled != true) {
+    var dishImage = document.querySelector(
+      `.grid-dish-img[data-id="${button.dataset.id}"]`
+    );
+
+    if (button.classList.contains("chosen")) {
+      if (dishImage) {
+        dishImage.classList.add("appear-shadow");
+
+        // Убираем класс через секунду
+        setTimeout(function () {
+          dishImage.classList.remove("appear-shadow");
+          dishImage.classList.add("disappear-shadow");
+        }, 900);
+        setTimeout(function () {
+          dishImage.classList.remove("disappear-shadow");
+        }, 1400);
+      }
+    } else {
+      if (dishImage) {
+        dishImage.classList.add("appear-shadow-delete");
+
+        // Убираем класс через секунду
+        setTimeout(function () {
+          dishImage.classList.remove("appear-shadow-delete");
+          dishImage.classList.add("disappear-shadow-delete");
+        }, 900);
+        setTimeout(function () {
+          dishImage.classList.remove("disappear-shadow-delete");
+        }, 1400);
+      }
+    }
+
+    button.disabled = true;
+    var current_client_name = localStorage.getItem("current_client_name");
+    if (!button.classList.contains("chosen")) {
+      button.textContent = `Удалено для "${current_client_name}"`;
+      setTimeout(function () {
+        button.disabled = false;
+        button.textContent = `Выбрать для "${current_client_name}"`;
+      }, 1000);
+    } else {
+      button.textContent = `Выбрано для "${current_client_name}"`;
+      setTimeout(function () {
+        button.disabled = false;
+        button.textContent = `Удалить для "${current_client_name}"`;
+      }, 1000);
+    }
+  }
 }
 
 $("button.dish-filter").on("click", function () {

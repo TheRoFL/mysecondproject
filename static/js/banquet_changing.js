@@ -527,8 +527,12 @@ socket.onmessage = function (e) {
     const orderButtonToAddListener = document.querySelector(
       `.order-button[data-id="${dish_id}"]`
     );
+    AddBtnAnimation(orderButtonToAddListener);
     orderButtonToAddListener.addEventListener("click", function () {
       handleButtonClick(this);
+    });
+    orderButtonToAddListener.addEventListener("click", function () {
+      AddBtnAnimation(this);
     });
   } else if (action === "client_quantity_changed") {
     client_id = data["client_id"];
@@ -834,11 +838,20 @@ socket.onmessage = function (e) {
     new_quantity = data["new_quantity"];
     banqet_id = data["banqet_id"];
     const DishNumberInput = document.querySelector(
+      `.dish-number-input[data-dish-id="${dishOrder_id}"]`
+    );
+    const DishNumberInput2 = document.querySelector(
       `.dish-number-input2[data-dish-id="${dishOrder_id}"]`
     );
     const clientOrderQuantity = document.getElementById(dishOrder_id);
     clientOrderQuantity.textContent = new_quantity;
-    DishNumberInput.textContent = new_quantity;
+    if (DishNumberInput) {
+      DishNumberInput.textContent = new_quantity;
+    }
+
+    if (DishNumberInput2) {
+      DishNumberInput2.textContent = new_quantity;
+    }
 
     const dish_order_price = document.querySelector(
       `.client_order_price[data-order-id="${dishOrder_id}"]`
