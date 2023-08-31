@@ -99,9 +99,9 @@ function updateClientsList(data) {
   });
   clientTotalPrice.html(
     `Итого за всех клиентов: <span class='order-price-count' data-id='${client_id}' 
-    id='${client_id}'>0</span>.00 руб. x <span class='client-quantity-2'
+    id='${client_id}'>0</span>.00 ₽ x <span class='client-quantity-2'
      data-id='${client_id}'>${quantity}</span> человек = <span class='client-price-count' 
-     data-id='${client_id}' id='${client_id}'>0</span>.00 руб.`
+     data-id='${client_id}' id='${client_id}'>0</span>.00 ₽`
   );
 
   // Добавляем элементы на страницу
@@ -464,7 +464,7 @@ socket.onmessage = function (e) {
       `.banquet-total-price[data-id="${banqet_id}"]`
     );
     banqet_id_element.textContent =
-      formatInteger(parseInt(data["total_banquet_price"])) + ".00 руб.";
+      formatInteger(parseInt(data["total_banquet_price"])) + ".00 ₽";
     if (clientElement) {
       clientElement.remove();
     }
@@ -508,7 +508,7 @@ socket.onmessage = function (e) {
       `.banquet-total-price[data-id="${data.banqet_id}"]`
     );
     total_banquet_price.textContent =
-      formatInteger(parseInt(data["total_banquet_price"])) + ".00 руб.";
+      formatInteger(parseInt(data["total_banquet_price"])) + ".00 ₽";
 
     const current_client_name = localStorage.getItem("current_client_name");
     const dish_id = data["dish_id"];
@@ -527,7 +527,10 @@ socket.onmessage = function (e) {
     const orderButtonToAddListener = document.querySelector(
       `.order-button[data-id="${dish_id}"]`
     );
-    AddBtnAnimation(orderButtonToAddListener);
+
+    if (orderButtonToAddListener) {
+      AddBtnAnimation(orderButtonToAddListener);
+    }
     orderButtonToAddListener.addEventListener("click", function () {
       handleButtonClick(this);
     });
@@ -559,7 +562,7 @@ socket.onmessage = function (e) {
       );
     }
     total_banquet_price.textContent =
-      formatInteger(parseInt(data["total_banquet_price"])) + ".00 руб.";
+      formatInteger(parseInt(data["total_banquet_price"])) + ".00 ₽";
   } else if (action === "client_name_changed") {
     client_id = data["client_id"];
     new_name = data["new_name"];
@@ -620,7 +623,7 @@ socket.onmessage = function (e) {
       `.banquet-total-price[data-id="${data.current_banquet_id}"]`
     );
     total_banquet_price.textContent =
-      formatInteger(parseInt(data["total_banquet_price"])) + ".00 руб.";
+      formatInteger(parseInt(data["total_banquet_price"])) + ".00 ₽";
   } else if (action === "menu_added") {
     client_id = data["client_id"];
     current_menu_id = data["current_menu_id"];
@@ -684,9 +687,7 @@ socket.onmessage = function (e) {
     // Создаем элемент для общей стоимости
     var totalCostHeader = document.createElement("h1");
     totalCostHeader.style.marginLeft = "15px";
-    totalCostHeader.textContent = `Итого: ${totalCost.toFixed(
-      2
-    )} руб. с человека`;
+    totalCostHeader.textContent = `Итого: ${totalCost.toFixed(2)} ₽ с человека`;
 
     menuDiv.appendChild(totalCostHeader);
 
@@ -734,7 +735,7 @@ socket.onmessage = function (e) {
       `.banquet-total-price[data-id="${data.current_banquet_id}"]`
     );
     total_banquet_price.textContent =
-      formatInteger(parseInt(data["total_banquet_price"])) + ".00 руб.";
+      formatInteger(parseInt(data["total_banquet_price"])) + ".00 ₽";
 
     function handleDeleteMenuButtonClick2(button) {
       const menu_id = button.dataset.id; // Получаем значение data-id из атрибута data-id
@@ -783,7 +784,7 @@ socket.onmessage = function (e) {
     id="${data.current_dish_order_id}">
     ${client_dishOrder_quantity}</span> шт. =
      <span class="client_order_price" data-id="${data.client_id}" id="${data.current_dish_order_id}">
-      ${client_dishOrder_price_count}</span>.00 руб.</h2>
+      ${client_dishOrder_price_count}</span>.00 ₽</h2>
   `;
     // Создаем кнопку для удаления
     var adittional_dish_item_button = document.createElement("div");
@@ -870,7 +871,7 @@ socket.onmessage = function (e) {
 
     const banquetTotalPrice = document.getElementById(banqet_id);
     banquetTotalPrice.textContent =
-      formatInteger(parseInt(data["total_banquet_price"])) + ".00 руб.";
+      formatInteger(parseInt(data["total_banquet_price"])) + ".00 ₽";
 
     const dishNumberInput2 = document.querySelector(
       `.dish-number-input2[data-dish-id="${dishOrder_id}"]`
@@ -912,7 +913,7 @@ socket.onmessage = function (e) {
       `.banquet-total-price[data-id="${data.current_banquet_id}"]`
     );
     total_banquet_price.textContent =
-      formatInteger(parseInt(data["total_banquet_price"])) + ".00 руб.";
+      formatInteger(parseInt(data["total_banquet_price"])) + ".00 ₽";
 
     const current_dish_id = data["current_dish_id"];
     orderButtonToDelete = document.querySelector(
@@ -1079,9 +1080,9 @@ showFormButton.addEventListener("click", () => {
   client_total_price.className = "client-total-price";
   client_total_price.classList.add("created");
   var ClientTotalPrice = `Итого:
-              <span class="order-price-count created">0</span>.00 руб. x
+              <span class="order-price-count created">0</span>.00 ₽ x
               <span class="client-quantity created">0</span> человек =
-              <span class="client-price-count created">0</span>.00 руб.`;
+              <span class="client-price-count created">0</span>.00 ₽`;
 
   client_total_price.innerHTML = ClientTotalPrice;
   vashZakazDiv.appendChild(client_total_price);

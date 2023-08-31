@@ -124,7 +124,7 @@
                   data-id="{{client.id}}"
                   data-order-id="{{client_dish.id}}"
                   >{{client_dish.price_count}}</span
-                >.00 руб.
+                >.00 ₽
               </div>
             </div>
             {% endfor %}
@@ -132,7 +132,7 @@
               Итого:
               <span class="menu-total" data-id="{{client.menu.id}}"
                 >{{client.menu.all_dishes_price}}</span
-              >.00 руб. с человека
+              >.00 ₽ с человека
             </h1>
             <div class="dotted-line"></div>
             {%endif%}
@@ -174,7 +174,7 @@
                   data-order-id="{{client_dish.id}}"
                   id="{{client_dish.id}}"
                   >{{client_dish.price_count}}</span
-                >.00 руб.
+                >.00 ₽
               </div>
               <div class="adittional-dish-item-button">
                 <div class="delete-btn-wrapper">
@@ -234,11 +234,10 @@
               </div>
             </div>
 
-            {% endfor %}
-            <div class="dotted-line"></div>
-            {% endif %}
+            {% endfor %} {% endif %}
           </div>
-
+        </div>
+        <div class="client-total-price-and-menu-btn">
           <div class="client-total-price">
             Итого:
             <span
@@ -247,7 +246,7 @@
               id="{{client.id}}"
             >
               {{client.total_client_price}}</span
-            >.00 руб. x
+            >.00 ₽ x
             <span class="client-quantity" data-id="{{client.id}}"
               >{{client.quantity}}</span
             >
@@ -257,14 +256,14 @@
               data-id="{{client.id}}"
               id="{{client.id}}"
               >{{client.menu_and_orders_price_count}}</span
-            >.00 руб.
+            >.00 ₽
           </div>
           <button
             class="details-button"
             data-id="{{client.id}}"
             data-name="{{client.type}}"
           >
-            Меню
+            Редактировать
           </button>
         </div>
       </div>
@@ -371,7 +370,7 @@
           <img
             src="http://localhost:8000/media/menu_images/{{dish.product.type}}/{{dish.product.create_tittle2}}.png"
         />
-          <h3>{{dish.product.name}} / {{dish.product.weight}} гр. / {{dish.product.price}} руб.</h3>
+          <h3>{{dish.product.name}} / {{dish.product.weight}} гр. / {{dish.product.price}} ₽</h3>
         </div>
       {% endfor %}
       <div class="dotted-line"></div>
@@ -389,7 +388,7 @@
     <h1>
       Сумма заказа:
       <span class="banquet-total-price" data-id="{{banquet.id}}" id="{{banquet.id}}"
-        >{{banquet.total_price}}.00 руб.</span>
+        >{{banquet.total_price}}.00 ₽</span>
       <button class="confirm-order">
         <a href="/banquet/ordering/">Оформить заказ</a>
       </button>
@@ -448,7 +447,7 @@
     let value = parseInt(banquetTotalPrice.textContent);
     if (!isNaN(value)) {
       let formattedValue = formatInteger(value);
-      banquetTotalPrice.textContent = formattedValue + ".00 руб.";
+      banquetTotalPrice.textContent = formattedValue + ".00 ₽";
     }
   </script>
 </body>

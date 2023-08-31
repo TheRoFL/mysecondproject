@@ -1,58 +1,3 @@
-function ChangeChosenStatus() {
-  var clientId = localStorage.getItem("current_client_id");
-  var clientName = localStorage.getItem("current_client_name");
-  var orderButtons_ = document.querySelectorAll(".order-button");
-
-  var all_dishes = [];
-  orderButtons_.forEach((button) => {
-    const dishId = button.dataset.id;
-    all_dishes.push(dishId);
-  });
-
-  const filter_ = localStorage.getItem("dish-filter");
-  var requestParams2 = {};
-  if (filter_ != "samples") {
-    requestParams2 = {
-      action: "dish",
-      dish_ids: all_dishes,
-      client_id: clientId,
-    };
-  } else {
-    requestParams2 = {
-      action: "menu",
-      dish_ids: all_dishes,
-      client_id: clientId,
-    };
-  }
-
-  $.ajax({
-    url: "http://127.0.0.1:8000/banquet/json/",
-    method: "GET",
-    data: requestParams2,
-    dataType: "json",
-    success: function (data) {
-      data = JSON.parse(data);
-      console.log(data);
-
-      orderButtons_.forEach((button) => {
-        const dishId = button.dataset.id;
-        if (Array.isArray(data)) {
-          if (data.includes(Number(dishId))) {
-            const button_to_delete = document.querySelector(
-              `.order-button[data-id="${dishId}"]`
-            );
-            button_to_delete.textContent = `Удалить для "${clientName}"`;
-            button_to_delete.classList.add("chosen");
-          }
-        }
-      });
-    },
-    error: function (xhr, status, error) {
-      console.error(error);
-    },
-  });
-}
-
 function formatInteger(integer) {
   if (typeof integer === "number" && Number.isInteger(integer)) {
     const integerStr = integer.toLocaleString("en-US"); // Преобразование числа в строку с разделением тысяч
@@ -286,7 +231,7 @@ function LoadMenu(filter) {
                   dish.pk + "/" + index
                 }" src="http://localhost:8000/media/${dish.fields.image}"></h1>
                   <h1>${dish.fields.name}</h1>
-                  <h2>Цена: ${dish.fields.price} руб.</h2>
+                  <h2>Цена: ${dish.fields.price} ₽</h2>
                   
                 </div>
               `;
@@ -332,7 +277,7 @@ function LoadMenu(filter) {
                 var h3 = $("<h3>").html(
                   `${item.fields.name.replace(/_/g, " ")} / ${
                     item.fields.price
-                  } руб.`
+                  } ₽`
                 );
               }
 
@@ -594,6 +539,99 @@ function AddBtnAnimation(button) {
       }, 1000);
     }
   }
+}
+
+function ChangeChosenStatus() {
+  var clientId = localStorage.getItem("current_client_id");
+  var clientName = localStorage.getItem("current_client_name");
+  var orderButtons_ = document.querySelectorAll(".order-button");
+  var orderMenuButtons_ = document.querySelectorAll(".order-menu-button");
+  var all_dishes = [];
+  orderButtons_.forEach((button) => {
+    const dishId = button.dataset.id;
+    all_dishes.push(dishId);
+  });
+
+  var all_menu_dishes = [];
+  orderMenuButtons_.forEach((button) => {
+    const dishId = button.dataset.id;
+    all_menu_dishes.push(dishId);
+  });
+
+  const filter_ = localStorage.getItem("dish-filter");
+  var requestParams2 = {};
+  if (filter_ != "samples") {
+    requestParams2 = {
+      action: "dish",
+      dish_ids: all_dishes,
+      client_id: clientId,
+    };
+  } else {
+    requestParams2 = {
+      action: "menu",
+      dish_ids: all_menu_dishes,
+      client_id: clientId,
+    };
+  }
+  $.ajax({
+    url: "http://127.0.0.1:8000/banquet/json/",
+    method: "GET",
+    data: requestParams2,
+    dataType: "json",
+    success: function (data) {
+      data = JSON.parse(data);
+      console.log(data);
+
+      orderButtons_.forEach((button) => {
+        const dishId = button.dataset.id;
+        const clientId = localStorage.getItem("current_client_id");
+        if (Array.isArray(data)) {
+          if (data[0].includes(Number(dishId))) {
+            const button_to_delete = document.querySelector(
+              `.order-button[data-id="${dishId}"]`
+            );
+
+            const dish_order_id = data[1][dishId];
+            const order_quantity = data[2][dish_order_id];
+            if (button_to_delete) {
+              button_to_delete.textContent = `Удалить для "${clientName}"`;
+
+              const container = document.querySelector(
+                `.order-btn-container[data-id="${dishId}"]`
+              );
+              CreateQuantityStatusButton(
+                container,
+                clientId,
+                dish_order_id,
+                order_quantity
+              );
+              button_to_delete.remove();
+              button_to_delete.classList.add("chosen");
+            }
+          }
+        }
+      });
+
+      orderMenuButtons_.forEach((button) => {
+        const dishId = button.dataset.id;
+        const clientName = localStorage.getItem("current_client_name");
+        if (Array.isArray(data)) {
+          if (data[0].includes(Number(dishId))) {
+            const button_to_delete_menu = document.querySelector(
+              `.order-menu-button[data-id="${dishId}"]`
+            );
+            if (button_to_delete_menu) {
+              button_to_delete_menu.textContent = `Удалить для "${clientName}"`;
+              button_to_delete_menu.classList.add("chosen");
+            }
+          }
+        }
+      });
+    },
+    error: function (xhr, status, error) {
+      console.error(error);
+    },
+  });
 }
 
 $("button.dish-filter").on("click", function () {

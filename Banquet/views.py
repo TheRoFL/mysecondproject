@@ -139,7 +139,6 @@ def home(request, dish_type=None, clientId=None):
                 'total': total
             }
         })
-    print(client_data)
 
     banquet_cost = banquet.total_price()
 
@@ -147,7 +146,6 @@ def home(request, dish_type=None, clientId=None):
     for dish in Dish.objects.all():
         dishes[dish.id] = dict(name=dish.name, price=int(dish.price), qauntity=1)
 
-    print(dishes)
     order = {
     'type':'Банкет',
     'clients':client_data,

@@ -90,7 +90,7 @@ input[type="submit"]:active {
   flex-direction: column;
 
   height: 25px;
-  width: 75px;
+  width: 0px;
 }
 
 .delete-btn-wrapper2 {
@@ -272,15 +272,19 @@ input[type="submit"]:active {
 
 .vash_zakaz {
   width: 100%;
-  height: 400px;
-  background-color: #fff;
-  border-radius: 0 0 20px 20px;
-  display: flex;
+  height: 330px;
+  background-color: #ffd000;
   flex-direction: column;
   font-size: 15px;
   overflow: auto;
+  display: flex;
+  position: relative;
+  padding-bottom: 50px;
+  box-sizing: border-box;
   scrollbar-width: none;
   -ms-overflow-style: none;
+  overflow-x: hidden;
+  padding-bottom: 0px;
 }
 .vash_zakaz::-webkit-scrollbar {
   width: 0; /* Вы можете настроить толщину */
@@ -522,9 +526,7 @@ input[type="submit"]:active {
 .details-button {
   scale: 0.75;
   width: 250px;
-  padding-left: 10px;
   align-self: center;
-  margin-left: -8px;
 }
 .order-sep-button:hover,
 .order-button:hover,
@@ -786,12 +788,6 @@ input[type="submit"]:active {
   grid-template-columns: 1fr 1fr;
 }
 
-.client-total-price {
-  margin-left: 10px;
-  margin-top: 10px;
-  width: 220px;
-}
-
 .flex-mod-dish {
   display: flex;
   flex-direction: row;
@@ -854,4 +850,20 @@ input[type="submit"]:active {
 
 .order-btn-container {
   align-items: center;
+}
+
+.client-total-price-and-menu-btn {
+  display: flex;
+  flex-direction: column;
+  font-size: 11px;
+  height: 80px;
+  background-color: #f2ff00;
+  border-radius: 0 0 20px 20px;
+  margin-top: -5px;
+}
+
+.client-total-price {
+  background-color: red;
+  padding: 16px;
+  display: inline-block;
 }
