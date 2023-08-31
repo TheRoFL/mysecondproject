@@ -149,6 +149,12 @@
                 <img
                   class="client-img"
                   data-id="{{client_dish.product.id}}"
+                  data-name="{{client_dish.product.name}}"
+                  data-tittle="{{client_dish.product.create_tittle2}}"
+                  data-weight="{{client_dish.product.weight}}"
+                  data-price="{{client_dish.product.price}}"
+                  data-sostav="{{client_dish.product.ingredients}}"
+                  data-type="{{client_dish.product.type}}"
                   src="http://localhost:8000/media/{{client_dish.product.image}}"
                 />
               </div>
@@ -194,13 +200,14 @@
                         ></path>
                       </svg>
                     </button>
-                    <input
+                    <span
                       class="dish-number-input"
                       data-id="{{client.id}}"
                       data-dish-id="{{client_dish.id}}"
                       type="text"
-                      value="{{client_dish.quantity}}"
-                    />
+                      value=""
+                      >{{client_dish.quantity}}</span
+                    >
                     <button
                       class="increase-btn"
                       data-id="{{client_dish.id}}"

@@ -413,6 +413,8 @@ class BanquetConsumer(WebsocketConsumer):
 
                 response = {"action":"order_deleted", 
                             "order_id": current_dish_order.id,
+                            'dish_id':current_dish_order.product.id,
+                            'dish_name':current_dish_order.product.name,
                             'orders_left':orders_left,
                             'order_total_price': current_client.total_client_price(),
                             'client_total_price': current_client.menu_and_orders_price_count(),

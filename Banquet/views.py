@@ -319,13 +319,18 @@ def forJsonResopnses(request):
     
     filter_ = request.GET.get("action")
     response = []
+    dish_ids2 = []
+    dish_order_ids = {}
+    dish_order_quantities = {}
     if filter_ == "dish":
-        try:
+        try:  
             current_client = Client.objects.get(id=client_id)
             all_client_dishes = current_client.dishes.all()
             for client_dish in all_client_dishes:
                 if client_dish.product.id in dish_ids:
-                    response.append(client_dish.product.id)
+                    dish_ids2.append(client_dish.product.id)
+                    dish_order_quantities[client_dish.id] = client_dish.quantity
+                    dish_order_ids[client_dish.product.id] = client_dish.id
         except:
             pass
     elif filter_ == "menu": 
@@ -333,10 +338,13 @@ def forJsonResopnses(request):
             current_client = Client.objects.get(id=client_id)
             for dish_id in dish_ids:
                 if current_client.menu.id == dish_id:
-                    response.append(current_client.menu.id)
+                    dish_ids2.append(current_client.menu.id)
         except:
             pass
     
+    response.append(dish_ids2)
+    response.append(dish_order_ids)
+    response.append(dish_order_quantities)
     if response:
         response = json.dumps(response)
     else:

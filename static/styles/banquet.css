@@ -112,6 +112,60 @@ input[type="submit"]:active {
   border-color: #4a644b;
 }
 
+.delete-btn-wrapper3 {
+  display: flex;
+  overflow: hidden;
+  color: black;
+  position: relative;
+  font-size: 25px;
+  align-items: center;
+  font-family: YSText, sans-serif;
+  line-height: 14px;
+  white-space: nowrap;
+  border-radius: 16px;
+  justify-content: center;
+  background-color: #f5f4f2;
+  font-feature-settings: "pnum" on, "lnum" on;
+
+  padding: 20px 30px; /* Настройте отступы, чтобы увеличить "толщину" */
+  width: 210px;
+  border-color: #4a644b;
+}
+.increase-btn2 {
+  background-color: #f5f4f2;
+  margin-left: 10px;
+  scale: 1.5;
+}
+
+.decrease-btn2 {
+  background-color: #f5f4f2;
+  margin-right: 10px;
+  scale: 1.5;
+}
+
+.increase-btn2,
+.decrease-btn2 {
+  transition: transform 0.15s ease-in-out; /* Добавляем плавную анимацию */
+}
+
+.increase-btn2:hover,
+.decrease-btn2:hover {
+  transform: scale(1.5); /* Увеличиваем элемент при наведении */
+}
+
+.increase-btn2:active,
+.decrease-btn2:active {
+  transform: scale(0.85);
+}
+
+.dish-number-input2 {
+  border-color: #4a644b;
+  background-color: #f5f4f2;
+  width: 80px;
+  height: 20px;
+  margin-top: 7px;
+  text-align: center;
+}
 .delete-menu-btn,
 .delete-btn {
   scale: 0.7;
@@ -129,7 +183,7 @@ input[type="submit"]:active {
   background-color: #f5f4f2;
   width: 25px;
   height: 20px;
-  margin-top: 11px;
+  margin-top: 7px;
   text-align: center;
 }
 .delete-menu-btn {
@@ -164,6 +218,7 @@ input[type="submit"]:active {
 .delete-menu-btn:active,
 .delete-btn:active,
 .order-button:active,
+.order-menu-button:active,
 .dish-filter:active {
   transform: scale(0.85);
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
@@ -451,6 +506,7 @@ input[type="submit"]:active {
 
 .order-sep-button,
 .order-button,
+.order-menu-button,
 .details-button {
   background-color: #4a644b;
   color: white;
@@ -472,6 +528,7 @@ input[type="submit"]:active {
 }
 .order-sep-button:hover,
 .order-button:hover,
+.order-menu-button:hover,
 .details-button:hover {
   background-color: #374a37; /* Зеленый фон при наведении */
 }
@@ -541,12 +598,14 @@ input[type="submit"]:active {
 
 .order-sep-button:hover,
 .order-button:hover,
+.order-menu-button:hover,
 .details-button:hover {
   transform: scale(1.1);
 }
 
 .order-sep-button:active,
 .order-button:active,
+.order-menu-button:active,
 .details-button:active {
   transform: scale(0.9);
 }
@@ -766,6 +825,10 @@ input[type="submit"]:active {
   object-fit: cover;
 }
 
+.client-img.active {
+  transform: scale(1.1);
+}
+
 .client-img {
   transition: transform 0.15s cubic-bezier(0.59, 0.3, 0.17, 1.47);
 }
@@ -787,4 +850,8 @@ input[type="submit"]:active {
 .decrease-btn-svg {
   margin-top: 5px;
   margin-left: 0px;
+}
+
+.order-btn-container {
+  align-items: center;
 }

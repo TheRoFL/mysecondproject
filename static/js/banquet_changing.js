@@ -509,6 +509,27 @@ socket.onmessage = function (e) {
     );
     total_banquet_price.textContent =
       formatInteger(parseInt(data["total_banquet_price"])) + ".00 руб.";
+
+    const current_client_name = localStorage.getItem("current_client_name");
+    const dish_id = data["dish_id"];
+    const dish_name = data["dish_name"];
+    var orderButton = $("<button>", {
+      class: "order-button",
+      "data-id": dish_id,
+      "data-name": dish_name,
+    }).text(`Выбрать для "${current_client_name}"`);
+
+    var orderButtonContainer = $(`.order-btn-container[data-id="${dish_id}"]`);
+    orderButtonContainer.empty();
+
+    orderButtonContainer.append(orderButton);
+
+    const orderButtonToAddListener = document.querySelector(
+      `.order-button[data-id="${dish_id}"]`
+    );
+    orderButtonToAddListener.addEventListener("click", function () {
+      handleButtonClick(this);
+    });
   } else if (action === "client_quantity_changed") {
     client_id = data["client_id"];
     banquet_id = data["banquet_id"];
@@ -813,11 +834,11 @@ socket.onmessage = function (e) {
     new_quantity = data["new_quantity"];
     banqet_id = data["banqet_id"];
     const DishNumberInput = document.querySelector(
-      `.dish-number-input[data-dish-id="${dishOrder_id}"]`
+      `.dish-number-input2[data-dish-id="${dishOrder_id}"]`
     );
     const clientOrderQuantity = document.getElementById(dishOrder_id);
     clientOrderQuantity.textContent = new_quantity;
-    DishNumberInput.value = new_quantity;
+    DishNumberInput.textContent = new_quantity;
 
     const dish_order_price = document.querySelector(
       `.client_order_price[data-order-id="${dishOrder_id}"]`
@@ -837,6 +858,13 @@ socket.onmessage = function (e) {
     const banquetTotalPrice = document.getElementById(banqet_id);
     banquetTotalPrice.textContent =
       formatInteger(parseInt(data["total_banquet_price"])) + ".00 руб.";
+
+    const dishNumberInput2 = document.querySelector(
+      `.dish-number-input2[data-dish-id="${dishOrder_id}"]`
+    );
+    if (dishNumberInput2) {
+      dishNumberInput2.textContent = new_quantity;
+    }
   }
 
   if (
@@ -872,6 +900,22 @@ socket.onmessage = function (e) {
     );
     total_banquet_price.textContent =
       formatInteger(parseInt(data["total_banquet_price"])) + ".00 руб.";
+
+    const current_dish_id = data["current_dish_id"];
+    orderButtonToDelete = document.querySelector(
+      `.order-button[data-id="${current_dish_id}"]`
+    );
+    orderButtonToDelete.remove();
+
+    const container = document.querySelector(
+      `.order-btn-container[data-id="${current_dish_id}"]`
+    );
+    CreateQuantityStatusButton(
+      container,
+      data.client_id,
+      data.current_dish_order_id,
+      1
+    );
   }
 };
 
@@ -1398,6 +1442,8 @@ for (let i = 0; i < client_imges.length; i++) {
 
     x.classList.remove("hidden");
     y.classList.remove("hidden");
+
+    // my_client = document.querySelector(`.my_client[data-id="${client_imges[i].}"]`)
   });
 
   var exit = document.getElementById(
@@ -1405,10 +1451,11 @@ for (let i = 0; i < client_imges.length; i++) {
   );
 
   exit.addEventListener("click", () => {
-    const current_dishes = document.querySelectorAll(`.grid-dish-img`);
-    current_dishes.forEach((button) => {
-      button.classList.remove("active");
-    });
+    const current_dish = document.querySelector(`.client-img.active`);
+    if (current_dish) {
+      current_dish.classList.remove("active");
+    }
+
     x = document.getElementById(
       "overflow3" + client_imges[i].getAttribute("data-id")
     );

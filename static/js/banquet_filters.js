@@ -146,8 +146,8 @@ function handleButtonClick(button) {
         current_client_id: clientId,
       };
 
-      var orderButtons = document.querySelectorAll(`.order-button`);
-      orderButtons.forEach((orderButton) => {
+      var orderMenuButtons = document.querySelectorAll(`.order-menu-button`);
+      orderMenuButtons.forEach((orderButton) => {
         orderButton.classList.remove("chosen");
         orderButton.textContent = `Выбрать для "${clientName}"`;
       });
@@ -230,7 +230,7 @@ function LoadMenu(filter) {
             );
 
             var orderButton = $("<button>", {
-              class: "order-button",
+              class: "order-menu-button",
               "data-id": item.pk,
               "data-name": item.fields.type,
             }).text(`Выбрать для "${current_client_name}"`);
@@ -347,7 +347,14 @@ function LoadMenu(filter) {
               }).text(`Выбрать для "${current_client_name}"`);
 
               dishDiv2.append(img, h3);
-              dishDiv.append(dishDiv2, orderButton);
+              var orderButtonContainer = document.createElement("div");
+              orderButtonContainer = $(
+                "<div class='order-btn-container'>"
+              ).append(orderButton);
+              orderButtonContainer.attr("data-id", item.pk);
+              // orderButtonContainer.attr("data-dishOrder-id", item.pk);
+              dishDiv.append(dishDiv2);
+              dishDiv.append(orderButtonContainer);
               gridItem.append(dishDiv);
 
               gridContainer.append(gridItem);
@@ -388,6 +395,14 @@ function LoadMenu(filter) {
 
         const orderButtons = document.querySelectorAll(".order-button");
         orderButtons.forEach((button) => {
+          button.addEventListener("click", function () {
+            handleButtonClick(this);
+          });
+        });
+
+        const orderMenuButtons =
+          document.querySelectorAll(".order-menu-button");
+        orderMenuButtons.forEach((button) => {
           button.addEventListener("click", function () {
             handleButtonClick(this);
           });
