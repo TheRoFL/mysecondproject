@@ -19,6 +19,18 @@
   <link rel="stylesheet" href="/static/styles/banquet.css" />
 </head>
 <body>
+  <h1>
+    Сумма заказа:
+    <span
+      class="banquet-total-price"
+      data-id="{{banquet.id}}"
+      id="{{banquet.id}}"
+      >{{banquet.total_price}}.00 ₽</span
+    >
+    <button class="confirm-order">
+      <a href="/banquet/ordering/">Оформить заказ</a>
+    </button>
+  </h1>
   <div class="body">
     <form id="clientForm" style="margin-left: 10px">
       <label for="clientName">Название клиента:</label>
@@ -117,22 +129,28 @@
                   id="{{client_dish.id}}"
                   >{{client_dish.quantity}}
                 </span>
-                шт. =
-
-                <span
-                  class="client_order_price"
-                  data-id="{{client.id}}"
-                  data-order-id="{{client_dish.id}}"
-                  >{{client_dish.price_count}}</span
-                >.00 ₽
+                <div class="client-order-price">
+                  <span
+                    class="client_order_price"
+                    data-id="{{client.id}}"
+                    data-order-id="{{client_dish.id}}"
+                    >{{client_dish.price_count}}</span
+                  >.00 ₽ ·
+                  <span class="dish-weight"
+                    >{{client_dish.product.weight}} гр.</span
+                  >
+                </div>
               </div>
             </div>
             {% endfor %}
             <h1 style="margin-left: 15px">
               Итого:
-              <span class="menu-total" data-id="{{client.menu.id}}"
-                >{{client.menu.all_dishes_price}}</span
-              >.00 ₽ с человека
+              <span class="menu-total-price">
+                <span class="menu-total" data-id="{{client.menu.id}}"
+                  >{{client.menu.all_dishes_price}}</span
+                >.00 ₽
+              </span>
+              с человека
             </h1>
             <div class="dotted-line"></div>
             {%endif%}
@@ -166,15 +184,18 @@
                   id="{{client_dish.id}}"
                   >{{client_dish.quantity}}
                 </span>
-                шт. =
-
-                <span
-                  class="client_order_price"
-                  data-id="{{client.id}}"
-                  data-order-id="{{client_dish.id}}"
-                  id="{{client_dish.id}}"
-                  >{{client_dish.price_count}}</span
-                >.00 ₽
+                <div class="client-order-price">
+                  <span
+                    class="client_order_price"
+                    data-id="{{client.id}}"
+                    data-order-id="{{client_dish.id}}"
+                    id="{{client_dish.id}}"
+                    >{{client_dish.price_count}}</span
+                  >.00 ₽ ·
+                  <span class="dish-weight"
+                    >{{client_dish.product.weight}} гр.</span
+                  >
+                </div>
               </div>
               <div class="adittional-dish-item-button">
                 <div class="delete-btn-wrapper">
@@ -316,6 +337,14 @@
         >
           Десерты
         </button>
+        <div class="dish-search-wrapper" type="text">
+          <input
+            class="dish-search"
+            type="text"
+            id="dish-search"
+            placeholder="Введите для поиска блюда"
+          />
+        </div>
       </div>
       {% if dish_type != 'samples' %}
       <div class="grid-container">
@@ -380,24 +409,9 @@
 
       {% endif %}
     </div>
-    <h1>&nbsp</h1>
-    <hr style="width: 90%; height: 3px; background: #4a644b" />
-    <h1>&nbsp</h1>
+
     <!-- prettier-ignore -->
-
-    <h1>
-      Сумма заказа:
-      <span class="banquet-total-price" data-id="{{banquet.id}}" id="{{banquet.id}}"
-        >{{banquet.total_price}}.00 ₽</span>
-      <button class="confirm-order">
-        <a href="/banquet/ordering/">Оформить заказ</a>
-      </button>
-    </h1>
   </div>
-
-  <h1>&nbsp</h1>
-  <hr style="width: 90%; height: 3px; background: #4a644b" />
-  <h1>&nbsp</h1>
 
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="/static/js/banquet_changing.js"></script>

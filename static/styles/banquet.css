@@ -1,6 +1,6 @@
 /* Простой стиль для красивого отображения формы */
 body {
-  font-family: Arial, sans-serif;
+  font-family: YSText, sans-serif;
   padding-bottom: 2000px; /* Размер пространства внизу body (можно задать нужное значение) */
   background-color: #fddada;
   color: #4a644b;
@@ -130,6 +130,8 @@ input[type="submit"]:active {
   padding: 20px 30px; /* Настройте отступы, чтобы увеличить "толщину" */
   width: 210px;
   border-color: #4a644b;
+
+  margin-left: -70px;
 }
 .increase-btn2 {
   background-color: #f5f4f2;
@@ -273,7 +275,7 @@ input[type="submit"]:active {
 .vash_zakaz {
   width: 100%;
   height: 330px;
-  background-color: #ffd000;
+  background-color: #ffffff;
   flex-direction: column;
   font-size: 15px;
   overflow: auto;
@@ -428,6 +430,14 @@ input[type="submit"]:active {
   text-align: center;
 }
 
+.grid-item-3 {
+  display: flex;
+  align-items: center; /* Выравнивание по центру по горизонтали */
+  justify-content: center;
+  text-align: center;
+  flex-direction: column;
+}
+
 .grid-item-test {
   display: flex;
   align-items: center;
@@ -509,7 +519,6 @@ input[type="submit"]:active {
 }
 
 .order-sep-button,
-.order-button,
 .order-menu-button,
 .details-button {
   background-color: #4a644b;
@@ -815,7 +824,7 @@ input[type="submit"]:active {
 }
 
 .client-img {
-  width: 50px;
+  width: 60px;
   cursor: pointer;
   border-radius: 10px;
   object-fit: cover;
@@ -866,4 +875,56 @@ input[type="submit"]:active {
   background-color: red;
   padding: 16px;
   display: inline-block;
+}
+
+.client-order-price {
+  margin-top: 5px;
+  display: block;
+  font-size: 10px;
+  font-weight: bold;
+}
+
+.dish-weight {
+  color: #9e9b98;
+  font-size: 10px;
+  margin-top: 5px;
+}
+
+.menu-total-price {
+  font-weight: bold;
+}
+
+.order-button {
+  background-color: #4a644b;
+  color: white;
+  scale: 0.95;
+  width: 200px;
+  border: none;
+  border-radius: 10px;
+  padding: 10px 20px;
+  cursor: pointer;
+  transition: border-color 0.3s ease, background-color 0.3s ease,
+    backdrop-filter 3s ease, transform 0.15s cubic-bezier(0.59, 0.3, 0.17, 1.47),
+    box-shadow 0.3s ease;
+}
+
+.dish-search-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 8px;
+  margin-left: 5px;
+  height: 30px;
+}
+
+.dish-search {
+  width: 250px;
+  height: 40px;
+  margin-top: 2px;
+  border: 1px solid #4a644b;
+  background-color: white;
+  border-radius: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }

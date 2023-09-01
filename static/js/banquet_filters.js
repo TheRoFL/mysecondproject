@@ -134,14 +134,14 @@ function handleSepOrderClick(button) {
   order_sep_button.disabled = true;
 }
 
-function LoadMenu(filter) {
+function LoadMenu(filter = null, name = "") {
   localStorage.setItem("dish-filter", filter);
   var requestParams = {
-    "dish-filter": filter, // Используем полученное значение для параметра запроса
+    "dish-filter": filter,
+    "dish-name": name,
   };
-
   $.ajax({
-    url: "http://127.0.0.1:8000/banquet/",
+    url: "http://127.0.0.1:8000/api/LoadMenu/",
     method: "GET",
     data: requestParams,
     dataType: "json",
@@ -253,7 +253,7 @@ function LoadMenu(filter) {
             if (item.model != "Banquet.menusample") {
               var gridItem = $("<div>", { class: "grid-item-2" });
               var gridContainer = $("<div>", { class: "grid-item" });
-              var dishDiv = $("<div>", {});
+              var dishDiv = $("<div>", { class: "grid-item-3" });
 
               var dishDiv2 = $("<div>", {
                 class: "dishes",
@@ -338,6 +338,12 @@ function LoadMenu(filter) {
           });
         }
 
+        if (jsonData[0] == null) {
+          var noResults = $("<h1 class='no-results'>").text(
+            "По вашему запросу ничего не найдено!"
+          );
+          $(".grid-container").append(noResults);
+        }
         const orderButtons = document.querySelectorAll(".order-button");
         orderButtons.forEach((button) => {
           button.addEventListener("click", function () {
@@ -574,7 +580,7 @@ function ChangeChosenStatus() {
     };
   }
   $.ajax({
-    url: "http://127.0.0.1:8000/banquet/json/",
+    url: "http://127.0.0.1:8000/api/ChangeChosenStatus/",
     method: "GET",
     data: requestParams2,
     dataType: "json",

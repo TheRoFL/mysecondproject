@@ -104,6 +104,8 @@ INSTALLED_APPS = [
 
     'django_email_verification',
 
+    "rest_framework",
+
 ]
 
 MIDDLEWARE = [

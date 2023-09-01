@@ -1480,3 +1480,19 @@ for (let i = 0; i < client_imges.length; i++) {
     y.classList.add("hidden");
   });
 }
+
+const dish_search = document.getElementById(`dish-search`);
+
+if (dish_search) {
+  dish_search.addEventListener("input", function () {
+    var currentValue = $(this).val();
+
+    if (currentValue.length > 25) {
+      $(this).val(currentValue.slice(0, 25));
+    }
+
+    var name = $(this).val();
+    var dish_filter = localStorage.getItem("dish-filter");
+    LoadMenu(dish_filter, name);
+  });
+}

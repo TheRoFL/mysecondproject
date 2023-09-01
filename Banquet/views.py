@@ -102,75 +102,49 @@ def home(request, dish_type=None, clientId=None):
         except Client.DoesNotExist:
             pass
      
-    serialized_menu_dishes = None
-    menu_dishes = []
-    if not current_dishes:
-        current_dishes = menu_samples
-        serialized_data = serialize('json', current_dishes)
-        for menu_sample in MenuSample.objects.all():
-            for dish_order in menu_sample.dishes.all():
-                serialized_product = serialize('json', [dish_order.product])
-                menu_dishes.append(json.loads(serialized_product)[0])
+    
+    # для generate_pdf(order, dishes)
+    # client_data = []
+    # for client in banquet.clients.all():
+    #     client_dishes = {}
+    #     total = 0
+    #     if client.menu:
+    #         for menu_dish in client.menu.dishes.all():
+    #             total += int(menu_dish.product.price)
+    #     if client.dishes.all():
+    #         for dish in client.dishes.all():
+    #             client_dishes[dish.product.id] = dish.quantity
+    #             total += int(dish.product.price) * dish.quantity
+    #     if client.menu: menu = client.menu.id
+    #     else: menu=None
+    #     client_type = client.type
+    #     client_data.append({
+    #         client_type: {
+    #             'quantity': client.quantity,
+    #             'menu': menu,
+    #             'additional': client_dishes,
+    #             'total': total
+    #         }
+    #     })
 
+    # banquet_cost = banquet.total_price()
 
-        serialized_menu_dishes = json.dumps(menu_dishes)
-        
+    # dishes = {}
+    # for dish in Dish.objects.all():
+    #     dishes[dish.id] = dict(name=dish.name, price=int(dish.price), qauntity=1)
 
-
-    client_data = []
-    for client in banquet.clients.all():
-        client_dishes = {}
-        total = 0
-        if client.menu:
-            for menu_dish in client.menu.dishes.all():
-                total += int(menu_dish.product.price)
-        if client.dishes.all():
-            for dish in client.dishes.all():
-                client_dishes[dish.product.id] = dish.quantity
-                total += int(dish.product.price) * dish.quantity
-        if client.menu: menu = client.menu.id
-        else: menu=None
-        client_type = client.type
-        client_data.append({
-            client_type: {
-                'quantity': client.quantity,
-                'menu': menu,
-                'additional': client_dishes,
-                'total': total
-            }
-        })
-
-    banquet_cost = banquet.total_price()
-
-    dishes = {}
-    for dish in Dish.objects.all():
-        dishes[dish.id] = dict(name=dish.name, price=int(dish.price), qauntity=1)
-
-    order = {
-    'type':'Банкет',
-    'clients':client_data,
-    'price': banquet_cost,
-    'waiters': int(banquet.quantity_count() / 20),
-    'client_quantity' : banquet.quantity_count()
-    }
+    # order = {
+    # 'type':'Банкет',
+    # 'clients':client_data,
+    # 'price': banquet_cost,
+    # 'waiters': int(banquet.quantity_count() / 20),
+    # 'client_quantity' : banquet.quantity_count()
+    # }
            
-    # generate_pdf(order, dishes)
+    # # generate_pdf(order, dishes)
 
-    if "application/json" in request.META.get("HTTP_ACCEPT", ""):
-        serialized_data = serialize('json', current_dishes)
-
-        if serialized_menu_dishes:
-            combined_data = {
-                    "current_menu": json.loads(serialized_data),
-                    "current_menu_dishes": json.loads(serialized_menu_dishes)
-                }
-            serialized_combined_data = json.dumps(combined_data)
-            return JsonResponse(serialized_combined_data, safe=False)
-        else: return JsonResponse(serialized_data, safe=False)
-    else:
-        menu_samples = MenuSample.objects.all()
-        contex["menu_samples"] = menu_samples
-        return render(request, 'Banquet/home.html', contex)    
+   
+    return render(request, 'Banquet/home.html', contex)    
 
 
 def ordering(request):
@@ -307,51 +281,7 @@ def ordering(request):
     
     return render(request, 'Banquet/ordering.html', contex)       
 
-
-def forJsonResopnses(request):
-    dish_ids = request.GET.getlist('dish_ids[]', []) 
-    dish_ids = map(int, dish_ids)
-    dish_ids = list(dish_ids)   
-    client_id = request.GET.get("client_id")
-
-    
-    filter_ = request.GET.get("action")
-    response = []
-    dish_ids2 = []
-    dish_order_ids = {}
-    dish_order_quantities = {}
-    if filter_ == "dish":
-        try:  
-            current_client = Client.objects.get(id=client_id)
-            all_client_dishes = current_client.dishes.all()
-            for client_dish in all_client_dishes:
-                if client_dish.product.id in dish_ids:
-                    dish_ids2.append(client_dish.product.id)
-                    dish_order_quantities[client_dish.id] = client_dish.quantity
-                    dish_order_ids[client_dish.product.id] = client_dish.id
-        except:
-            pass
-    elif filter_ == "menu": 
-        try:
-            current_client = Client.objects.get(id=client_id)
-            for dish_id in dish_ids:
-                if current_client.menu.id == dish_id:
-                    dish_ids2.append(current_client.menu.id)
-        except:
-            pass
-    
-    response.append(dish_ids2)
-    response.append(dish_order_ids)
-    response.append(dish_order_quantities)
-    if response:
-        response = json.dumps(response)
-    else:
-        response = {'if_dish':False}
-        response = json.dumps(response)
-    
-    return JsonResponse(response, safe=False)
-
-    
+   
 def generate_pdf(order, dishes, menus, duration):
     def format_integer(integer):
         if isinstance(integer, int):
