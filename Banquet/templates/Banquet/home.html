@@ -32,17 +32,6 @@
     </button>
   </h1>
   <div class="body">
-    <form id="clientForm" style="margin-left: 10px">
-      <label for="clientName">Название клиента:</label>
-      <input type="text" id="clientName" required />
-
-      <label for="clientCount">Количество клиентов:</label>
-      <input type="number" id="clientCount" required />
-      <br />
-
-      <button type="submit">Сохранить</button>
-      <button type="button" id="cancelFormBtn">Отменить</button>
-    </form>
     <div class="vseClients" id="all_clients">
       <!-- prettier-ignore -->
       {% if banquet.clients.all %} 
@@ -142,7 +131,7 @@
                 </div>
               </div>
             </div>
-            {% endfor %}
+            {% endfor %} {% comment %}
             <h1 style="margin-left: 15px">
               Итого:
               <span class="menu-total-price">
@@ -152,15 +141,19 @@
               </span>
               с человека
             </h1>
+            {% endcomment %}
             <div class="dotted-line"></div>
             {%endif%}
           </div>
 
           <div class="additional-dishes" data-id="{{client.id}}">
             {% if client.dishes.all %}
-            <h1 style="margin-left: 15px; margin-bottom: 10px">
-              Выбранные отдельно блюда:
-            </h1>
+            <div class="additional-dishes-sign">
+              Выбранные отдельно блюда
+              <button class="clear-additional-btn" data-id="{{client.id}}">
+                Очистить
+              </button>
+            </div>
             {% for client_dish in client.dishes.all %}
             <div class="adittional-dish" data-id="{{client_dish.id}}">
               <div class="adittional-dish-item-img">
@@ -177,13 +170,7 @@
                 />
               </div>
               <div class="adittional-dish-item">
-                {{client_dish.product.name}} x
-                <span
-                  class="client_order_quantity"
-                  data-id="{{client.id}}"
-                  id="{{client_dish.id}}"
-                  >{{client_dish.quantity}}
-                </span>
+                {{client_dish.product.name}}
                 <div class="client-order-price">
                   <span
                     class="client_order_price"
@@ -261,23 +248,28 @@
         <div class="client-total-price-and-menu-btn">
           <div class="client-total-price">
             Итого:
-            <span
-              class="order-price-count"
-              data-id="{{client.id}}"
-              id="{{client.id}}"
+            <span class="order-price-bold">
+              <span
+                class="order-price-count"
+                data-id="{{client.id}}"
+                id="{{client.id}}"
+              >
+                {{client.total_client_price}}</span
+              >.00 ₽</span
             >
-              {{client.total_client_price}}</span
-            >.00 ₽ x
+            x
             <span class="client-quantity" data-id="{{client.id}}"
               >{{client.quantity}}</span
             >
             человек =
-            <span
-              class="client-price-count"
-              data-id="{{client.id}}"
-              id="{{client.id}}"
-              >{{client.menu_and_orders_price_count}}</span
-            >.00 ₽
+            <span class="order-price-bold">
+              <span
+                class="client-price-count"
+                data-id="{{client.id}}"
+                id="{{client.id}}"
+                >{{client.menu_and_orders_price_count}}</span
+              >.00 ₽</span
+            >
           </div>
           <button
             class="details-button"
@@ -291,6 +283,9 @@
 
       {% endfor %} {% endif %}
       <button id="showFormBtn" class="formaClienta">+</button>
+    </div>
+    <div class="banquet-additional-dishes">
+      <div class="banquet-additional-dish"></div>
     </div>
     <div class="overflow2 hidden2"></div>
     <div class="menuu hidden2">
@@ -342,8 +337,30 @@
             class="dish-search"
             type="text"
             id="dish-search"
-            placeholder="Введите для поиска блюда"
+            placeholder="Введите запрос"
           />
+          {% comment %}
+          <div class="search-svg-wrapper">
+            <svg
+              class="search-svg"
+              enable-background="new 0 0 24 24"
+              height="24"
+              viewBox="0 0 24 24"
+              width="24"
+              focusable="false"
+              style="
+                pointer-events: none;
+                display: block;
+                width: 100%;
+                height: 100%;
+              "
+            >
+              <path
+                d="m20.87 20.17-5.59-5.59C16.35 13.35 17 11.75 17 10c0-3.87-3.13-7-7-7s-7 3.13-7 7 3.13 7 7 7c1.75 0 3.35-.65 4.58-1.71l5.59 5.59.7-.71zM10 16c-3.31 0-6-2.69-6-6s2.69-6 6-6 6 2.69 6 6-2.69 6-6 6z"
+              ></path>
+            </svg>
+          </div>
+          {% endcomment %}
         </div>
       </div>
       {% if dish_type != 'samples' %}

@@ -819,7 +819,16 @@ socket.onmessage = function (e) {
         `span.client_order_quantity[id="${current_dish_order_id}"]`
       );
 
-      clientOrderQuantity.textContent = newQuantity;
+      if (clientOrderQuantity) {
+        clientOrderQuantity.textContent = newQuantity;
+      }
+
+      const clientOrderQuantity2 = document.querySelector(
+        `span.dish-number-input[data-dish-id="${current_dish_order_id}"]`
+      );
+      if (clientOrderQuantity2) {
+        clientOrderQuantity2.textContent = newQuantity;
+      }
     }
   } else if (action == "menu_added_sep") {
     var client_id = localStorage.getItem("current_client_id");
@@ -879,12 +888,21 @@ socket.onmessage = function (e) {
     if (dishNumberInput2) {
       dishNumberInput2.textContent = new_quantity;
     }
+  } else if (action == "client_additional_cleared") {
+    const additionalDishes = document.querySelector(
+      `.additional-dishes[data-id="${data["client_id"]}"]`
+    );
+    if (additionalDishes) {
+      while (additionalDishes.firstChild) {
+        additionalDishes.removeChild(additionalDishes.firstChild);
+      }
+    }
   }
 
   if (
     action == "dish_added" ||
     action == "new_dish_added" ||
-    action == "recalc_after_menu_adding_sep"
+    action == "recalc_after_changing"
   ) {
     const OrderTotalPrice = document.querySelector(
       `span.order-price-count[data-id="${data.client_id}"]`
@@ -919,7 +937,9 @@ socket.onmessage = function (e) {
     orderButtonToDelete = document.querySelector(
       `.order-button[data-id="${current_dish_id}"]`
     );
-    orderButtonToDelete.remove();
+    if (orderButtonToDelete) {
+      orderButtonToDelete.remove();
+    }
 
     const container = document.querySelector(
       `.order-btn-container[data-id="${current_dish_id}"]`
@@ -1208,37 +1228,6 @@ showFormButton.addEventListener("click", () => {
   );
 });
 
-cancelFormButton.addEventListener("click", () => {
-  clientForm.style.display = "none";
-  showFormButton.style.display = "block";
-
-  document.getElementById("clientName").value = null;
-  document.getElementById("clientCount").value = null;
-});
-
-clientForm.addEventListener("submit", (event) => {
-  event.preventDefault();
-  const clientName = document.getElementById("clientName").value;
-  const clientCount = document.getElementById("clientCount").value;
-
-  showFormButton.style.display = "block";
-  clientForm.style.display = "none";
-
-  document.getElementById("clientName").value = null;
-  document.getElementById("clientCount").value = null;
-  // Здесь можно добавить обработку данных формы, например, отправку на сервер или другую обработку.
-  // На данном этапе, форма останется открытой после отправки.
-  username_id = localStorage.getItem("username_id");
-  socket.send(
-    JSON.stringify({
-      action: "added_client",
-      clientName: clientName,
-      clientCount: clientCount,
-      current_user_id: username_id,
-    })
-  );
-});
-
 $(".quantity-input").on("input", function () {
   const client_id = $(this).data("id");
   var currentValue = $(this).val();
@@ -1251,17 +1240,17 @@ $(".quantity-input").on("input", function () {
     sum += parseInt(input.value);
   });
 
-  if (sum > 2000) {
-    currentValue = 2000 - (sum - parseInt(currentValue));
+  if (sum > 3500) {
+    currentValue = 3500 - (sum - parseInt(currentValue));
   }
 
   // Проверяем длину введенного текста
   if (currentValue.length > 4) {
     // Если длина больше максимальной, обрезаем текст до максимальной длины
-    currentValue = 2000;
+    currentValue = 3500;
   }
 
-  const quantity = Math.min(2000, Math.max(0, currentValue)); // Ограничиваем значение до 2000
+  const quantity = Math.min(3500, Math.max(0, currentValue)); // Ограничиваем значение до 2000
   $(this).val(quantity); // Обновляем значение поля ввода
   updateQuantity(client_id, quantity);
 });
@@ -1479,6 +1468,13 @@ for (let i = 0; i < client_imges.length; i++) {
     x.classList.add("hidden");
     y.classList.add("hidden");
   });
+
+  document.addEventListener("keydown", (e) => {
+    if (e.code == "Escape") {
+      x.classList.add("hidden");
+      y.classList.add("hidden");
+    }
+  });
 }
 
 const dish_search = document.getElementById(`dish-search`);
@@ -1496,3 +1492,19 @@ if (dish_search) {
     LoadMenu(dish_filter, name);
   });
 }
+
+function handleClearAdditionalBtnClick(event) {
+  const client_id = event.target.dataset.id;
+  username_id = localStorage.getItem("username_id");
+  socket.send(
+    JSON.stringify({
+      action: "client_additional_clear",
+      client_id: client_id,
+      current_user_id: username_id,
+    })
+  );
+}
+const ClearAdditionalBtns = document.querySelectorAll(`.clear-additional-btn`);
+ClearAdditionalBtns.forEach((button) => {
+  button.addEventListener("click", handleClearAdditionalBtnClick);
+});

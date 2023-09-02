@@ -80,6 +80,7 @@ class Client(models.Model):
     
 class Banquet(models.Model):
     clients = models.ManyToManyField(Client)
+    additional = models.ManyToManyField(DishOrder)
     type = models.CharField(max_length=50)
     owner = models.ForeignKey(ProfileData, on_delete=models.CASCADE, default=None)
 

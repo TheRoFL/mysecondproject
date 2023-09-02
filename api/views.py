@@ -62,6 +62,7 @@ def LoadMenu(request):
             if dish_name == "":
                 current_dishes = Dish.objects.all()
             else:
+                # сделать поиск по тегам
                 current_dishes = Dish.objects.filter(name__icontains=dish_name)
             for current_dish in current_dishes:
                 current_dish.tittle = current_dish.name
@@ -84,8 +85,8 @@ def LoadMenu(request):
             if dish_name == "":
                 current_dishes = Dish.objects.filter(type=dish_type)
             else:
+                # сделать поиск по тегам
                 current_dishes = Dish.objects.filter(name__icontains=dish_name)
-                print(current_dishes)
             for current_dish in current_dishes:
                 current_dish.tittle = current_dish.name
                 current_dish.name = current_dish.name.replace(" ", "_")

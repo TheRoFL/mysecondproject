@@ -91,6 +91,8 @@ input[type="submit"]:active {
 
   height: 25px;
   width: 0px;
+
+  margin-bottom: 0px;
 }
 
 .delete-btn-wrapper2 {
@@ -171,10 +173,10 @@ input[type="submit"]:active {
 .delete-menu-btn,
 .delete-btn {
   scale: 0.7;
-  background-color: #e74c3c; /* Change background color to red */
+  background-color: #58865a; /* Change background color to red */
   color: #fff;
   border: none;
-  padding: 7px 10px;
+  padding: 5px 10px;
   margin: 3px;
   cursor: pointer;
   transition: background-color 0.3s ease; /* Add a transition effect */
@@ -190,8 +192,10 @@ input[type="submit"]:active {
 }
 .delete-menu-btn {
   scale: 1;
-  width: 150px;
-  height: 25px;
+  width: 80px;
+  height: 20px;
+  padding-top: 3px;
+  font-size: 12px;
 }
 
 .increase-btn {
@@ -206,6 +210,7 @@ input[type="submit"]:active {
 .increase-btn,
 .decrease-btn,
 .delete-menu-btn,
+.clear-additional-btn,
 .delete-btn {
   transition: transform 0.15s ease-in-out; /* Добавляем плавную анимацию */
 }
@@ -213,14 +218,16 @@ input[type="submit"]:active {
 .increase-btn:hover,
 .decrease-btn:hover,
 .delete-menu-btn:hover,
+.clear-additional-btn:hover,
 .delete-btn:hover {
-  transform: scale(1.5); /* Увеличиваем элемент при наведении */
+  transform: scale(1.1); /* Увеличиваем элемент при наведении */
 }
 
 .delete-menu-btn:active,
 .delete-btn:active,
 .order-button:active,
 .order-menu-button:active,
+.clear-additional-btn:active,
 .dish-filter:active {
   transform: scale(0.85);
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
@@ -322,25 +329,35 @@ input[type="submit"]:active {
 }
 
 .menuu {
-  display: inline-block;
+  /* Ваш текущий CSS стиль, оставьте его без изменений */
+  display: flex;
+  flex-direction: column;
   color: black;
   background-color: #fff;
   position: fixed; /* фиксированное положение */
   top: 50%;
   left: 50%;
   z-index: 10;
-  width: 1200px;
-  height: 800px;
-  margin: -400px 0 0 -600px;
+  width: 1200px; /* Убираем явное задание ширины */
+  height: 800px; /* Убираем явное задание высоты */
+  max-width: 90%;
+  max-height: 100%;
+  min-width: 910px;
+  transform: translate(-50%, -50%);
   border-radius: 30px;
   padding: 15px;
   border: 5px solid #4a644b;
-
   overflow: auto;
   scrollbar-width: none;
   -ms-overflow-style: none;
+  animation: fadeIn 0.25s ease-in-out forwards;
+  justify-content: flex-start; /* Исходное значение justify-content */
+}
 
-  animation: fadeIn 0.25s ease-in-out forwards; /* Применяем анимацию при появлении */
+@media screen and (width < 910px) {
+  .grid-container {
+    justify-content: center; /* Изменяем justify-content на center */
+  }
 }
 
 .menuu::-webkit-scrollbar {
@@ -377,7 +394,11 @@ input[type="submit"]:active {
 
 .dd-f {
   display: flex;
+  max-width: 100%;
+  max-height: 100%;
   justify-content: center;
+  flex-wrap: wrap;
+  row-gap: 10px;
 }
 
 .grid-container {
@@ -762,6 +783,20 @@ input[type="submit"]:active {
   width: 300px;
 }
 
+.banquet-additional-dishes {
+  display: flex;
+  margin-left: 200px;
+}
+
+.banquet-additional-dish {
+  display: flex;
+  width: 675px;
+  height: 450px;
+  background-color: #4a644b73;
+  border-radius: 20px;
+  border: 3px solid #4a644b;
+}
+
 .my_client:hover,
 .formaClienta:hover {
   transform: scale(1.075);
@@ -786,10 +821,11 @@ input[type="submit"]:active {
 }
 .client-menu-btn {
   display: flex;
-  flex-direction: column;
-  align-items: center;
-
+  flex-direction: row;
+  align-items: baseline;
   margin-top: 7px;
+  margin-bottom: 5px;
+  justify-content: space-evenly;
 }
 
 .all_banquets {
@@ -866,15 +902,17 @@ input[type="submit"]:active {
   flex-direction: column;
   font-size: 11px;
   height: 80px;
-  background-color: #f2ff00;
+  background-color: #ffffff;
   border-radius: 0 0 20px 20px;
   margin-top: -5px;
 }
-
 .client-total-price {
-  background-color: red;
-  padding: 16px;
+  background-color: #4a644b;
+  color: white;
+  padding: 15px;
   display: inline-block;
+  font-size: 11px;
+  text-align: center;
 }
 
 .client-order-price {
@@ -884,6 +922,10 @@ input[type="submit"]:active {
   font-weight: bold;
 }
 
+.order-price-bold {
+  font-size: 10px;
+  font-weight: bold;
+}
 .dish-weight {
   color: #9e9b98;
   font-size: 10px;
@@ -927,4 +969,38 @@ input[type="submit"]:active {
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+.clear-additional-btn {
+  font-size: 10px;
+  width: 65px;
+  height: 20px;
+  border-radius: 10px;
+  background-color: #58865a;
+  color: white;
+}
+
+.additional-dishes-sign {
+  display: flex;
+  justify-content: space-evenly;
+  align-items: baseline;
+
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+
+.search-svg {
+  scale: 0.8;
+  margin-bottom: 10px;
+  margin-left: 0px;
+}
+
+.search-svg-wrapper {
+  border: 1px solid #4a644b;
+  background-color: #4a644b73;
+  border-radius: 0 40px 40px 0;
+  cursor: pointer;
+  height: 40px;
+  width: 64px;
+  margin-bottom: 5px;
 }

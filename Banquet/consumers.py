@@ -273,7 +273,7 @@ class BanquetConsumer(WebsocketConsumer):
                 dish_to_del.delete()
                 
             response = {
-                'action': 'recalc_after_menu_adding_sep',
+                'action': 'recalc_after_changing',
                 'current_banquet_id':current_banquet.id,
                 'client_id':current_client.id,
                 'order_total_price': current_client.total_client_price() / 2,
@@ -425,7 +425,35 @@ class BanquetConsumer(WebsocketConsumer):
                 current_dish_order.delete()
                 self.send_response(response)
 
-       
+        elif action == "client_additional_clear":
+            current_client_id = data["client_id"]      
+            current_client = get_object_or_404(Client, id=current_client_id)
+
+            for dish in current_client.dishes.all():
+                dish.delete()
+
+            current_banquet = Banquet.objects.get(owner=current_user_profiledata, is_ordered=False)
+            
+            response = {
+                            "action":"client_additional_cleared", 
+                            'client_id':current_client.id,
+                            'banqet_id':current_banquet.id,
+                            'order_total_price': current_client.total_client_price(),
+                            'client_total_price': current_client.menu_and_orders_price_count(),
+                            'total_banquet_price':current_banquet.total_price()
+                        }
+            
+            self.send_response(response)
+
+            response = {
+                'action': 'recalc_after_changing',
+                'current_banquet_id':current_banquet.id,
+                'client_id':current_client.id,
+                'order_total_price': current_client.total_client_price(),
+                'client_total_price': current_client.menu_and_orders_price_count(), #считает сумму клиента без меню
+                'total_banquet_price': current_banquet.total_price()
+            }
+            self.send_response(response)
             
     def send_response(self, response):
         self.send(text_data=json.dumps(response))

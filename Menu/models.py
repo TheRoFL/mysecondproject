@@ -25,6 +25,7 @@ class Dish(models.Model):
     
     image = models.ImageField(upload_to=upload_to) #изображение блюда
 
+    name_tags = models.TextField(blank=True, null=True) #тэги блюда
 
 
     def __str__(self):
