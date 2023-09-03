@@ -109,6 +109,12 @@ class Banquet(models.Model):
             total += client.menu_and_orders_price_count()
         return total 
     
+    def total_price_additional(self):
+        total_additional = 0
+        for dish in self.additional.all():
+            total_additional += dish.price_count()
+        return total_additional 
+    
     def calculate_waiters(self):
         qauntity = int(self.quantity_count() / 20)
         if qauntity == 0:

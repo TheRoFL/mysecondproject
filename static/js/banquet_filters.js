@@ -108,6 +108,29 @@ function handleButtonClick(button) {
   }
 }
 
+function handleButtonClickAddittional(button) {
+  var username_id = localStorage.getItem("username_id");
+  var clientName = localStorage.getItem("current_client_name");
+
+  var dishId = button.dataset.id;
+
+  const data_to_send = {
+    action: "added_dish_additional",
+    current_dish_id: dishId,
+    current_user_id: username_id,
+  };
+
+  if (button.classList.contains("chosen")) {
+    handleDeleteDishButtonClickFromMenu(button);
+    button.classList.remove("chosen");
+    button.textContent = `Выбрать для "${clientName}"`;
+  } else {
+    button.classList.add("chosen");
+    button.textContent = `Удалить для "${clientName}"`;
+    socket.send(JSON.stringify(data_to_send));
+  }
+}
+
 function handleSepOrderClick(button) {
   var username_id = localStorage.getItem("username_id");
   var clientId = localStorage.getItem("current_client_id");
@@ -134,7 +157,7 @@ function handleSepOrderClick(button) {
   order_sep_button.disabled = true;
 }
 
-function LoadMenu(filter = null, name = "") {
+function LoadMenu(filter = null, name = null, is_addit = null) {
   localStorage.setItem("dish-filter", filter);
   var requestParams = {
     "dish-filter": filter,
@@ -347,8 +370,13 @@ function LoadMenu(filter = null, name = "") {
         const orderButtons = document.querySelectorAll(".order-button");
         orderButtons.forEach((button) => {
           button.addEventListener("click", function () {
-            handleButtonClick(this);
+            if (!is_addit) {
+              handleButtonClick(this);
+            } else {
+              handleButtonClickAddittional(this);
+            }
           });
+          // button.style.display = "none";
         });
 
         const orderMenuButtons =
@@ -465,6 +493,18 @@ function LoadMenu(filter = null, name = "") {
 
       setTimeout(ChangeChosenStatus, 1);
       const mainGrid = document.querySelector(".grid-container");
+
+      // if (name == null) {
+      //   mainGrid.classList.add("disappear");
+
+      //   setTimeout(() => {
+      //     mainGrid.classList.remove("disappear");
+      //     mainGrid.classList.add("appear");
+      //   }, 250);
+      //   setTimeout(() => {
+      //     mainGrid.classList.remove("appear");
+      //   }, 1);
+      // }
 
       mainGrid.classList.add("disappear");
 

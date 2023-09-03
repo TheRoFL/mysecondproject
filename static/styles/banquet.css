@@ -182,7 +182,8 @@ input[type="submit"]:active {
   transition: background-color 0.3s ease; /* Add a transition effect */
   border-radius: 10px;
 }
-.dish-number-input {
+.dish-number-input,
+.dish-number-input-adittional {
   border-color: #4a644b;
   background-color: #f5f4f2;
   width: 25px;
@@ -198,27 +199,35 @@ input[type="submit"]:active {
   font-size: 12px;
 }
 
-.increase-btn {
+.increase-btn,
+.increase-btn-adittional {
   background-color: #f5f4f2;
   margin-left: 10px;
 }
-.decrease-btn {
+.decrease-btn,
+.decrease-btn-adittional {
   background-color: #f5f4f2;
   margin-right: 10px;
 }
 /* Change button background color to a darker shade of red when hovered */
 .increase-btn,
+.increase-btn-adittional,
 .decrease-btn,
+.decrease-btn-adittional,
 .delete-menu-btn,
 .clear-additional-btn,
+.clear-additional-btn-additional,
 .delete-btn {
   transition: transform 0.15s ease-in-out; /* Добавляем плавную анимацию */
 }
 
 .increase-btn:hover,
+.increase-btn-adittional:hover,
 .decrease-btn:hover,
+.decrease-btn-adittional:hover,
 .delete-menu-btn:hover,
 .clear-additional-btn:hover,
+.clear-additional-btn-additional:hover,
 .delete-btn:hover {
   transform: scale(1.1); /* Увеличиваем элемент при наведении */
 }
@@ -228,13 +237,16 @@ input[type="submit"]:active {
 .order-button:active,
 .order-menu-button:active,
 .clear-additional-btn:active,
+.clear-additional-btn-additional:active,
 .dish-filter:active {
   transform: scale(0.85);
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
 }
 
 .increase-btn:active,
-.decrease-btn:active {
+.increase-btn-additional:active,
+.decrease-btn:active,
+.decrease-btn-additional:active {
   transform: scale(0.85);
 }
 /*----------------------------------------------------------------*/
@@ -247,17 +259,18 @@ input[type="submit"]:active {
   max-width: 100%;
   margin: 80px;
   flex-wrap: wrap;
-  margin-left: 200px;
+  margin-left: 100px;
   gap: 150px;
 }
 
 #showFormBtn {
-  font-size: 80px;
+  font-size: 70px;
   display: inline;
+  color: #000000a7;
 }
 
 .formaClienta {
-  width: 240px;
+  width: 300px;
   height: 450px;
   scale: 1.5;
   border-radius: 20px;
@@ -541,7 +554,8 @@ input[type="submit"]:active {
 
 .order-sep-button,
 .order-menu-button,
-.details-button {
+.details-button,
+.details-button-additional {
   background-color: #4a644b;
   color: white;
   scale: 0.95;
@@ -553,7 +567,8 @@ input[type="submit"]:active {
     backdrop-filter 3s ease, transform 0.15s cubic-bezier(0.59, 0.3, 0.17, 1.47),
     box-shadow 0.3s ease;
 }
-.details-button {
+.details-button,
+.details-button-additional {
   scale: 0.75;
   width: 250px;
   align-self: center;
@@ -561,7 +576,8 @@ input[type="submit"]:active {
 .order-sep-button:hover,
 .order-button:hover,
 .order-menu-button:hover,
-.details-button:hover {
+.details-button:hover,
+.details-button-additional:hover {
   background-color: #374a37; /* Зеленый фон при наведении */
 }
 
@@ -638,7 +654,8 @@ input[type="submit"]:active {
 .order-sep-button:active,
 .order-button:active,
 .order-menu-button:active,
-.details-button:active {
+.details-button:active,
+.details-button-additional:active {
   transform: scale(0.9);
 }
 
@@ -777,27 +794,18 @@ input[type="submit"]:active {
 }
 
 .my_client,
+.banquet-additional-dish,
 .formaClienta {
   transition: transform 0.3s ease;
   transform: scale(1);
-  width: 300px;
 }
 
 .banquet-additional-dishes {
   display: flex;
-  margin-left: 200px;
-}
-
-.banquet-additional-dish {
-  display: flex;
-  width: 675px;
-  height: 450px;
-  background-color: #4a644b73;
-  border-radius: 20px;
-  border: 3px solid #4a644b;
 }
 
 .my_client:hover,
+.banquet-additional-dish:hover,
 .formaClienta:hover {
   transform: scale(1.075);
 }
@@ -971,7 +979,8 @@ input[type="submit"]:active {
   align-items: center;
 }
 
-.clear-additional-btn {
+.clear-additional-btn,
+.clear-additional-btn-additional {
   font-size: 10px;
   width: 65px;
   height: 20px;
@@ -1003,4 +1012,26 @@ input[type="submit"]:active {
   height: 40px;
   width: 64px;
   margin-bottom: 5px;
+}
+
+.header-text {
+  font-size: 20px;
+  color: rgb(255, 255, 255);
+}
+
+.extra-dishes {
+  display: flex;
+  align-items: center;
+  height: 100vh;
+  width: 283px;
+  height: 25px;
+  font-size: 14px;
+  border-radius: 10px;
+  text-align: center;
+  background-color: white;
+  margin-bottom: 10px;
+}
+
+.extra-dishes-text {
+  margin-left: 65px;
 }

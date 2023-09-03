@@ -1508,3 +1508,14 @@ const ClearAdditionalBtns = document.querySelectorAll(`.clear-additional-btn`);
 ClearAdditionalBtns.forEach((button) => {
   button.addEventListener("click", handleClearAdditionalBtnClick);
 });
+
+banquetAdditionalDish = document.querySelector(`.banquet-additional-dish`);
+if (banquetAdditionalDish) {
+  banquetAdditionalDish.addEventListener("click", function () {
+    banquetAdditionalDishes = document.querySelector(
+      `.banquet-additional-dishes`
+    );
+    banquetAdditionalDishes.style.display = "none";
+    // banquetAdditionalDish.remove();
+  });
+}
