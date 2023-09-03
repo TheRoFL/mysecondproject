@@ -191,6 +191,9 @@ input[type="submit"]:active {
   margin-top: 7px;
   text-align: center;
 }
+.dish-number-input-adittional {
+  width: 32px;
+}
 .delete-menu-btn {
   scale: 1;
   width: 80px;

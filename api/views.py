@@ -1,10 +1,11 @@
 import json
 from django.http import JsonResponse
+from django.contrib.auth.models import User
 from Menu.models import *
 from Banquet.models import *
 from Cart.models import *
 from django.core.serializers import serialize
-import re
+
 
 def ChangeChosenStatus(request):
     dish_ids = request.GET.getlist('dish_ids[]', []) 
@@ -49,6 +50,44 @@ def ChangeChosenStatus(request):
     
     return JsonResponse(response, safe=False)
 
+def ChangeChosenStatusAdditional(request):
+    dish_ids = request.GET.getlist('dish_ids[]', []) 
+    dish_ids = map(int, dish_ids)
+    dish_ids = list(dish_ids)   
+    username_id = request.GET.get("username_id")
+    try:
+        current_user = User.objects.get(id=username_id)
+        current_user_profiledata = ProfileData.objects.get(user=current_user)
+    except ProfileData.DoesNotExist:
+        pass
+    
+
+    response = []
+    dish_ids2 = []
+    dish_order_ids = {}
+    dish_order_quantities = {}
+
+    try:  
+        current_banquet = Banquet.objects.get(owner=current_user_profiledata, is_ordered=False)
+        all_client_banquet = current_banquet.additional.all()
+        for client_dish in all_client_banquet:
+            if client_dish.product.id in dish_ids:
+                dish_ids2.append(client_dish.product.id)
+                dish_order_quantities[client_dish.id] = client_dish.quantity
+                dish_order_ids[client_dish.product.id] = client_dish.id
+    except:
+        pass
+ 
+    response.append(dish_ids2)
+    response.append(dish_order_ids)
+    response.append(dish_order_quantities)
+    if response:
+        response = json.dumps(response)
+    else:
+        response = {'if_dish':False}
+        response = json.dumps(response)
+    
+    return JsonResponse(response, safe=False)
 
 def LoadMenu(request):
     dish_type = request.GET.get('dish-filter')

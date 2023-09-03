@@ -284,11 +284,6 @@
       {% endfor %} {% endif %}
       <button id="showFormBtn" class="formaClienta">+</button>
       <div class="banquet-additional-dishes">
-        {% if not banquet.additional.all %}
-        <button class="banquet-additional-dish">
-          Нажмите, чтобы добавить блюда в общий заказ
-        </button>
-        {% else %}
         <div class="banquet-additional-dish-2">
           <div class="my_client formaClienta menu-client-btn">
             <div class="formaClienta_header">
@@ -301,7 +296,7 @@
               data-id="{{banquet.id}}"
               data-name="{{banquet.type}}"
             >
-              <div class="additional-dishes" data-id="{{banquet.id}}">
+              <div class="additional-dishes" data-banquet-id="{{banquet.id}}">
                 {% if banquet.additional.all %}
                 <div class="additional-dishes-sign">
                   Выбранное дополнительно
@@ -366,14 +361,13 @@
                             ></path>
                           </svg>
                         </button>
-                        <span
+                        <input
                           class="dish-number-input-adittional"
                           data-id="{{banquet.id}}"
                           data-dish-id="{{client_dish.id}}"
                           type="text"
-                          value=""
-                          >{{client_dish.quantity}}</span
-                        >
+                          value="{{client_dish.quantity}}"
+                        />
                         <button
                           class="increase-btn-adittional"
                           data-id="{{client_dish.id}}"
@@ -426,7 +420,6 @@
             </div>
           </div>
         </div>
-        {% endif %}
       </div>
     </div>
 

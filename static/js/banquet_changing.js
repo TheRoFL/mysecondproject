@@ -310,7 +310,7 @@ socket.onmessage = function (e) {
       ) {
         event.stopPropagation();
         LoadMenu("all");
-
+        localStorage.setItem("is_additional", false);
         localStorage.setItem("current_client_id", button.dataset.id);
         localStorage.setItem("current_client_name", button.dataset.name);
         menuButtons.forEach((button) => {
@@ -531,9 +531,18 @@ socket.onmessage = function (e) {
     if (orderButtonToAddListener) {
       AddBtnAnimation(orderButtonToAddListener);
     }
-    orderButtonToAddListener.addEventListener("click", function () {
-      handleButtonClick(this);
-    });
+
+    var is_addit = localStorage.getItem("is_additional");
+    if (is_addit == "true") {
+      orderButtonToAddListener.addEventListener("click", function () {
+        handleButtonClickAddittional(this);
+      });
+    } else {
+      orderButtonToAddListener.addEventListener("click", function () {
+        handleButtonClick(this);
+      });
+    }
+
     orderButtonToAddListener.addEventListener("click", function () {
       AddBtnAnimation(this);
     });
@@ -897,11 +906,38 @@ socket.onmessage = function (e) {
         additionalDishes.removeChild(additionalDishes.firstChild);
       }
     }
+  } else if (action == "banquet_additional_cleared") {
+    const additionalDishes = document.querySelector(
+      `.additional-dishes[data-banquet-id="${data["banqet_id"]}"]`
+    );
+    if (additionalDishes) {
+      while (additionalDishes.firstChild) {
+        additionalDishes.removeChild(additionalDishes.firstChild);
+      }
+    }
+  } else if (
+    action == "additional_order_increased_additional" ||
+    action == "additional_order_decreased_additional"
+  ) {
+    var current_dish_order_id = data["current_dish_order_id"];
+    var dishNumberInputAdittional = document.querySelector(
+      `input.dish-number-input-adittional[data-dish-id="${current_dish_order_id}"]`
+    );
+    if (dishNumberInputAdittional) {
+      dishNumberInputAdittional.value = data["new_quantity"];
+    }
+    var dishNumberInputAdittional2 = document.querySelector(
+      `span.dish-number-input2[data-dish-id="${current_dish_order_id}"]`
+    );
+    if (dishNumberInputAdittional2) {
+      dishNumberInputAdittional2.textContent = data["new_quantity"];
+    }
   }
 
   if (
     action == "dish_added" ||
     action == "new_dish_added" ||
+    action == "new_additional_dish_added" ||
     action == "recalc_after_changing"
   ) {
     const OrderTotalPrice = document.querySelector(
@@ -923,9 +959,11 @@ socket.onmessage = function (e) {
     const client_price_count = document.querySelector(
       `span.client-price-count[data-id="${data.client_id}"]`
     );
-    client_price_count.textContent = formatInteger(
-      parseInt(data.client_total_price)
-    );
+    if (client_price_count) {
+      client_price_count.textContent = formatInteger(
+        parseInt(data.client_total_price)
+      );
+    }
 
     const total_banquet_price = document.querySelector(
       `.banquet-total-price[data-id="${data.current_banquet_id}"]`
@@ -1519,3 +1557,103 @@ if (banquetAdditionalDish) {
     // banquetAdditionalDish.remove();
   });
 }
+
+function handleClearBanquetAdditionalBtnClick(event) {
+  const banquet_id = event.target.dataset.id;
+  username_id = localStorage.getItem("username_id");
+  socket.send(
+    JSON.stringify({
+      action: "banquet_additional_clear",
+      banquet_id: banquet_id,
+      current_user_id: username_id,
+    })
+  );
+}
+const ClearAdditionalBtn = document.querySelector(
+  `.clear-additional-btn-additional`
+);
+
+if (ClearAdditionalBtn) {
+  ClearAdditionalBtn.addEventListener(
+    "click",
+    handleClearBanquetAdditionalBtnClick
+  );
+}
+
+var dishNumberInputsAittional = document.querySelectorAll(
+  `.dish-number-input-adittional`
+);
+
+dishNumberInputsAittional.forEach((input) => {
+  input.addEventListener("input", function () {
+    const current_user_id = localStorage.getItem("username_id");
+    var currentValue = $(this).val();
+    var order_id = input.getAttribute("data-dish-id");
+    // Удаление всех символов, кроме цифр
+    currentValue = currentValue.replace(/\D/g, "");
+
+    // Проверяем длину введенного текста
+    if (currentValue.length > 3) {
+      // Если длина больше максимальной, обрезаем текст до максимальной длины
+      currentValue = 100;
+    }
+
+    const quantity = Math.min(100, Math.max(0, currentValue)); // Ограничиваем значение до 2000
+    $(this).val(quantity); // Обновляем значение поля ввода
+
+    socket.send(
+      JSON.stringify({
+        action: "additional_order_quantity_change",
+        current_user_id: current_user_id,
+        new_quantity: quantity,
+        order_id: order_id,
+      })
+    );
+  });
+});
+
+var is_addit__ = localStorage.getItem("is_additional");
+var action = "additional_order_increase";
+var action2 = "additional_order_decrease";
+if (is_addit__ == "true") {
+  var action = "additional_order_increase_additional";
+  var action2 = "additional_order_decrease_additional";
+}
+
+var increaseAdittionalBtns = document.querySelectorAll(
+  `.increase-btn-adittional`
+);
+increaseAdittionalBtns.forEach((increaseBtn) => {
+  increaseBtn.addEventListener("click", () => {
+    const order_id = increaseBtn.dataset.id;
+    const client_id = increaseBtn.dataset.clientid;
+    socket.send(
+      JSON.stringify({
+        action: "additional_order_increase_additional",
+        order_id: order_id,
+        client_id: client_id,
+        current_client_id: client_id,
+        current_user_id: current_user_id,
+      })
+    );
+  });
+});
+
+var decreaseAdittionalBtns = document.querySelectorAll(
+  `.decrease-btn-adittional`
+);
+decreaseAdittionalBtns.forEach((decreaseBtn) => {
+  decreaseBtn.addEventListener("click", () => {
+    const order_id = decreaseBtn.dataset.id;
+    const client_id = decreaseBtn.dataset.clientid;
+    socket.send(
+      JSON.stringify({
+        action: "additional_order_decrease_additional",
+        order_id: order_id,
+        client_id: client_id,
+        current_client_id: client_id,
+        current_user_id: current_user_id,
+      })
+    );
+  });
+});
