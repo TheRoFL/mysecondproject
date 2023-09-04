@@ -24,6 +24,12 @@
   {% for dishorder in client.dishes.all %}
   <h5 style="margin-left: 75px">{{dishorder}}</h5>
   {% endfor %} {% endif %} {% endfor %}
+  <h3 style="margin-left: 15px">
+    <h5 style="margin-left: 20px">Дополнительно к клиентам:</h5>
+    {% for additional_dish in current_banquet.additional.all %}
+    <h4 style="margin-left: 25px">{{additional_dish}}</h4>
+    {% endfor %}
+  </h3>
 </h2>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>

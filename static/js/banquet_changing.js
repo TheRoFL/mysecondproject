@@ -848,6 +848,24 @@ socket.onmessage = function (e) {
     const additional_dishes = document.querySelector(
       `.additional-dishes[data-id="${client_id}"]`
     );
+  } else if (action == "additional_order_deleted") {
+    var adittionalDish = document.querySelector(
+      `.adittional-dish[data-id="${data["current_dish_order_id"]}"]`
+    );
+    if (adittionalDish) {
+      adittionalDish.remove();
+    }
+
+    var orderPriceCountAdditional = document.querySelector(
+      `.order-price-count-additional[data-id="${data["banqet_id"]}"`
+    );
+    orderPriceCountAdditional.textContent =
+      data["current_banquet_additional_price"][0];
+    var banquetTotalPrice = document.querySelector(
+      `.banquet-total-price[data-id="${data["banqet_id"]}"]`
+    );
+    banquetTotalPrice.textContent =
+      formatInteger(parseInt(data["total_banquet_price"])) + ".00 ₽";
   } else if (
     action == "additional_order_increased" ||
     action == "additional_order_decreased"
@@ -929,8 +947,14 @@ socket.onmessage = function (e) {
     var dishNumberInputAdittional2 = document.querySelector(
       `span.dish-number-input2[data-dish-id="${current_dish_order_id}"]`
     );
+    var dishNumberInputAdittional2Additional = document.querySelector(
+      `input.dish-number-input2-additional[data-dish-id="${current_dish_order_id}"]`
+    );
     if (dishNumberInputAdittional2) {
       dishNumberInputAdittional2.textContent = data["new_quantity"];
+    }
+    if (dishNumberInputAdittional2Additional) {
+      dishNumberInputAdittional2Additional.value = data["new_quantity"];
     }
   }
 
@@ -1593,12 +1617,12 @@ dishNumberInputsAittional.forEach((input) => {
     currentValue = currentValue.replace(/\D/g, "");
 
     // Проверяем длину введенного текста
-    if (currentValue.length > 3) {
+    if (currentValue.length > 4) {
       // Если длина больше максимальной, обрезаем текст до максимальной длины
-      currentValue = 100;
+      currentValue = 3500;
     }
 
-    const quantity = Math.min(100, Math.max(0, currentValue)); // Ограничиваем значение до 2000
+    const quantity = Math.min(3500, Math.max(0, currentValue)); // Ограничиваем значение до 2000
     $(this).val(quantity); // Обновляем значение поля ввода
 
     socket.send(
@@ -1627,6 +1651,11 @@ increaseAdittionalBtns.forEach((increaseBtn) => {
   increaseBtn.addEventListener("click", () => {
     const order_id = increaseBtn.dataset.id;
     const client_id = increaseBtn.dataset.clientid;
+
+    if (parseInt(increaseBtn.textContent) > 3500) {
+      increaseBtn.textContent = 3500;
+    }
+
     socket.send(
       JSON.stringify({
         action: "additional_order_increase_additional",
@@ -1657,3 +1686,59 @@ decreaseAdittionalBtns.forEach((decreaseBtn) => {
     );
   });
 });
+
+deleteAdditionalBtns = document.querySelectorAll(`.delete-additional-btn`);
+
+if (deleteAdditionalBtns) {
+  deleteAdditionalBtns.forEach((deleteAdditionalBtn) => {
+    deleteAdditionalBtn.addEventListener("click", () => {
+      const order_id = deleteAdditionalBtn.dataset.id;
+      socket.send(
+        JSON.stringify({
+          action: "additional_order_delete",
+          order_id: order_id,
+          current_user_id: current_user_id,
+        })
+      );
+    });
+  });
+}
+
+function formatInteger(integer) {
+  if (typeof integer === "number" && Number.isInteger(integer)) {
+    const integerStr = integer.toLocaleString("en-US"); // Преобразование числа в строку с разделением тысяч
+    const parts = integerStr.split(",");
+
+    // Разделение на разряды
+    let formattedInteger = "";
+    while (parts.length > 0) {
+      if (formattedInteger.length > 0) {
+        formattedInteger = " " + formattedInteger;
+      }
+      formattedInteger = parts[parts.length - 1] + formattedInteger;
+      parts.pop();
+    }
+
+    return formattedInteger;
+  } else {
+    return "Invalid input";
+  }
+}
+
+var client_order_prices = document.querySelectorAll(`.client_order_price`);
+if (client_order_prices) {
+  client_order_prices.forEach((client_order_price) => {
+    client_order_price.textContent = formatInteger(
+      parseInt(client_order_price.textContent)
+    );
+  });
+}
+
+var orderPriceCountAdditional = document.querySelector(
+  `.order-price-count-additional`
+);
+if (orderPriceCountAdditional) {
+  orderPriceCountAdditional.textContent = formatInteger(
+    parseInt(orderPriceCountAdditional.textContent)
+  );
+}

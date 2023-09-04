@@ -64,18 +64,53 @@ function CreateQuantityStatusButton(
   decreaseBtn.appendChild(decreaseBtnSvg);
 
   // Создание спана для вывода числа
-  const dishNumberInput = document.createElement("span");
-  dishNumberInput.className = "dish-number-input2";
-  dishNumberInput.setAttribute("data-id", client_id);
-  dishNumberInput.setAttribute("data-dish-id", order_id);
-  dishNumberInput.setAttribute("type", "text");
-  dishNumberInput.textContent = order_quantity;
+  var is_additional_ = localStorage.getItem("is_additional");
+  var dishNumberInput = null;
+  if (is_additional_ == "false") {
+    dishNumberInput = document.createElement("span");
+    dishNumberInput.className = "dish-number-input2";
+    dishNumberInput.setAttribute("data-dish-id", order_id);
+    dishNumberInput.setAttribute("type", "text");
+    dishNumberInput.textContent = order_quantity;
+  } else {
+    dishNumberInput = document.createElement("input");
+    dishNumberInput.className = "dish-number-input2-additional";
+    dishNumberInput.setAttribute("data-dish-id", order_id);
+    dishNumberInput.setAttribute("type", "text");
+    dishNumberInput.value = order_quantity;
+
+    dishNumberInput.addEventListener("input", (event) => {
+      const current_user_id = localStorage.getItem("username_id");
+      var currentValue = event.target.value;
+      var order_id = event.target.getAttribute("data-dish-id");
+
+      // Удаление всех символов, кроме цифр
+      currentValue = currentValue.replace(/\D/g, "");
+
+      // Проверяем длину введенного текста
+      if (currentValue.length > 4) {
+        // Если длина больше максимальной, обрезаем текст до максимальной длины
+        currentValue = 3500;
+      }
+
+      const quantity = Math.min(3500, Math.max(0, currentValue)); // Ограничиваем значение до 3500
+      event.target.value = quantity; // Обновляем значение поля ввода
+
+      socket.send(
+        JSON.stringify({
+          action: "additional_order_quantity_change",
+          current_user_id: current_user_id,
+          new_quantity: quantity,
+          order_id: order_id,
+        })
+      );
+    });
+  }
 
   // Создание кнопки увеличения
   const increaseBtn = document.createElement("button");
   increaseBtn.className = "increase-btn2";
   increaseBtn.setAttribute("data-id", order_id);
-  increaseBtn.setAttribute("data-clientid", client_id);
 
   const increaseBtnSvg = document.createElementNS(
     "http://www.w3.org/2000/svg",

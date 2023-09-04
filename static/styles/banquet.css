@@ -114,6 +114,24 @@ input[type="submit"]:active {
   border-color: #4a644b;
 }
 
+.delete-btn-wrapper2-additional {
+  display: flex;
+  overflow: hidden;
+  position: relative;
+  font-size: 13px;
+  align-items: center;
+  font-family: YSText, sans-serif;
+  line-height: 14px;
+  white-space: nowrap;
+  border-radius: 16px;
+  justify-content: center;
+  background-color: #f5f4f2;
+  font-feature-settings: "pnum" on, "lnum" on;
+
+  height: 25px;
+  width: 90px;
+  border-color: #4a644b;
+}
 .delete-btn-wrapper3 {
   display: flex;
   overflow: hidden;
@@ -170,6 +188,17 @@ input[type="submit"]:active {
   margin-top: 7px;
   text-align: center;
 }
+
+.dish-number-input2-additional {
+  border-color: #4a644b;
+  background-color: #f5f4f2;
+  width: 100px;
+  height: 20px;
+  margin-top: 7px;
+  text-align: center;
+  font-size: 20px;
+}
+
 .delete-menu-btn,
 .delete-btn {
   scale: 0.7;
@@ -192,7 +221,7 @@ input[type="submit"]:active {
   text-align: center;
 }
 .dish-number-input-adittional {
-  width: 32px;
+  width: 43px;
 }
 .delete-menu-btn {
   scale: 1;
@@ -211,6 +240,9 @@ input[type="submit"]:active {
 .decrease-btn-adittional {
   background-color: #f5f4f2;
   margin-right: 10px;
+}
+.decrease-btn-adittional {
+  margin-right: 30px;
 }
 /* Change button background color to a darker shade of red when hovered */
 .increase-btn,
@@ -334,9 +366,18 @@ input[type="submit"]:active {
   background-color: rgba(10, 10, 10, 0);
 }
 
+.delete-additional-btn {
+  background-color: rgba(10, 10, 10, 0);
+}
+
 .musorka {
   width: 17px;
   margin-bottom: 10px;
+}
+
+.musorka-additional {
+  width: 17px;
+  margin-bottom: 5px;
 }
 
 .menu-client-btn.active {
@@ -927,7 +968,7 @@ input[type="submit"]:active {
 }
 
 .client-order-price {
-  margin-top: 5px;
+  margin-top: 2px;
   display: block;
   font-size: 10px;
   font-weight: bold;
@@ -1037,4 +1078,17 @@ input[type="submit"]:active {
 
 .extra-dishes-text {
   margin-left: 65px;
+}
+
+.increase-btn-adittional {
+  margin-left: 5px;
+}
+.dish-number-input-adittional {
+  margin-left: -23px;
+  margin-top: 11px;
+}
+
+.adittional-dish-item-button-additional {
+  display: flex;
+  column-gap: 5px;
 }

@@ -571,21 +571,69 @@ class BanquetConsumer(WebsocketConsumer):
         elif action == "additional_order_quantity_change":
             current_dish_order_id = data["order_id"]         
             current_dish_order = get_object_or_404(DishOrder, id=current_dish_order_id)
-            current_dish_order.quantity = data["new_quantity"]  
-            current_dish_order.save()
+            current_banquet = Banquet.objects.get(owner=current_user_profiledata, is_ordered=False)
+            
+            new_quantity = data["new_quantity"]  
+            if new_quantity != 0:
+                current_dish_order.quantity = data["new_quantity"]  
+                current_dish_order.save()
+
+
+                response = {
+                                "action":"additional_order_increased_additional",
+                                'current_dish_order_id':current_dish_order.id,
+                                'new_quantity':current_dish_order.quantity,
+                                'banqet_id':current_banquet.id,
+                                'current_dish_order_price_count':current_dish_order.price_count(),
+                                'total_banquet_price': current_banquet.total_price()
+                            }
+                
+                self.send_response(response)
+
+            elif new_quantity == 0:
+                orders_left = current_banquet.additional.all()
+                if not orders_left:
+                    orders_left = json.dumps(False)
+                else: orders_left = json.dumps(True)
+
+                response = {"action":"order_deleted", 
+                            'dish_id':current_dish_order.product.id,
+                            "order_id": current_dish_order.id,
+                            'orders_left':orders_left,
+                            'banqet_id':current_banquet.id,
+                            'total_banquet_price':current_banquet.total_price()
+                            }
+
+                current_dish_order.delete()
+                is_left = current_banquet.additional.all()
+                if is_left: is_left = True
+                else: is_left = False
+                response["is_left"] = is_left
+                response["current_banquet_additional_price"] = current_banquet.total_price_additional(),
+                response['total_banquet_price'] = current_banquet.total_price()
+                self.send_response(response)
+
+        elif action == "additional_order_delete":
+            current_dish_order_id = data["order_id"]         
+            current_dish_order = get_object_or_404(DishOrder, id=current_dish_order_id)
+            
 
             current_banquet = Banquet.objects.get(owner=current_user_profiledata, is_ordered=False)
+            
             response = {
-                            "action":"additional_order_increased_additional",
+                            "action":"additional_order_deleted",
                             'current_dish_order_id':current_dish_order.id,
                             'new_quantity':current_dish_order.quantity,
                             'banqet_id':current_banquet.id,
-                            'current_dish_order_price_count':current_dish_order.price_count(),
-                            'total_banquet_price': current_banquet.total_price()
                         }
-            
+            current_dish_order.delete()
+            is_left = current_banquet.additional.all()
+            if is_left: is_left = True
+            else: is_left = False
+            response["is_left"] = is_left
+            response["current_banquet_additional_price"] = current_banquet.total_price_additional(),
+            response['total_banquet_price'] = current_banquet.total_price()
             self.send_response(response)
-
 
     def send_response(self, response):
         self.send(text_data=json.dumps(response))

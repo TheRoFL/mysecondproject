@@ -337,60 +337,70 @@
                       >
                     </div>
                   </div>
-                  <div class="adittional-dish-item-button">
-                    <div class="delete-btn-wrapper">
-                      <div class="delete-btn-wrapper2">
-                        <button
-                          class="decrease-btn-adittional"
-                          data-id="{{client_dish.id}}"
-                          data-banquetId="{{banquet.id}}"
+                  <div class="adittional-dish-item-button-additional">
+                    <div class="delete-btn-wrapper2-additional">
+                      <button
+                        class="decrease-btn-adittional"
+                        data-id="{{client_dish.id}}"
+                        data-banquetId="{{banquet.id}}"
+                      >
+                        <svg
+                          width="1em"
+                          height="1em"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          xmlns="http://www.w3.org/2000/svg"
+                          class="decrease-btn-svg"
                         >
-                          <svg
-                            width="1em"
-                            height="1em"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            xmlns="http://www.w3.org/2000/svg"
-                            class="decrease-btn-svg"
-                          >
-                            <path
-                              fill-rule="evenodd"
-                              clip-rule="evenodd"
-                              d="M6 12a1 1 0 0 0 1 1h10a1 1 0 1 0 0-2H7a1 1 0 0 0-1 1Z"
-                              fill="currentColor"
-                            ></path>
-                          </svg>
-                        </button>
-                        <input
-                          class="dish-number-input-adittional"
-                          data-id="{{banquet.id}}"
-                          data-dish-id="{{client_dish.id}}"
-                          type="text"
-                          value="{{client_dish.quantity}}"
-                        />
-                        <button
-                          class="increase-btn-adittional"
-                          data-id="{{client_dish.id}}"
-                          data-banquetId="{{banquet.id}}"
+                          <path
+                            fill-rule="evenodd"
+                            clip-rule="evenodd"
+                            d="M6 12a1 1 0 0 0 1 1h10a1 1 0 1 0 0-2H7a1 1 0 0 0-1 1Z"
+                            fill="currentColor"
+                          ></path>
+                        </svg>
+                      </button>
+                      <input
+                        class="dish-number-input-adittional"
+                        data-id="{{banquet.id}}"
+                        data-dish-id="{{client_dish.id}}"
+                        type="text"
+                        value="{{client_dish.quantity}}"
+                      />
+                      <button
+                        class="increase-btn-adittional"
+                        data-id="{{client_dish.id}}"
+                        data-banquetId="{{banquet.id}}"
+                      >
+                        <svg
+                          width="1em"
+                          height="1em"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          xmlns="http://www.w3.org/2000/svg"
+                          class="increase-btn-svg"
                         >
-                          <svg
-                            width="1em"
-                            height="1em"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            xmlns="http://www.w3.org/2000/svg"
-                            class="increase-btn-svg"
-                          >
-                            <path
-                              fill-rule="evenodd"
-                              clip-rule="evenodd"
-                              d="M12 6a1 1 0 0 0-1 1v4H7a1 1 0 1 0 0 2h4v4a1 1 0 1 0 2 0v-4h4a1 1 0 1 0 0-2h-4V7a1 1 0 0 0-1-1Z"
-                              fill="currentColor"
-                            ></path>
-                          </svg>
-                        </button>
-                      </div>
+                          <path
+                            fill-rule="evenodd"
+                            clip-rule="evenodd"
+                            d="M12 6a1 1 0 0 0-1 1v4H7a1 1 0 1 0 0 2h4v4a1 1 0 1 0 2 0v-4h4a1 1 0 1 0 0-2h-4V7a1 1 0 0 0-1-1Z"
+                            fill="currentColor"
+                          ></path>
+                        </svg>
+                      </button>
                     </div>
+
+                    <button
+                      class="delete-additional-btn"
+                      data-id="{{client_dish.id}}"
+                    >
+                      <img
+                        data-id="{{client_dish.id}}"
+                        class="musorka-additional"
+                        src="/static/images/trashcan.png"
+                        alt="delete"
+                      />
+                    </button>
                   </div>
                 </div>
 
@@ -405,8 +415,7 @@
                     class="order-price-count-additional"
                     data-id="{{banquet.id}}"
                     id="{{banquet.id}}"
-                  >
-                    {{banquet.total_price_additional}}</span
+                    >{{banquet.total_price_additional}}</span
                   >.00 ₽</span
                 >
               </div>
