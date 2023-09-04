@@ -102,8 +102,9 @@ def LoadMenu(request):
                 current_dishes = Dish.objects.all()
             else:
                 # сделать поиск по тегам
-                current_dishes = Dish.objects.filter(Q(name__icontains=dish_name) | Q(name_tags__icontains=dish_name))
-            for current_dish in current_dishes:
+                current_dishes = Dish.objects.filter(Q(name__icontains=dish_name) |
+                                                     Q(name_tags__icontains=dish_name))
+            for current_dish in current_dishes: 
                 current_dish.tittle = current_dish.name
                 current_dish.name = current_dish.name.replace(" ", "_")
                 
@@ -125,7 +126,9 @@ def LoadMenu(request):
                 current_dishes = Dish.objects.filter(type=dish_type)
             else:
                 # сделать поиск по тегам
-                current_dishes = Dish.objects.filter(Q(name__icontains=dish_name) | Q(name_tags__icontains=dish_name))
+                current_dishes = Dish.objects.filter((Q(name__icontains=dish_name) |
+                                                     Q(name_tags__icontains=dish_name)) &
+                                                     Q(type__icontains=dish_type))
             for current_dish in current_dishes:
                 current_dish.tittle = current_dish.name
                 current_dish.name = current_dish.name.replace(" ", "_")

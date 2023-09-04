@@ -6,10 +6,10 @@ const y1 = document.querySelector(".overflow2");
 
 detailsButtons.forEach((button) => {
   button.addEventListener("click", function () {
-    LoadMenu("all");
     localStorage.setItem("is_additional", false);
     localStorage.setItem("current_client_id", button.dataset.id);
     localStorage.setItem("current_client_name", button.dataset.name);
+    LoadMenu("all");
     menuButtons.forEach((button) => {
       var current_client_id = localStorage.getItem("current_client_id");
       var my_client_form = document.querySelector(

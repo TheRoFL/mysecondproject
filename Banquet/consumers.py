@@ -121,6 +121,10 @@ class BanquetConsumer(WebsocketConsumer):
             current_dish = get_object_or_404(Dish, id=current_dish_id)
             current_client = get_object_or_404(Client, id=current_client_id)
 
+            is_first = current_client.dishes.all()
+            if is_first: is_first = False
+            else: is_first = True
+
             current_dishorder = None
             for current_client_dish_order in current_client.dishes.all():
                 if current_client_dish_order.product.id == current_dish.id:
@@ -146,10 +150,34 @@ class BanquetConsumer(WebsocketConsumer):
             current_client.dishes.add(current_dishorder)
             current_client.save()
 
+            current_dish_order_data = {
+                 'id': current_dishorder.id,
+                 'quantity': current_dishorder.quantity,
+                 'price': current_dishorder.price_count()
+            }
+
+            current_dish_data = {
+                'id': current_dish.id,
+                'name': current_dish.name,
+                'tittle': current_dish.name,
+                'description': current_dish.discription,
+                'ingredients': current_dish.ingredients,
+                'price': int(current_dish.price),
+                'weight': current_dish.weight,
+                'image': current_dish.image.url,
+                'sostav':current_dish.ingredients,
+                'type':current_dish.type,
+            }
+            current_dish_data = json.dumps(current_dish_data)
+            current_dish_order_data = json.dumps(current_dish_order_data)
+
             response = {'client_id': current_client_id,
                         'current_dish_id': current_dish_id,
                         'current_dish_order_id': current_dishorder.id,
+                        'current_dish_data': current_dish_data,
+                        'current_dish_order_data': current_dish_order_data,
                         'current_dish_order_name': current_dishorder.product.name,
+                        'is_first': is_first,
                         'current_banquet_id': current_banquet.id,
                         'client_dishOrder_quantity': current_dishorder.quantity,
                         'client_dishOrder_price_count':current_dishorder.price_count(),
@@ -249,15 +277,43 @@ class BanquetConsumer(WebsocketConsumer):
                     except Exception as e:
                         print(e)
 
+                    is_first = current_client.dishes.all()
+                    if is_first: is_first = False
+                    else: is_first = True
                     current_banquet = Banquet.objects.get(owner=current_user_profiledata, is_ordered=False)
                     current_client.dishes.add(current_dishorder)
                     current_client.save()
                     current_client_id = current_client.id
                     current_dish_id = current_dish.id
+                    
+                    current_dish_order_data = {
+                        'id': current_dishorder.id,
+                        'quantity': current_dishorder.quantity,
+                        'price': current_dishorder.price_count()
+                    }
+
+                    current_dish_data = {
+                        'id': current_dish.id,
+                        'name': current_dish.name,
+                        'tittle': current_dish.name,
+                        'description': current_dish.discription,
+                        'ingredients': current_dish.ingredients,
+                        'price': int(current_dish.price),
+                        'weight': current_dish.weight,
+                        'image': current_dish.image.url,
+                        'sostav':current_dish.ingredients,
+                        'type':current_dish.type,
+                    }
+                    current_dish_data = json.dumps(current_dish_data)
+                    current_dish_order_data = json.dumps(current_dish_order_data)
+
                     response = {'client_id': current_client_id,
                                 'current_dish_id': current_dish_id,
                                 'current_dish_order_id': current_dishorder.id,
+                                'current_dish_data': current_dish_data,
+                                'current_dish_order_data': current_dish_order_data,
                                 'current_dish_order_name': current_dishorder.product.name,
+                                'is_first': is_first,
                                 'current_banquet_id': current_banquet.id,
                                 'client_dishOrder_quantity': current_dishorder.quantity,
                                 'client_dishOrder_price_count':current_dishorder.price_count(),
@@ -265,7 +321,7 @@ class BanquetConsumer(WebsocketConsumer):
                                 'client_total_price': current_client.menu_and_orders_price_count(), #считает сумму клиента без меню
                                 'total_banquet_price': current_banquet.total_price()
                             }
-                    
+
                     response.update(additional_response)
                     self.send_response(response)
             

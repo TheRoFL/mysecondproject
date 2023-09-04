@@ -111,7 +111,7 @@ function CreateQuantityStatusButton(
   const increaseBtn = document.createElement("button");
   increaseBtn.className = "increase-btn2";
   increaseBtn.setAttribute("data-id", order_id);
-
+  increaseBtn.setAttribute("data-clientid", client_id);
   const increaseBtnSvg = document.createElementNS(
     "http://www.w3.org/2000/svg",
     "svg"
@@ -157,15 +157,55 @@ function CreateQuantityStatusButton(
   increaseBtn.addEventListener("click", () => {
     const order_id = increaseBtn.dataset.id;
     const client_id = increaseBtn.dataset.clientid;
-    socket.send(
-      JSON.stringify({
-        action: action,
-        order_id: order_id,
-        client_id: client_id,
-        current_client_id: client_id,
-        current_user_id: current_user_id,
-      })
+    const dishNumberInputAdittional = document.querySelector(
+      `.dish-number-input-adittional[data-dish-id="${order_id}"]`
     );
+
+    if (is_addit__ == "true") {
+      if (dishNumberInputAdittional) {
+        if (dishNumberInputAdittional.value >= 3500) {
+          dishNumberInputAdittional.textContent = 3500;
+        } else {
+          socket.send(
+            JSON.stringify({
+              action: action,
+              order_id: order_id,
+              client_id: client_id,
+              current_client_id: client_id,
+              current_user_id: current_user_id,
+            })
+          );
+        }
+      } else {
+        const dishNumberInputAdittional2 = document.querySelector(
+          `.dish-number-input2-additional[data-dish-id="${order_id}"]`
+        );
+
+        if (dishNumberInputAdittional2.value >= 3500) {
+          dishNumberInputAdittional2.textContent = 3500;
+        } else {
+          socket.send(
+            JSON.stringify({
+              action: action,
+              order_id: order_id,
+              client_id: client_id,
+              current_client_id: client_id,
+              current_user_id: current_user_id,
+            })
+          );
+        }
+      }
+    } else {
+      socket.send(
+        JSON.stringify({
+          action: "additional_order_increase",
+          order_id: order_id,
+          client_id: client_id,
+          current_client_id: client_id,
+          current_user_id: current_user_id,
+        })
+      );
+    }
   });
 
   decreaseBtn.addEventListener("click", () => {

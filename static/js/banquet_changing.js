@@ -767,6 +767,8 @@ socket.onmessage = function (e) {
       handleDeleteMenuButtonClick2(event.target); // Передаем кнопку как аргумент
     });
   } else if (action == "new_dish_added") {
+    var dish_data = data["current_dish_data"];
+    dish_data = JSON.parse(dish_data);
     var client_id = localStorage.getItem("current_client_id");
     var newDiv = document.createElement("div");
     div_name = "client-orders-" + data.current_dish_order_id;
@@ -775,42 +777,111 @@ socket.onmessage = function (e) {
     const additional_dishes = document.querySelector(
       `.additional-dishes[data-id="${client_id}"]`
     );
+    if (data["is_first"]) {
+      var additionalDishesSign = `
+      <div class="additional-dishes-sign">
+        Выбранные отдельно блюда
+        <button class="clear-additional-btn" data-id="${data["client_id"]}">
+          Очистить
+        </button>
+      </div>
+    `;
+      var temp2 = document.createElement("div");
+      temp2.innerHTML += additionalDishesSign;
+      additional_dishes.append(temp2);
+    }
 
-    var adittional_dish = document.createElement("div");
-    var client_dishOrder_product_name = data.current_dish_order_name;
-    var client_dishOrder_quantity = data.client_dishOrder_quantity;
-    var client_dishOrder_price_count = data.client_dishOrder_price_count;
-    adittional_dish.classList.add("adittional-dish");
-    adittional_dish.dataset.id = data.current_dish_order_id;
+    const client_id2 = data["client_id"];
+    const order_id = data["current_dish_order_id"];
+    const order_quantity = data["client_dishOrder_quantity"];
 
-    var extra_sign = document.createElement("h1");
-    extra_sign.value = "Дополнительно:";
-    var adittional_dish_item = document.createElement("div");
-    adittional_dish_item.classList.add("adittional-dish-item");
-    adittional_dish_item.innerHTML = `
-    <h2 style="margin-left: 30px">
-    ${client_dishOrder_product_name} x <span class="client_order_quantity" data-id="${data.client_id}" 
-    id="${data.current_dish_order_id}">
-    ${client_dishOrder_quantity}</span> шт. =
-     <span class="client_order_price" data-id="${data.client_id}" id="${data.current_dish_order_id}">
-      ${client_dishOrder_price_count}</span>.00 ₽</h2>
-  `;
-    // Создаем кнопку для удаления
-    var adittional_dish_item_button = document.createElement("div");
-    adittional_dish_item_button.classList.add("adittional-dish-item-button");
-    var deleteButton = document.createElement("button");
-    deleteButton.classList.add("delete-btn");
-    deleteButton.dataset.id = data.current_dish_order_id;
-    deleteButton.dataset.clientid = data.client_id;
-    deleteButton.dataset.unique_id =
-      data.current_dish_order_id + "-" + data.client_id;
-    deleteButton.innerText = "X";
+    const dish_id = dish_data["id"];
+    const dish_name = dish_data["name"];
+    const dish_tittle = dish_data["name"];
+    const dish_weight = dish_data["weight"];
+    const dish_price = dish_data["price"];
+    const dish_sostav = dish_data["sostav"];
+    const dish_type = dish_data["type"];
+    const dish_image = dish_data["image"];
+    var adittionalDish = `
+    <div class="adittional-dish" data-id="${order_id}">
+  <div class="adittional-dish-item-img">
+    <img class="client-img" data-id="${dish_id}" data-name="${dish_name}" data-tittle="${dish_tittle}" data-weight="${dish_weight}"
+     data-price="${dish_price}.00" data-sostav="${dish_sostav}" data-type="${dish_type}" 
+     src="http://localhost:8000${dish_image}">
+  </div>
+  <div class="adittional-dish-item">
+  ${dish_tittle}
+    <div class="client-order-price">
+      <span class="client_order_price" data-id="${client_id2}" data-order-id="${order_id}" id="${order_id}">${dish_price}</span>.00 ₽ ·
+      <span class="dish-weight">${dish_weight} гр.</span>
+    </div>
+  </div>
+  <div class="adittional-dish-item-button">
+    <div class="delete-btn-wrapper">
+      <div class="delete-btn-wrapper2">
+        <button class="decrease-btn" data-id="${order_id}" data-clientid="${client_id2}">
+          <svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="decrease-btn-svg">
+            <path fill-rule="evenodd" clip-rule="evenodd" d="M6 12a1 1 0 0 0 1 1h10a1 1 0 1 0 0-2H7a1 1 0 0 0-1 1Z" fill="currentColor"></path>
+          </svg>
+        </button>
+        <span class="dish-number-input" data-id="${order_id}" data-dish-id="${order_id}" type="text" value="">${order_quantity}</span>
+        <button class="increase-btn" data-id="${order_id}" data-clientid="${client_id2}">
+          <svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="increase-btn-svg">
+            <path fill-rule="evenodd" clip-rule="evenodd" d="M12 6a1 1 0 0 0-1 1v4H7a1 1 0 1 0 0 2h4v4a1 1 0 1 0 2 0v-4h4a1 1 0 1 0 0-2h-4V7a1 1 0 0 0-1-1Z" fill="currentColor"></path>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+  </div>
+`;
 
-    adittional_dish_item_button.append(deleteButton);
-    adittional_dish.append(adittional_dish_item);
-    adittional_dish.append(adittional_dish_item_button);
-    deleteButton.addEventListener("click", handleDeleteDishButtonClick);
-    additional_dishes.appendChild(adittional_dish);
+    var temp = document.createElement("div");
+    temp.innerHTML += adittionalDish;
+    additional_dishes.append(temp);
+
+    var additionalDishesSignBtn = document.querySelector(
+      `.clear-additional-btn[data-id="${data["client_id"]}"]`
+    );
+
+    additionalDishesSignBtn.addEventListener(
+      "click",
+      handleClearAdditionalBtnClick
+    );
+
+    var decreaseBtn = document.querySelector(
+      `.decrease-btn[data-id="${order_id}"]`
+    );
+    decreaseBtn.addEventListener("click", () => {
+      const order_id = decreaseBtn.dataset.id;
+      const client_id = decreaseBtn.dataset.clientid;
+      socket.send(
+        JSON.stringify({
+          action: "additional_order_decrease",
+          order_id: order_id,
+          client_id: client_id,
+          current_client_id: client_id,
+          current_user_id: current_user_id,
+        })
+      );
+    });
+    var increaseBtn = document.querySelector(
+      `.increase-btn[data-id="${order_id}"]`
+    );
+    increaseBtn.addEventListener("click", () => {
+      const order_id = increaseBtn.dataset.id;
+      const client_id = increaseBtn.dataset.clientid;
+      socket.send(
+        JSON.stringify({
+          action: "additional_order_increase",
+          order_id: order_id,
+          client_id: client_id,
+          current_client_id: client_id,
+          current_user_id: current_user_id,
+        })
+      );
+    });
   } else if (action == "dish_added") {
     var newQuantity = data.client_dishOrder_quantity;
     var client_dishOrder_price_count = data.client_dishOrder_price_count;
@@ -1652,19 +1723,22 @@ increaseAdittionalBtns.forEach((increaseBtn) => {
     const order_id = increaseBtn.dataset.id;
     const client_id = increaseBtn.dataset.clientid;
 
-    if (parseInt(increaseBtn.textContent) > 3500) {
-      increaseBtn.textContent = 3500;
-    }
-
-    socket.send(
-      JSON.stringify({
-        action: "additional_order_increase_additional",
-        order_id: order_id,
-        client_id: client_id,
-        current_client_id: client_id,
-        current_user_id: current_user_id,
-      })
+    const dishNumberInputAdittional = document.querySelector(
+      `.dish-number-input-adittional[data-dish-id="${order_id}"]`
     );
+    if (dishNumberInputAdittional.value >= 3500) {
+      dishNumberInputAdittional.textContent = 3500;
+    } else {
+      socket.send(
+        JSON.stringify({
+          action: "additional_order_increase_additional",
+          order_id: order_id,
+          client_id: client_id,
+          current_client_id: client_id,
+          current_user_id: current_user_id,
+        })
+      );
+    }
   });
 });
 
