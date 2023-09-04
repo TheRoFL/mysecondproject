@@ -523,6 +523,9 @@ class BanquetConsumer(WebsocketConsumer):
                     current_dishorder = current_additional_dish_order
                     break
 
+            is_first = current_banquet.additional.all()
+            if is_first: is_first = False
+            else: is_first = True
             try:
                 if not current_dishorder:
                     current_dishorder = DishOrder.objects.create(
@@ -540,11 +543,34 @@ class BanquetConsumer(WebsocketConsumer):
             except Exception as e:
                 print(e)
 
-  
+            current_dish_order_data = {
+                        'id': current_dishorder.id,
+                        'quantity': current_dishorder.quantity,
+                        'price': current_dishorder.price_count()
+                    }
+
+            current_dish_data = {
+                'id': current_dish.id,
+                'name': current_dish.name,
+                'tittle': current_dish.name,
+                'description': current_dish.discription,
+                'ingredients': current_dish.ingredients,
+                'price': int(current_dish.price),
+                'weight': current_dish.weight,
+                'image': current_dish.image.url,
+                'sostav':current_dish.ingredients,
+                'type':current_dish.type,
+            }
+            current_dish_data = json.dumps(current_dish_data)
+            current_dish_order_data = json.dumps(current_dish_order_data)
+
 
             response = {
                         'current_dish_id': current_dish_id,
+                        'is_first': is_first,
                         'current_dish_order_id': current_dishorder.id,
+                        'current_dish_data': current_dish_data,
+                        'current_dish_order_data': current_dish_order_data,
                         'current_dish_order_name': current_dishorder.product.name,
                         'current_banquet_id': current_banquet.id,
                         'client_dishOrder_quantity': current_dishorder.quantity,
