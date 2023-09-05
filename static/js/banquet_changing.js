@@ -56,6 +56,20 @@ function updateClientsList(data) {
 
   const deleteButtons = document.querySelectorAll(".delete-client-btn");
 
+  function handleDeleteClientButtonClick(event) {
+    const client_id = event.target.dataset.id; // Получаем id клиента из атрибута data-id
+    username_id = localStorage.getItem("username_id");
+    current_client_id = localStorage.getItem("current_client_id");
+    socket.send(
+      JSON.stringify({
+        action: "client_delete",
+        client_id: client_id,
+        current_user_id: username_id,
+        current_client_id: current_client_id,
+      })
+    );
+  }
+
   deleteButtons.forEach((button) => {
     button.addEventListener("click", handleDeleteClientButtonClick);
   });
@@ -229,50 +243,6 @@ function updateQuantity(client_id, quantity) {
       client_id: client_id,
       current_user_id: username_id,
       quantity: quantity,
-    })
-  );
-}
-
-function handleDeleteClientButtonClick(event) {
-  const client_id = event.target.dataset.id; // Получаем id клиента из атрибута data-id
-  username_id = localStorage.getItem("username_id");
-  current_client_id = localStorage.getItem("current_client_id");
-  socket.send(
-    JSON.stringify({
-      action: "client_delete",
-      client_id: client_id,
-      current_user_id: username_id,
-      current_client_id: current_client_id,
-    })
-  );
-}
-
-function handleDeleteDishButtonClick(event) {
-  const mybutton = event.target; // Получаем элемент, на котором произошло событие (в данном случае, кнопка)
-  const order_id = mybutton.dataset.id; // Получаем значение data-id из атрибута data-id
-  var username_id = localStorage.getItem("username_id");
-  var current_client_id = mybutton.dataset.clientid;
-  socket.send(
-    JSON.stringify({
-      action: "dish_order_delete",
-      order_id: order_id,
-      current_user_id: username_id,
-      client_id: current_client_id,
-    })
-  );
-}
-
-function handleDeleteMenuButtonClick(event) {
-  const mybutton = event.target; // Получаем элемент, на котором произошло событие (в данном случае, кнопка)
-  const menu_id = mybutton.dataset.id; // Получаем значение data-id из атрибута data-id
-  var username_id = localStorage.getItem("username_id");
-  var current_client_id = mybutton.dataset.clientid;
-  socket.send(
-    JSON.stringify({
-      action: "client_menu_delete",
-      menu_id: menu_id,
-      current_user_id: username_id,
-      client_id: current_client_id,
     })
   );
 }
@@ -637,6 +607,8 @@ socket.onmessage = function (e) {
     client_id = data["client_id"];
     current_menu_id = data["current_menu_id"];
 
+    const dishes_data = JSON.parse(data["current_menu_dishes"]);
+
     var menuToRemove = document.querySelector(
       `div.client-menu[data-id="${client_id}"]`
     );
@@ -678,34 +650,45 @@ socket.onmessage = function (e) {
     var totalCost = data["menu_total_price_count"];
     items = data["current_menu_dishes"];
 
-    // Создаем элементы для каждого блюда
-    i = 0;
-    items.forEach(function (item) {
-      var dishDiv = document.createElement("div");
-      dishDiv.className = "client-menu-dish";
-      // dishDiv.setAttribute("data-id", item.name);
+    const client_id2 = data["client_id"];
+    var banqet_id = data["current_banquet_id"];
 
-      var dishHeader = document.createElement("h1");
-      dishHeader.style.marginLeft = "25px";
-      dishHeader.textContent = "-" + items[i];
-      i = i + 1;
-      dishDiv.appendChild(dishHeader);
-      menuDiv.appendChild(dishDiv);
+    dishes_data.forEach(function (dish_data) {
+      dish_data = JSON.parse(dish_data);
+
+      const dish_id = dish_data["id"];
+      const dish_name = dish_data["name"];
+      const dish_tittle = dish_data["name"];
+      const dish_weight = dish_data["weight"];
+      const dish_price = dish_data["price"];
+      const dish_sostav = dish_data["sostav"];
+      const dish_type = dish_data["type"];
+      const dish_image = dish_data["image"];
+      var adittionalDish = `
+    <div class="client-menu-dish">
+  <div class="adittional-dish-item-img">
+    <img class="client-img" data-id="${dish_id}" data-name="${dish_name}" data-tittle="${dish_tittle}" data-weight="${dish_weight}"
+     data-price="${dish_price}.00" data-sostav="${dish_sostav}" data-type="${dish_type}" 
+     src="http://localhost:8000${dish_image}">
+  </div>
+  <div class="adittional-dish-item">
+  ${dish_tittle} x 1<div class="client-order-price">
+      <span class="client_order_price" data-id="${client_id2}">${dish_price}</span>.00 ₽ ·
+      <span class="dish-weight">${dish_weight} гр.</span>
+    </div>
+  </div>
+  </div>
+`;
+
+      var temp = document.createElement("div");
+      temp.innerHTML += adittionalDish;
+      menuDiv.append(temp);
     });
 
-    // Создаем элемент для общей стоимости
-    var totalCostHeader = document.createElement("h1");
-    totalCostHeader.style.marginLeft = "15px";
-    totalCostHeader.textContent = `Итого: ${totalCost.toFixed(2)} ₽ с человека`;
-
-    menuDiv.appendChild(totalCostHeader);
-
-    // Добавляем разделитель
-
-    var separator = document.createElement("div");
-    separator.classList.add("dotted-line");
-    menuDiv.appendChild(separator);
-
+    var dottedLine = `<div class="dotted-line"></div>`;
+    var temp = document.createElement("div");
+    temp.innerHTML += dottedLine;
+    menuDiv.append(temp);
     var current_client_id = localStorage.getItem("current_client_id");
 
     var client_menu_total_price = document.querySelector(
@@ -850,7 +833,7 @@ socket.onmessage = function (e) {
     );
 
     var decreaseBtn = document.querySelector(
-      `.decrease-btn[data-id="${order_id}"]`
+      `.decrease-btn-adittional[data-id="${order_id}"]`
     );
     if (decreaseBtn) {
       decreaseBtn.addEventListener("click", () => {
@@ -858,7 +841,7 @@ socket.onmessage = function (e) {
         const client_id = decreaseBtn.dataset.clientid;
         socket.send(
           JSON.stringify({
-            action: "additional_order_decrease",
+            action: "additional_order_decrease_additional",
             order_id: order_id,
             client_id: client_id,
             current_client_id: client_id,
@@ -869,7 +852,7 @@ socket.onmessage = function (e) {
     }
 
     var increaseBtn = document.querySelector(
-      `.increase-btn[data-id="${order_id}"]`
+      `.increase-btn-adittional[data-id="${order_id}"]`
     );
     if (increaseBtn) {
       increaseBtn.addEventListener("click", () => {
@@ -877,11 +860,58 @@ socket.onmessage = function (e) {
         const client_id = increaseBtn.dataset.clientid;
         socket.send(
           JSON.stringify({
-            action: "additional_order_increase",
+            action: "additional_order_increase_additional",
             order_id: order_id,
             client_id: client_id,
             current_client_id: client_id,
             current_user_id: current_user_id,
+          })
+        );
+      });
+    }
+
+    var deleteBtn = document.querySelector(
+      `.delete-additional-btn[data-id="${order_id}"]`
+    );
+    if (deleteBtn) {
+      deleteBtn.addEventListener("click", () => {
+        const order_id = deleteBtn.dataset.id;
+        socket.send(
+          JSON.stringify({
+            action: "additional_order_delete",
+            order_id: order_id,
+            current_user_id: current_user_id,
+          })
+        );
+      });
+    }
+
+    var dishNumberInputAdittional = document.querySelector(
+      `.dish-number-input-adittional[data-dish-id="${order_id}"]`
+    );
+    if (dishNumberInputAdittional) {
+      dishNumberInputAdittional.addEventListener("input", function () {
+        const current_user_id = localStorage.getItem("username_id");
+        var currentValue = $(this).val();
+        var order_id = dishNumberInputAdittional.getAttribute("data-dish-id");
+        // Удаление всех символов, кроме цифр
+        currentValue = currentValue.replace(/\D/g, "");
+
+        // Проверяем длину введенного текста
+        if (currentValue.length > 4) {
+          // Если длина больше максимальной, обрезаем текст до максимальной длины
+          currentValue = 3500;
+        }
+
+        const quantity = Math.min(3500, Math.max(0, currentValue)); // Ограничиваем значение до 2000
+        $(this).val(quantity); // Обновляем значение поля ввода
+
+        socket.send(
+          JSON.stringify({
+            action: "additional_order_quantity_change",
+            current_user_id: current_user_id,
+            new_quantity: quantity,
+            order_id: order_id,
           })
         );
       });
@@ -1147,6 +1177,13 @@ socket.onmessage = function (e) {
     if (dishNumberInputAdittional2Additional) {
       dishNumberInputAdittional2Additional.value = data["new_quantity"];
     }
+
+    var client_order_price = document.querySelector(
+      `.order-price-count-additional[data-id="${data.banqet_id}"]`
+    );
+    client_order_price.textContent = formatInteger(
+      parseInt(data.current_dish_order_price_count)
+    );
   }
 
   if (
@@ -1216,260 +1253,7 @@ const clientForm = document.getElementById("clientForm");
 const cancelFormButton = document.getElementById("cancelFormBtn");
 
 showFormButton.addEventListener("click", () => {
-  showFormButton.remove();
-  // Создаем основной div элемент
-  const divElement = document.createElement("div");
-  divElement.className = "my_client formaClienta menu-client-btn";
-  divElement.classList.add("created");
-  divElement.setAttribute("data-name", "Выберите клиента");
-  localStorage.setItem("current_client_name", "Выберите клиента");
-  // Создаем div для header
-  const headerDiv = document.createElement("div");
-  headerDiv.className = "formaClienta_header";
-
-  // Создаем input для имени
-  const nameInput = document.createElement("input");
-  nameInput.className = "name-input";
-  nameInput.value = "Введите клиента";
-  nameInput.classList.add("created");
-  nameInput.addEventListener("change", function () {
-    const client_id = $(this).data("id");
-    var currentValue = $(this).val();
-    // Проверяем длину введенного текста
-    if (currentValue.length > 15) {
-      // Если длина больше максимальной, обрезаем текст до максимальной длины
-      $(this).val(currentValue.slice(0, 15));
-    }
-    if (currentValue.length == 0) {
-      // Если длина больше максимальной, обрезаем текст до максимальной длины
-      $(this).val("Введите клиента");
-    }
-    const name = $(this).val();
-    username_id = localStorage.getItem("username_id");
-    socket.send(
-      JSON.stringify({
-        action: "client_name_update",
-        client_id: client_id,
-        current_user_id: username_id,
-        name: name,
-      })
-    );
-  });
-
-  nameInput.addEventListener("input", function () {
-    const client_id = $(this).data("id");
-    var currentValue = $(this).val();
-    // Проверяем длину введенного текста
-    if (currentValue.length > 15) {
-      // Если длина больше максимальной, обрезаем текст до максимальной длины
-      $(this).val(currentValue.slice(0, 15));
-    }
-
-    const name = $(this).val();
-    username_id = localStorage.getItem("username_id");
-    socket.send(
-      JSON.stringify({
-        action: "client_name_update",
-        client_id: client_id,
-        current_user_id: username_id,
-        name: name,
-      })
-    );
-  });
-
-  const pElement = document.createElement("p");
-  pElement.style.fontSize = "10px";
-  pElement.style.display = "inline";
-  pElement.style.color = "#fff";
-  pElement.style.marginBottom = "12px";
-  pElement.textContent = "x";
-
-  const quantityInput = document.createElement("input");
-  quantityInput.className = "quantity-input";
-  quantityInput.value = "0";
-  quantityInput.classList.add("created");
-
-  quantityInput.addEventListener("input", function () {
-    const client_id = $(this).data("id");
-    var currentValue = $(this).val();
-    var all_clients = document.querySelectorAll(".quantity-input");
-    // Удаление всех символов, кроме цифр
-    currentValue = currentValue.replace(/\D/g, "");
-
-    var sum = 0;
-    all_clients.forEach(function (input) {
-      sum += parseInt(input.value);
-    });
-
-    if (sum > 2000) {
-      currentValue = 2000 - (sum - parseInt(currentValue));
-    }
-    // Проверяем длину введенного текста
-    if (currentValue.length > 4) {
-      // Если длина больше максимальной, обрезаем текст до максимальной длины
-      currentValue = 2000;
-    }
-
-    const quantity = Math.min(2000, Math.max(0, currentValue)); // Ограничиваем значение до 2000
-    $(this).val(quantity); // Обновляем значение поля ввода
-    updateQuantity(client_id, quantity);
-  });
-
-  // Создаем кнопку для удаления клиента
-  const deleteClientButton = document.createElement("button");
-  deleteClientButton.className = "delete-client-btn";
-  deleteClientButton.classList.add("created");
-  // Создаем изображение внутри кнопки
-  const deleteImage = document.createElement("img");
-  deleteImage.className = "musorka";
-  deleteImage.src = "/static/images/Мусорка.png";
-  deleteImage.alt = "delete";
-  deleteImage.classList.add("created");
-
-  // Добавляем элементы в иерархию
-  deleteClientButton.appendChild(deleteImage);
-  headerDiv.appendChild(nameInput);
-  headerDiv.appendChild(pElement);
-  headerDiv.appendChild(quantityInput);
-  headerDiv.appendChild(deleteClientButton);
-  divElement.appendChild(headerDiv);
-
-  const vashZakazDiv = document.createElement("div");
-  vashZakazDiv.className = "vash_zakaz";
-  vashZakazDiv.classList.add("created");
-  divElement.appendChild(vashZakazDiv); // Пустой div для vash_zakaz
-
-  const client_menu = document.createElement("div");
-  client_menu.className = "client-menu";
-  client_menu.classList.add("created");
-  vashZakazDiv.appendChild(client_menu);
-
-  const additional_dishes = document.createElement("div");
-  additional_dishes.className = "additional-dishes";
-  additional_dishes.classList.add("created");
-  vashZakazDiv.appendChild(additional_dishes);
-
-  const client_total_price = document.createElement("div");
-  client_total_price.className = "client-total-price";
-  client_total_price.classList.add("created");
-  var ClientTotalPrice = `Итого:
-              <span class="order-price-count created">0</span>.00 ₽ x
-              <span class="client-quantity created">0</span> человек =
-              <span class="client-price-count created">0</span>.00 ₽`;
-
-  client_total_price.innerHTML = ClientTotalPrice;
-  vashZakazDiv.appendChild(client_total_price);
-
-  var buttonDetails = document.createElement("button");
-  buttonDetails.className = "details-button";
-  buttonDetails.classList.add("created");
-  buttonDetails.textContent = "Меню";
-
-  divElement.appendChild(buttonDetails);
-  // Добавляем созданный элемент в DOM
-  const container = document.getElementById("all_clients"); // Замените "container" на ID родительского контейнера, куда вы хотите добавить элемент
-  container.appendChild(divElement);
-
-  const showFormButton2 = document.createElement("button");
-  showFormButton2.id = "showFormBtn";
-  showFormButton2.className = "formaClienta";
-  showFormButton2.textContent = "+";
-  showFormButton2.addEventListener("click", () => {
-    showFormButton2.remove();
-    // Создаем основной div элемент
-    const divElement = document.createElement("div");
-    divElement.className = "my_client formaClienta menu-client-btn";
-    divElement.classList.add("created");
-    divElement.setAttribute("data-name", "Выберите клиента");
-    localStorage.setItem("current_client_name", "Выберите клиента");
-    // Создаем div для header
-    const headerDiv = document.createElement("div");
-    headerDiv.className = "formaClienta_header";
-
-    // Создаем input для имени
-    const nameInput = document.createElement("input");
-    nameInput.className = "name-input";
-    nameInput.value = "Введите клиента";
-    nameInput.classList.add("created");
-    nameInput.addEventListener("input", function () {
-      const client_id = $(this).data("id");
-      const name = $(this).val();
-      username_id = localStorage.getItem("username_id");
-      socket.send(
-        JSON.stringify({
-          action: "client_name_update",
-          client_id: client_id,
-          current_user_id: username_id,
-          name: name,
-        })
-      );
-    });
-    // Создаем элемент p
-    const pElement = document.createElement("p");
-    pElement.style.fontSize = "10px";
-    pElement.style.display = "inline";
-    pElement.style.color = "#fff";
-    pElement.style.marginBottom = "12px";
-    pElement.textContent = "x";
-
-    // Создаем input для количества
-    const quantityInput = document.createElement("input");
-    quantityInput.className = "quantity-input";
-    quantityInput.value = "1";
-    quantityInput.classList.add("created");
-    quantityInput.setAttribute("pattern", "[A-Za-z]{3}");
-
-    quantityInput.addEventListener("input", function () {
-      const client_id = $(this).data("id");
-      const quantity = Math.max(1, $(this).val()); // Ensure the quantity is not less than 1
-      updateQuantity(client_id, quantity);
-    });
-
-    // Создаем кнопку для удаления клиента
-    const deleteClientButton = document.createElement("button");
-    deleteClientButton.className = "delete-client-btn";
-    deleteClientButton.classList.add("created");
-    // Создаем изображение внутри кнопки
-    const deleteImage = document.createElement("img");
-    deleteImage.className = "musorka";
-    deleteImage.src = "/static/images/Мусорка.png";
-    deleteImage.alt = "delete";
-    deleteImage.classList.add("created");
-
-    // Добавляем элементы в иерархию
-    deleteClientButton.appendChild(deleteImage);
-    headerDiv.appendChild(nameInput);
-    headerDiv.appendChild(pElement);
-    headerDiv.appendChild(quantityInput);
-    headerDiv.appendChild(deleteClientButton);
-    divElement.appendChild(headerDiv);
-
-    const vashZakazDiv = document.createElement("div");
-    vashZakazDiv.className = "vash_zakaz";
-    vashZakazDiv.classList.add("created");
-
-    vashZakazDiv.appendChild(ClientTotalPrice);
-    divElement.appendChild(vashZakazDiv);
-    const container = document.getElementById("all_clients");
-    container.appendChild(divElement);
-
-    const showFormButton2 = document.createElement("button");
-    showFormButton2.id = "showFormBtn";
-    showFormButton2.className = "formaClienta";
-    showFormButton2.textContent = "+";
-    showFormButton2.addEventListener;
-    container.appendChild(showFormButton);
-    username_id = localStorage.getItem("username_id");
-    socket.send(
-      JSON.stringify({
-        action: "added_client",
-        clientName: "Введите клиента",
-        clientCount: 0,
-        current_user_id: username_id,
-      })
-    );
-  });
-  container.appendChild(showFormButton);
+  CreateClient();
   username_id = localStorage.getItem("username_id");
   socket.send(
     JSON.stringify({
@@ -1611,6 +1395,35 @@ var buttonToHighlight = $(
 buttonToHighlight.addClass("highlighted");
 
 const deleteButtons = document.querySelectorAll(".delete-client-btn");
+
+function handleDeleteClientButtonClick(event) {
+  const client_id = event.target.dataset.id; // Получаем id клиента из атрибута data-id
+  username_id = localStorage.getItem("username_id");
+  current_client_id = localStorage.getItem("current_client_id");
+  socket.send(
+    JSON.stringify({
+      action: "client_delete",
+      client_id: client_id,
+      current_user_id: username_id,
+      current_client_id: current_client_id,
+    })
+  );
+}
+
+function handleDeleteMenuButtonClick(event) {
+  const mybutton = event.target; // Получаем элемент, на котором произошло событие (в данном случае, кнопка)
+  const menu_id = mybutton.dataset.id; // Получаем значение data-id из атрибута data-id
+  var username_id = localStorage.getItem("username_id");
+  var current_client_id = mybutton.dataset.clientid;
+  socket.send(
+    JSON.stringify({
+      action: "client_menu_delete",
+      menu_id: menu_id,
+      current_user_id: username_id,
+      client_id: current_client_id,
+    })
+  );
+}
 
 deleteButtons.forEach((button) => {
   button.addEventListener("click", handleDeleteClientButtonClick);

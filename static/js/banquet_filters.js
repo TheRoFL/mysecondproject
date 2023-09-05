@@ -963,6 +963,271 @@ function ChangeChosenStatusAdditional() {
   });
 }
 
+function CreateClient() {
+  showFormButton.remove();
+  // Создаем основной div элемент
+  const divElement = document.createElement("div");
+  divElement.className = "my_client formaClienta menu-client-btn";
+  divElement.classList.add("created");
+  divElement.setAttribute("data-name", "Выберите клиента");
+  localStorage.setItem("current_client_name", "Выберите клиента");
+  // Создаем div для header
+  const headerDiv = document.createElement("div");
+  headerDiv.className = "formaClienta_header";
+
+  // Создаем input для имени
+  const nameInput = document.createElement("input");
+  nameInput.className = "name-input";
+  nameInput.value = "Введите клиента";
+  nameInput.classList.add("created");
+  nameInput.addEventListener("change", function () {
+    const client_id = $(this).data("id");
+    var currentValue = $(this).val();
+    // Проверяем длину введенного текста
+    if (currentValue.length > 15) {
+      // Если длина больше максимальной, обрезаем текст до максимальной длины
+      $(this).val(currentValue.slice(0, 15));
+    }
+    if (currentValue.length == 0) {
+      // Если длина больше максимальной, обрезаем текст до максимальной длины
+      $(this).val("Введите клиента");
+    }
+    const name = $(this).val();
+    username_id = localStorage.getItem("username_id");
+    socket.send(
+      JSON.stringify({
+        action: "client_name_update",
+        client_id: client_id,
+        current_user_id: username_id,
+        name: name,
+      })
+    );
+  });
+
+  nameInput.addEventListener("input", function () {
+    const client_id = $(this).data("id");
+    var currentValue = $(this).val();
+    // Проверяем длину введенного текста
+    if (currentValue.length > 15) {
+      // Если длина больше максимальной, обрезаем текст до максимальной длины
+      $(this).val(currentValue.slice(0, 15));
+    }
+
+    const name = $(this).val();
+    username_id = localStorage.getItem("username_id");
+    socket.send(
+      JSON.stringify({
+        action: "client_name_update",
+        client_id: client_id,
+        current_user_id: username_id,
+        name: name,
+      })
+    );
+  });
+
+  const pElement = document.createElement("p");
+  pElement.style.fontSize = "10px";
+  pElement.style.display = "inline";
+  pElement.style.color = "#fff";
+  pElement.style.marginBottom = "12px";
+  pElement.textContent = "x";
+
+  const quantityInput = document.createElement("input");
+  quantityInput.className = "quantity-input";
+  quantityInput.value = "0";
+  quantityInput.classList.add("created");
+
+  quantityInput.addEventListener("input", function () {
+    const client_id = $(this).data("id");
+    var currentValue = $(this).val();
+    var all_clients = document.querySelectorAll(".quantity-input");
+    // Удаление всех символов, кроме цифр
+    currentValue = currentValue.replace(/\D/g, "");
+
+    var sum = 0;
+    all_clients.forEach(function (input) {
+      sum += parseInt(input.value);
+    });
+
+    if (sum > 2000) {
+      currentValue = 2000 - (sum - parseInt(currentValue));
+    }
+    // Проверяем длину введенного текста
+    if (currentValue.length > 4) {
+      // Если длина больше максимальной, обрезаем текст до максимальной длины
+      currentValue = 2000;
+    }
+
+    const quantity = Math.min(2000, Math.max(0, currentValue)); // Ограничиваем значение до 2000
+    $(this).val(quantity); // Обновляем значение поля ввода
+    updateQuantity(client_id, quantity);
+  });
+
+  // Создаем кнопку для удаления клиента
+  const deleteClientButton = document.createElement("button");
+  deleteClientButton.className = "delete-client-btn";
+  deleteClientButton.classList.add("created");
+  // Создаем изображение внутри кнопки
+  const deleteImage = document.createElement("img");
+  deleteImage.className = "musorka";
+  deleteImage.src = "/static/images/Мусорка.png";
+  deleteImage.alt = "delete";
+  deleteImage.classList.add("created");
+
+  // Добавляем элементы в иерархию
+  deleteClientButton.appendChild(deleteImage);
+  headerDiv.appendChild(nameInput);
+  headerDiv.appendChild(pElement);
+  headerDiv.appendChild(quantityInput);
+  headerDiv.appendChild(deleteClientButton);
+  divElement.appendChild(headerDiv);
+
+  const vashZakazDiv = document.createElement("div");
+  vashZakazDiv.className = "vash_zakaz";
+  vashZakazDiv.classList.add("created");
+  divElement.appendChild(vashZakazDiv); // Пустой div для vash_zakaz
+
+  const client_menu = document.createElement("div");
+  client_menu.className = "client-menu";
+  client_menu.classList.add("created");
+  vashZakazDiv.appendChild(client_menu);
+
+  const additional_dishes = document.createElement("div");
+  additional_dishes.className = "additional-dishes";
+  additional_dishes.classList.add("created");
+  vashZakazDiv.appendChild(additional_dishes);
+
+  const client_total_price = document.createElement("div");
+  client_total_price.className = "client-total-price";
+  client_total_price.classList.add("created");
+  var ClientTotalPrice = `Итого:
+              <span class="order-price-bold">
+              <span class="order-price-count created">
+                0</span>.00 ₽</span> x
+              <span class="client-quantity created">0</span> человек =
+              <span class="order-price-bold">
+              <span class="client-price-count created">0</span>.00 ₽</span>`;
+
+  client_total_price.innerHTML = ClientTotalPrice;
+
+  var buttonDetails = document.createElement("button");
+  buttonDetails.className = "details-button";
+  buttonDetails.classList.add("created");
+  buttonDetails.textContent = "Редактировать";
+
+  MenuAndPriceDiv = document.createElement("div");
+  MenuAndPriceDiv.className = "client-total-price-and-menu-btn";
+
+  MenuAndPriceDiv.append(client_total_price);
+  MenuAndPriceDiv.append(buttonDetails);
+  divElement.appendChild(MenuAndPriceDiv);
+
+  // Добавляем созданный элемент в DOM
+  const container = document.getElementById("all_clients"); // Замените "container" на ID родительского контейнера, куда вы хотите добавить элемент
+  container.appendChild(divElement);
+
+  const showFormButton2 = document.createElement("button");
+  showFormButton2.id = "showFormBtn";
+  showFormButton2.className = "formaClienta";
+  showFormButton2.textContent = "+";
+  showFormButton2.addEventListener("click", () => {
+    showFormButton2.remove();
+    // Создаем основной div элемент
+    const divElement = document.createElement("div");
+    divElement.className = "my_client formaClienta menu-client-btn";
+    divElement.classList.add("created");
+    divElement.setAttribute("data-name", "Выберите клиента");
+    localStorage.setItem("current_client_name", "Выберите клиента");
+    // Создаем div для header
+    const headerDiv = document.createElement("div");
+    headerDiv.className = "formaClienta_header";
+
+    // Создаем input для имени
+    const nameInput = document.createElement("input");
+    nameInput.className = "name-input";
+    nameInput.value = "Введите клиента";
+    nameInput.classList.add("created");
+    nameInput.addEventListener("input", function () {
+      const client_id = $(this).data("id");
+      const name = $(this).val();
+      username_id = localStorage.getItem("username_id");
+      socket.send(
+        JSON.stringify({
+          action: "client_name_update",
+          client_id: client_id,
+          current_user_id: username_id,
+          name: name,
+        })
+      );
+    });
+    // Создаем элемент p
+    const pElement = document.createElement("p");
+    pElement.style.fontSize = "10px";
+    pElement.style.display = "inline";
+    pElement.style.color = "#fff";
+    pElement.style.marginBottom = "12px";
+    pElement.textContent = "x";
+
+    // Создаем input для количества
+    const quantityInput = document.createElement("input");
+    quantityInput.className = "quantity-input";
+    quantityInput.value = "1";
+    quantityInput.classList.add("created");
+    quantityInput.setAttribute("pattern", "[A-Za-z]{3}");
+
+    quantityInput.addEventListener("input", function () {
+      const client_id = $(this).data("id");
+      const quantity = Math.max(1, $(this).val()); // Ensure the quantity is not less than 1
+      updateQuantity(client_id, quantity);
+    });
+
+    // Создаем кнопку для удаления клиента
+    const deleteClientButton = document.createElement("button");
+    deleteClientButton.className = "delete-client-btn";
+    deleteClientButton.classList.add("created");
+    // Создаем изображение внутри кнопки
+    const deleteImage = document.createElement("img");
+    deleteImage.className = "musorka";
+    deleteImage.src = "/static/images/Мусорка.png";
+    deleteImage.alt = "delete";
+    deleteImage.classList.add("created");
+
+    // Добавляем элементы в иерархию
+    deleteClientButton.appendChild(deleteImage);
+    headerDiv.appendChild(nameInput);
+    headerDiv.appendChild(pElement);
+    headerDiv.appendChild(quantityInput);
+    headerDiv.appendChild(deleteClientButton);
+    divElement.appendChild(headerDiv);
+
+    const vashZakazDiv = document.createElement("div");
+    vashZakazDiv.className = "vash_zakaz";
+    vashZakazDiv.classList.add("created");
+
+    vashZakazDiv.appendChild(ClientTotalPrice);
+    divElement.appendChild(vashZakazDiv);
+    const container = document.getElementById("all_clients");
+    container.appendChild(divElement);
+
+    const showFormButton2 = document.createElement("button");
+    showFormButton2.id = "showFormBtn";
+    showFormButton2.className = "formaClienta";
+    showFormButton2.textContent = "+";
+    showFormButton2.addEventListener;
+    container.appendChild(showFormButton);
+    username_id = localStorage.getItem("username_id");
+    socket.send(
+      JSON.stringify({
+        action: "added_client",
+        clientName: "Введите клиента",
+        clientCount: 0,
+        current_user_id: username_id,
+      })
+    );
+  });
+  container.appendChild(showFormButton);
+}
+
 $("button.dish-filter").on("click", function () {
   var filter = $(this).data("filter"); // Получаем значение data-filter
   localStorage.setItem("dish-filter", filter);

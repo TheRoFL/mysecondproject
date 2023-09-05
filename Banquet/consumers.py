@@ -196,15 +196,7 @@ class BanquetConsumer(WebsocketConsumer):
 
             current_menu = get_object_or_404(MenuSample, id=current_menu_id)
             current_client = get_object_or_404(Client, id=current_client_id)
-
-            previous_menu_id = None
-            try:
-                previous_menu_id = current_client.menu.id
-            except Exception as e:
-                previous_menu_id = None
-                print(e)
-
-                
+               
                            
             current_client.menu = current_menu
             current_client.save()
@@ -213,8 +205,23 @@ class BanquetConsumer(WebsocketConsumer):
             
             current_menu_name = current_menu.type
             current_menu_dishes = []
-            for dish in current_menu.dishes.all():
-                current_menu_dishes.append(dish.print_order())
+            for current_dish in current_menu.dishes.all():
+                current_dish_data = {
+                    'id': current_dish.product.id,
+                    'name': current_dish.product.name,
+                    'tittle': current_dish.product.name,
+                    'description': current_dish.product.discription,
+                    'ingredients': current_dish.product.ingredients,
+                    'price': int(current_dish.product.price),
+                    'weight': current_dish.product.weight,
+                    'image': current_dish.product.image.url,
+                    'sostav':current_dish.product.ingredients,
+                    'type':current_dish.product.type,
+                }
+                current_dish_data = json.dumps(current_dish_data)
+                current_menu_dishes.append(current_dish_data)
+
+            current_menu_dishes = json.dumps(current_menu_dishes)
 
             response = {
                         'action': "menu_added",
@@ -222,7 +229,6 @@ class BanquetConsumer(WebsocketConsumer):
                         'current_banquet_id': current_banquet.id,
                         'current_menu_dishes': current_menu_dishes,
                         'current_menu_name': current_menu_name,
-                        'previous_menu_id': previous_menu_id,
                         'current_menu_id': current_menu.id,
                         'menu_total_price_count':current_menu.all_dishes_price(),
                         'order_total_price': current_client.total_client_price(),
@@ -462,16 +468,12 @@ class BanquetConsumer(WebsocketConsumer):
                 
                 self.send_response(response)
             else:
-                orders_left = current_client.dishes.all()
-                if not orders_left:
-                    orders_left = json.dumps(False)
-                else: orders_left = json.dumps(True)
+
 
                 response = {"action":"order_deleted", 
                             "order_id": current_dish_order.id,
                             'dish_id':current_dish_order.product.id,
                             'dish_name':current_dish_order.product.name,
-                            'orders_left':orders_left,
                             'order_total_price': current_client.total_client_price(),
                             'client_total_price': current_client.menu_and_orders_price_count(),
                             'client_id':current_client.id,
@@ -479,6 +481,11 @@ class BanquetConsumer(WebsocketConsumer):
                             'total_banquet_price':current_banquet.total_price()
                             }
                 current_dish_order.delete()
+                orders_left = current_client.dishes.all()
+                if not orders_left:
+                    orders_left = json.dumps(False)
+                else: orders_left = json.dumps(True)
+                response["orders_left"] = orders_left
                 self.send_response(response)
 
         elif action == "client_additional_clear":
