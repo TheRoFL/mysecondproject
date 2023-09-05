@@ -579,6 +579,7 @@ class BanquetConsumer(WebsocketConsumer):
                         'current_dish_data': current_dish_data,
                         'current_dish_order_data': current_dish_order_data,
                         'current_dish_order_name': current_dishorder.product.name,
+                        'additional_price':current_banquet.total_price_additional(),
                         'current_banquet_id': current_banquet.id,
                         'client_dishOrder_quantity': current_dishorder.quantity,
                         'client_dishOrder_price_count':current_dishorder.price_count(),
@@ -598,6 +599,7 @@ class BanquetConsumer(WebsocketConsumer):
             response = {
                             "action":"banquet_additional_cleared", 
                             'banqet_id':current_banquet.id,
+                            'additinal_price':current_banquet.total_price_additional(),
                             'total_banquet_price': current_banquet.total_price()
                         }
             
@@ -614,6 +616,7 @@ class BanquetConsumer(WebsocketConsumer):
                             "action":"additional_order_increased_additional",
                             'current_dish_order_id':current_dish_order.id,
                             'new_quantity':current_dish_order.quantity,
+                            'additinal_price':current_banquet.total_price_additional(),
                             'banqet_id':current_banquet.id,
                             'current_dish_order_price_count':current_dish_order.price_count(),
                             'total_banquet_price': current_banquet.total_price()
@@ -631,9 +634,10 @@ class BanquetConsumer(WebsocketConsumer):
             current_banquet = Banquet.objects.get(owner=current_user_profiledata, is_ordered=False)
 
             if current_dish_order.quantity > 0:
-                response = {"action":"additional_order_increased_additional",
+                response = {"action":"additional_order_decreased_additional",
                             'current_dish_order_id':current_dish_order.id,
                             'new_quantity':current_dish_order.quantity,
+                            'additinal_price':current_banquet.total_price_additional(),
                             'banqet_id':current_banquet.id,
                             'current_dish_order_price_count':current_dish_order.price_count(),
                             'total_banquet_price': current_banquet.total_price()
@@ -641,20 +645,22 @@ class BanquetConsumer(WebsocketConsumer):
                 
                 self.send_response(response)
             else:
-                orders_left = current_banquet.additional.all()
-                if not orders_left:
-                    orders_left = json.dumps(False)
-                else: orders_left = json.dumps(True)
-
                 response = {"action":"order_deleted", 
                             "order_id": current_dish_order.id,
                             'dish_id':current_dish_order.product.id,
                             'dish_name':current_dish_order.product.name,
-                            'orders_left':orders_left,
+                            'additinal_price':current_banquet.total_price_additional(),
                             'banqet_id':current_banquet.id,
                             'total_banquet_price':current_banquet.total_price()
                             }
                 current_dish_order.delete()
+
+                orders_left = current_banquet.additional.all()
+                if not orders_left:
+                    orders_left = json.dumps(False)
+                else: orders_left = json.dumps(True)
+                response["orders_left"] = orders_left
+
                 self.send_response(response)
 
         elif action == "additional_order_quantity_change":
@@ -673,6 +679,7 @@ class BanquetConsumer(WebsocketConsumer):
                                 'current_dish_order_id':current_dish_order.id,
                                 'new_quantity':current_dish_order.quantity,
                                 'banqet_id':current_banquet.id,
+                                'additinal_price':current_banquet.total_price_additional(),
                                 'current_dish_order_price_count':current_dish_order.price_count(),
                                 'total_banquet_price': current_banquet.total_price()
                             }
@@ -680,24 +687,19 @@ class BanquetConsumer(WebsocketConsumer):
                 self.send_response(response)
 
             elif new_quantity == 0:
-                orders_left = current_banquet.additional.all()
-                if not orders_left:
-                    orders_left = json.dumps(False)
-                else: orders_left = json.dumps(True)
-
                 response = {"action":"order_deleted", 
                             'dish_id':current_dish_order.product.id,
                             "order_id": current_dish_order.id,
-                            'orders_left':orders_left,
                             'banqet_id':current_banquet.id,
+                            'additinal_price':current_banquet.total_price_additional(),
                             'total_banquet_price':current_banquet.total_price()
                             }
 
                 current_dish_order.delete()
                 is_left = current_banquet.additional.all()
-                if is_left: is_left = True
-                else: is_left = False
-                response["is_left"] = is_left
+                if is_left: is_left = "true"
+                else: is_left = "false"
+                response["orders_left"] = is_left
                 response["current_banquet_additional_price"] = current_banquet.total_price_additional(),
                 response['total_banquet_price'] = current_banquet.total_price()
                 self.send_response(response)

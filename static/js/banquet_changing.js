@@ -450,7 +450,7 @@ socket.onmessage = function (e) {
       clientOrdersElement.remove();
       if (data.orders_left == "false") {
         var clientAdditional = document.querySelector(
-          `.additional-dishes[data-id="${client_id}"]`
+          `.additional-dishes[data-banquet-id="${data.banqet_id}"]`
         );
         while (clientAdditional.firstChild) {
           clientAdditional.removeChild(clientAdditional.firstChild);
@@ -466,11 +466,11 @@ socket.onmessage = function (e) {
     }
 
     const new_client_total_price = document.querySelector(
-      `span.client-price-count[data-id="${data.client_id}"]`
+      `span.order-price-count-additional[data-id="${data.banqet_id}"]`
     );
     if (new_client_total_price) {
       new_client_total_price.textContent = formatInteger(
-        parseInt(data.client_total_price)
+        parseInt(data.additinal_price)
       );
     }
 
@@ -916,6 +916,9 @@ socket.onmessage = function (e) {
         );
       });
     }
+
+    var AddPrice = document.querySelector(`.order-price-count-additional`);
+    AddPrice.textContent = formatInteger(data["additional_price"]);
   } else if (action == "new_dish_added") {
     var dish_data = data["current_dish_data"];
     dish_data = JSON.parse(dish_data);
@@ -1077,11 +1080,16 @@ socket.onmessage = function (e) {
       adittionalDish.remove();
     }
 
+    if (data["is_left"] == false) {
+      var to_delete = document.querySelector(`.additional-dishes-sign`);
+      to_delete.remove();
+    }
     var orderPriceCountAdditional = document.querySelector(
       `.order-price-count-additional[data-id="${data["banqet_id"]}"`
     );
-    orderPriceCountAdditional.textContent =
-      data["current_banquet_additional_price"][0];
+    orderPriceCountAdditional.textContent = formatInteger(
+      parseInt(data["current_banquet_additional_price"][0])
+    );
     var banquetTotalPrice = document.querySelector(
       `.banquet-total-price[data-id="${data["banqet_id"]}"]`
     );
@@ -1154,6 +1162,16 @@ socket.onmessage = function (e) {
         additionalDishes.removeChild(additionalDishes.firstChild);
       }
     }
+    var additional_order_price = document.querySelector(
+      `.order-price-count-additional[data-id="${data.banqet_id}"]`
+    );
+    additional_order_price.textContent = formatInteger(
+      parseInt(data.additinal_price)
+    );
+
+    var banquet_total = document.querySelector(`.banquet-total-price`);
+    banquet_total.textContent =
+      formatInteger(parseInt(data.total_banquet_price)) + ".00 ₽";
   } else if (
     action == "additional_order_increased_additional" ||
     action == "additional_order_decreased_additional"
@@ -1179,11 +1197,22 @@ socket.onmessage = function (e) {
     }
 
     var client_order_price = document.querySelector(
-      `.order-price-count-additional[data-id="${data.banqet_id}"]`
+      `.client_order_price[data-order-id="${data.current_dish_order_id}"]`
     );
     client_order_price.textContent = formatInteger(
       parseInt(data.current_dish_order_price_count)
     );
+
+    var additional_order_price = document.querySelector(
+      `.order-price-count-additional[data-id="${data.banqet_id}"]`
+    );
+    additional_order_price.textContent = formatInteger(
+      parseInt(data.additinal_price)
+    );
+
+    var banquet_total = document.querySelector(`.banquet-total-price`);
+    banquet_total.textContent =
+      formatInteger(parseInt(data.total_banquet_price)) + ".00 ₽";
   }
 
   if (
