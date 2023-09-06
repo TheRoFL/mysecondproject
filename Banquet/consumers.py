@@ -1,4 +1,5 @@
 import json
+import time
 from django.shortcuts import get_object_or_404
 from channels.generic.websocket import WebsocketConsumer
 from django.contrib.auth.models import User
@@ -9,6 +10,13 @@ import uuid
 from django.core import serializers
 class BanquetConsumer(WebsocketConsumer):
     def connect(self):
+        self.rate_limit = 10
+        self.rate_limit_period = 1  # в секундах
+        self.block_duration = 1  # в секундах
+        self.request_count = 0
+        self.last_request_time = None
+        self.is_blocked = False  # Флаг блокировки
+    
         self.accept()
         # Генерируем уникальный идентификатор клиента
         self.client_id = str(uuid.uuid4())
@@ -21,6 +29,25 @@ class BanquetConsumer(WebsocketConsumer):
 
     # Receive message from WebSocket
     def receive(self, text_data):
+
+        # Проверьте, прошло ли достаточно времени с момента последнего запроса
+        current_time = time.time()
+        if self.last_request_time is None or \
+           (current_time - self.last_request_time) > self.rate_limit_period:
+            # Сбросите счетчик запросов и установите новое время
+            self.request_count = 1
+            self.last_request_time = current_time
+        else:
+            # Увеличьте счетчик запросов
+            self.request_count += 1
+
+        # Проверьте, не превышен ли лимит запросов
+        if self.request_count <= self.rate_limit:
+            pass
+        else:
+            time.sleep(self.block_duration)
+            self.send(json.dumps("Rate limit exceeded, access blocked for 1 second"))
+
         additional_response = {}
         data = json.loads(text_data)
         print(data)

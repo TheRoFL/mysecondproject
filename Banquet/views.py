@@ -21,11 +21,13 @@ from reportlab.lib.units import cm
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 
-
+from django_ratelimit.decorators import ratelimit
 
 
 
 @login_required(login_url='/login/')
+@ratelimit(key='ip', rate='600/m', method='POST', block=True)
+@ratelimit(key='ip', rate='600/m', method='GET', block=True)
 def home(request, dish_type=None, clientId=None):
     clientId = request.GET.get('editting-clientId')
     if clientId == "null":
@@ -146,7 +148,8 @@ def home(request, dish_type=None, clientId=None):
    
     return render(request, 'Banquet/home.html', contex)    
 
-
+@ratelimit(key='ip', rate='600/m', method='POST', block=True)
+@ratelimit(key='ip', rate='600/m', method='GET', block=True)
 def ordering(request):
     try:
         current_user = User.objects.get(id=request.user.id)

@@ -569,12 +569,18 @@ function LoadMenu(filter = null, name = null) {
           });
         }
 
-        if (jsonData[0] == null) {
-          var noResults = $("<h1 class='no-results'>").text(
-            "По вашему запросу ничего не найдено!"
-          );
-          $(".grid-container").append(noResults);
+        if (!jsonData["current_menu"]) {
+          document.getElementById("dish-search").style.display = "inline-block";
+          if (jsonData[0] == null) {
+            var noResults = $("<h1 class='no-results'>").text(
+              "По вашему запросу ничего не найдено!"
+            );
+            $(".grid-container").append(noResults);
+          }
+        } else {
+          document.getElementById("dish-search").style.display = "none";
         }
+
         const orderButtons = document.querySelectorAll(".order-button");
         var is_addit = localStorage.getItem("is_additional");
         if (is_addit == "false") {
@@ -687,13 +693,6 @@ function LoadMenu(filter = null, name = null) {
             y.classList.add("hidden");
           });
         }
-
-        document.addEventListener("keydown", (e) => {
-          if (e.code == "Escape") {
-            x.classList.add("hidden");
-            y.classList.add("hidden");
-          }
-        });
 
         var animate_orderButtons = document.querySelectorAll(".order-button");
         animate_orderButtons.forEach((button) => {

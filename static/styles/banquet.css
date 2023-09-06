@@ -30,6 +30,11 @@ input {
   width: 300px;
 }
 
+input[disabled] {
+  cursor: not-allowed; /* Опционально: изменяет курсор на "не доступно" */
+  /* Добавьте здесь другие стили, если необходимо */
+}
+
 .main-grid-container {
   display: grid;
   padding: 3% 3%;
