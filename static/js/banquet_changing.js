@@ -491,8 +491,10 @@ socket.onmessage = function (e) {
             common_additional.removeChild(common_additional.firstChild);
           }
         }
-        while (clientAdditional.firstChild) {
-          clientAdditional.removeChild(clientAdditional.firstChild);
+        if (data.additinal_price >= 0) {
+          while (clientAdditional.firstChild) {
+            clientAdditional.removeChild(clientAdditional.firstChild);
+          }
         }
       }
     }
@@ -2128,6 +2130,11 @@ detailsButtonAdditional_.addEventListener("click", function () {
   localStorage.setItem("current_client_name", "Дополнительные блюда");
   x1.classList.remove("hidden2");
   y1.classList.remove("hidden2");
+
+  var my_client_additional = document.querySelector(
+    `.my_client[data-id="additional"]`
+  );
+  my_client_additional.classList.add("active");
 });
 
 document.addEventListener("keydown", (e) => {
@@ -2150,14 +2157,19 @@ y1.addEventListener("click", () => {
   }, 1);
   x1.classList.add("hidden2");
   y1.classList.add("hidden2");
+
+  var my_client_additional = document.querySelector(
+    `.my_client[data-id="additional"]`
+  );
+  my_client_additional.classList.remove("active");
 });
 
-if (
-  /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
-    navigator.userAgent
-  )
-) {
-  console.log("С телефона");
-} else {
-  console.log("С пк");
-}
+// if (
+//   /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+//     navigator.userAgent
+//   )
+// ) {
+//   console.log("С телефона");
+// } else {
+//   console.log("С пк");
+// }

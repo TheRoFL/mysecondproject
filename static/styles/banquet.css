@@ -689,7 +689,8 @@ input[type="submit"]:active {
 .order-sep-button:hover,
 .order-button:hover,
 .order-menu-button:hover,
-.details-button:hover {
+.details-button:hover,
+.details-button-additional:hover {
   transform: scale(1.1);
 }
 

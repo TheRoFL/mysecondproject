@@ -105,45 +105,57 @@ def home(request, dish_type=None, clientId=None):
             pass
      
     
-    # для generate_pdf(order, dishes)
-    # client_data = []
-    # for client in banquet.clients.all():
-    #     client_dishes = {}
-    #     total = 0
-    #     if client.menu:
-    #         for menu_dish in client.menu.dishes.all():
-    #             total += int(menu_dish.product.price)
-    #     if client.dishes.all():
-    #         for dish in client.dishes.all():
-    #             client_dishes[dish.product.id] = dish.quantity
-    #             total += int(dish.product.price) * dish.quantity
-    #     if client.menu: menu = client.menu.id
-    #     else: menu=None
-    #     client_type = client.type
-    #     client_data.append({
-    #         client_type: {
-    #             'quantity': client.quantity,
-    #             'menu': menu,
-    #             'additional': client_dishes,
-    #             'total': total
-    #         }
-    #     })
+    client_data = []
+    for client in banquet.clients.all():
+        client_dishes = {}
+        total = 0
+        if client.menu:
+            for menu_dish in client.menu.dishes.all():
+                total += int(menu_dish.product.price)
+        if client.dishes.all():
+            for dish in client.dishes.all():
+                client_dishes[dish.product.id] = dish.quantity
+                total += int(dish.product.price) * dish.quantity
+        if client.menu: menu = client.menu.id
+        else: menu=None
+        client_type = client.type
+        client_data.append({
+            client_type: {
+                'quantity': client.quantity,
+                'menu': menu,
+                'additional': client_dishes,
+                'total': total
+            }
+        })
 
-    # banquet_cost = banquet.total_price()
+    additional_dishes = {}
+    for additional_dish in banquet.additional.all():
+            additional_dishes[additional_dish.product.id] = additional_dish.quantity
 
-    # dishes = {}
-    # for dish in Dish.objects.all():
-    #     dishes[dish.id] = dict(name=dish.name, price=int(dish.price), qauntity=1)
 
-    # order = {
-    # 'type':'Банкет',
-    # 'clients':client_data,
-    # 'price': banquet_cost,
-    # 'waiters': int(banquet.quantity_count() / 20),
-    # 'client_quantity' : banquet.quantity_count()
-    # }
+    banquet_cost = banquet.total_price()
+
+    dishes = {}
+    for dish in Dish.objects.all():
+        dishes[dish.id] = dict(name=dish.name, price=int(dish.price), qauntity=1)
+
+    order = {
+    'type':'Банкет',
+    'clients':client_data,
+    'additional':additional_dishes,
+    'price': banquet_cost,
+    'waiters': int(banquet.quantity_count() / 20),
+    'client_quantity' : banquet.quantity_count()
+    }
            
-    # # generate_pdf(order, dishes)
+    menus = {}
+    for mune in MenuSample.objects.all():
+        all_mune_dishes = []
+        for mune_dish in mune.dishes.all():
+            all_mune_dishes.append(mune_dish.id)
+        menus[mune.id] = all_mune_dishes
+
+    generate_pdf(order, dishes, menus)
 
    
     return render(request, 'Banquet/home.html', contex)    
@@ -285,7 +297,8 @@ def ordering(request):
     return render(request, 'Banquet/ordering.html', contex)       
 
    
-def generate_pdf(order, dishes, menus, duration):
+def generate_pdf(order, dishes, menus, duration=3):
+    print(order)
     def format_integer(integer):
         if isinstance(integer, int):
             integer_str = "{:,}".format(integer)  # Преобразование числа в строку с разделением тысяч
@@ -358,7 +371,7 @@ def generate_pdf(order, dishes, menus, duration):
                         menu_dish_data = dishes[menu_dish]
                         menu_dish = f'{menu_dish_data["name"]}'  + ' x '
                         menu_dish += f'{menu_dish_data["qauntity"]}' + ' шт. = '
-                        menu_dish += f'{menu_dish_data["price"] * menu_dish_data["qauntity"]}' + ".00 руб."
+                        menu_dish += f'{menu_dish_data["price"] * menu_dish_data["qauntity"]}' + ".00 ₽."
                         doc.append(Paragraph(menu_dish, styles["ClientDish"]))
 
 
@@ -370,24 +383,35 @@ def generate_pdf(order, dishes, menus, duration):
                     for additional_dish in client_data["additional"]:
                         dish = f'{dishes[additional_dish]["name"]}'  + ' x '
                         dish += f'{client_data["additional"][additional_dish]}' + ' шт. = '
-                        dish += f'{dishes[additional_dish]["price"] * client_data["additional"][additional_dish]}' + ".00 руб."
+                        dish += f'{dishes[additional_dish]["price"] * client_data["additional"][additional_dish]}' + ".00 ₽"
                         doc.append(Paragraph(dish, styles["ClientDish"]))
                         doc.append(Spacer(1, 2))
 
                 total = client_data["total"]
-                subtotal = f'Подытог: {client_data["total"]}.00 руб. x {client_data["quantity"]} шт. = {format_integer(total * client_data["quantity"])}.00 руб.'
+                subtotal = f'Подытог: {client_data["total"]}.00 ₽ x {client_data["quantity"]} чел. = {format_integer(total * client_data["quantity"])}.00 ₽'
                 doc.append(Paragraph(subtotal, styles["AdditionalDishes"]))
                     
                 doc.append(Spacer(1, 5))
+
+        doc.append(Spacer(1, 10))
+        doc.append(Paragraph(f'Дополнительно к заказу:', styles["Client"]))
+        doc.append(Spacer(1, 10))
+        for dish_id, quantity in order["additional"].items():
+            dish = f'{dishes[dish_id]["name"]}'  + ' x '
+            dish += f'{quantity}' + ' шт. = '
+            additional_dish_price = dishes[dish_id]["price"] * quantity
+            dish += f'{format_integer(additional_dish_price)}' + ".00 ₽"
+            doc.append(Paragraph(dish, styles["ClientDish"]))
+            doc.append(Spacer(1, 2))
 
         doc.append(Spacer(1, 20))
         waiters = order['waiters']
         waiter_salary = 400
         service = waiters * waiter_salary * duration
-        doc.append(Paragraph(f'Обслуживаение: {waiters} официантов x {waiter_salary}.00 руб./час * {duration} ч. = {format_integer(service)}.00 руб.',
+        doc.append(Paragraph(f'Обслуживаение: {waiters} официантов x {waiter_salary}.00 ₽/час * {duration} ч. = {format_integer(service)}.00 ₽',
                             styles["Waiters"]))
         doc.append(Spacer(1, 10))
-        doc.append(Paragraph(f'Итого: {format_integer(int(order["price"]) + int(service))}.00 руб.', styles["Client"]))
+        doc.append(Paragraph(f'Итого: {format_integer(int(order["price"]) + int(service))}.00 ₽', styles["Client"]))
         return doc
 
     document = []   
