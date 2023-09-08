@@ -70,9 +70,8 @@ function updateClientsList(data) {
     );
   }
 
-  deleteButtons.forEach((button) => {
-    button.addEventListener("click", handleDeleteClientButtonClick);
-  });
+  const lastDeleteButton = deleteButtons[deleteButtons.length - 1];
+  lastDeleteButton.addEventListener("click", handleDeleteClientButtonClick);
 
   const quantity_inputs = document.querySelectorAll(".quantity-input");
   function quantity_input_change() {
@@ -502,7 +501,14 @@ socket.onmessage = function (e) {
       `span.order-price-count[data-id="${data.client_id}"]`
     );
     if (new_OrderTotalPrice) {
-      new_OrderTotalPrice.textContent = data.order_total_price;
+      new_OrderTotalPrice.textContent = formatInteger(data.order_total_price);
+    }
+
+    const clientPriceCount = document.querySelector(
+      `span.client-price-count[data-id="${data.client_id}"]`
+    );
+    if (clientPriceCount) {
+      clientPriceCount.textContent = formatInteger(data.client_total_price);
     }
 
     const new_client_total_price = document.querySelector(
@@ -923,7 +929,9 @@ socket.onmessage = function (e) {
   <div class="adittional-dish-item">
   ${dish_tittle}
     <div class="client-order-price">
-      <span class="client_order_price" data-id="${client_id2}" data-order-id="${order_id}" id="${order_id}">${dish_price}</span>.00 ₽ ·
+      <span class="client_order_price" data-id="${client_id2}" data-order-id="${order_id}" id="${order_id}">${formatInteger(
+      dish_price
+    )}</span>.00 ₽ ·
       <span class="dish-weight">${dish_weight} гр.</span>
     </div>
   </div>
@@ -1270,7 +1278,6 @@ socket.onmessage = function (e) {
       var exit = document.getElementById(
         "overflow3" + adittionalDish.getAttribute("data-id")
       );
-      console.log("overflow3" + adittionalDish.getAttribute("data-id"));
       exit.addEventListener("click", () => {
         x = document.getElementById(
           "overflow3" + adittionalDish.getAttribute("data-id")
@@ -1340,7 +1347,6 @@ socket.onmessage = function (e) {
     });
   } else if (action == "dish_added") {
     var newQuantity = data.client_dishOrder_quantity;
-    var client_dishOrder_price_count = data.client_dishOrder_price_count;
     var current_dish_order_id = data.current_dish_order_id;
 
     var clientContainer = document.getElementById(data.client_id);
@@ -1349,7 +1355,9 @@ socket.onmessage = function (e) {
         `span.client_order_price[id="${current_dish_order_id}"]`
       );
 
-      clientOrderPriceElement.textContent = data.client_dishOrder_price_count;
+      clientOrderPriceElement.textContent = formatInteger(
+        parseInt(data.client_dishOrder_price_count)
+      );
 
       const clientOrderQuantity = document.querySelector(
         `span.client_order_quantity[id="${current_dish_order_id}"]`
@@ -1535,7 +1543,9 @@ socket.onmessage = function (e) {
     );
 
     if (OrderTotalPrice) {
-      OrderTotalPrice.textContent = data.order_total_price;
+      OrderTotalPrice.textContent = formatInteger(
+        parseInt(data.order_total_price)
+      );
     }
 
     const order_total_price = document.querySelector(
@@ -1543,7 +1553,9 @@ socket.onmessage = function (e) {
     );
 
     if (order_total_price) {
-      order_total_price.textContent = data.order_total_price;
+      order_total_price.textContent = formatInteger(
+        parseInt(data.order_total_price)
+      );
     }
 
     const client_price_count = document.querySelector(
@@ -1596,7 +1608,7 @@ showFormButton.addEventListener("click", () => {
   socket.send(
     JSON.stringify({
       action: "added_client",
-      clientName: "Введите клиента",
+      clientName: "Шаблон клиента",
       clientCount: 0,
       current_user_id: username_id,
     })
@@ -1656,7 +1668,7 @@ $(".name-input").on("change", function () {
   const client_id = $(this).data("id");
 
   if (currentValue.length == 0) {
-    $(this).val("Введите клиента");
+    $(this).val("Шаблон клиента");
     const name = $(this).val();
 
     username_id = localStorage.getItem("username_id");
@@ -2079,4 +2091,73 @@ if (orderPriceCountAdditional) {
   orderPriceCountAdditional.textContent = formatInteger(
     parseInt(orderPriceCountAdditional.textContent)
   );
+}
+
+const menuButtons = document.querySelectorAll(".vash_zakaz");
+const detailsButtons = document.querySelectorAll(".details-button");
+const x1 = document.querySelector(".menuu");
+const y1 = document.querySelector(".overflow2");
+
+detailsButtons.forEach((button) => {
+  button.addEventListener("click", function () {
+    localStorage.setItem("is_additional", false);
+    localStorage.setItem("current_client_id", button.dataset.id);
+    localStorage.setItem("current_client_name", button.dataset.name);
+    LoadMenu("all");
+    menuButtons.forEach((button) => {
+      var current_client_id = localStorage.getItem("current_client_id");
+      var my_client_form = document.querySelector(
+        `.my_client[data-id="${current_client_id}"]`
+      );
+      if (my_client_form) {
+        my_client_form.classList.add("active");
+      }
+      button.classList.add("active");
+    });
+    x1.classList.remove("hidden2");
+    y1.classList.remove("hidden2");
+  });
+});
+
+const detailsButtonAdditional_ = document.querySelector(
+  ".details-button-additional"
+);
+detailsButtonAdditional_.addEventListener("click", function () {
+  LoadMenu("all", null, true);
+  localStorage.setItem("is_additional", true);
+  localStorage.setItem("current_client_name", "Дополнительные блюда");
+  x1.classList.remove("hidden2");
+  y1.classList.remove("hidden2");
+});
+
+document.addEventListener("keydown", (e) => {
+  if (e.code == "Escape") {
+    x1.classList.add("hidden2");
+    y1.classList.add("hidden2");
+  }
+});
+
+y1.addEventListener("click", () => {
+  var gridContainer = document.querySelector(".grid-container");
+  var chosenClient = document.querySelector(".my_client.active");
+  if (chosenClient) {
+    chosenClient.classList.remove("active");
+  }
+  gridContainer.classList.remove("menu-mode");
+
+  setTimeout(() => {
+    gridContainer.classList.remove("appear");
+  }, 1);
+  x1.classList.add("hidden2");
+  y1.classList.add("hidden2");
+});
+
+if (
+  /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+    navigator.userAgent
+  )
+) {
+  console.log("С телефона");
+} else {
+  console.log("С пк");
 }

@@ -401,10 +401,10 @@ input[type="submit"]:active {
   left: 50%;
   z-index: 10;
   width: 1200px; /* Убираем явное задание ширины */
-  height: 800px; /* Убираем явное задание высоты */
+  height: 80%; /* Убираем явное задание высоты */
   max-width: 90%;
   max-height: 100%;
-  min-width: 910px;
+  min-width: 720px;
   transform: translate(-50%, -50%);
   border-radius: 30px;
   padding: 15px;
@@ -416,14 +416,8 @@ input[type="submit"]:active {
   justify-content: flex-start; /* Исходное значение justify-content */
 }
 
-@media screen and (width < 910px) {
-  .grid-container {
-    justify-content: center; /* Изменяем justify-content на center */
-  }
-}
-
 .menuu::-webkit-scrollbar {
-  width: 0; /* Устанавливаем нулевую ширину */
+  width: 0;
   height: 0;
 }
 
@@ -470,9 +464,8 @@ input[type="submit"]:active {
   flex-wrap: wrap;
   flex-direction: row-reverse;
 
-  /* Добавляем анимацию */
-  opacity: 1; /* Начальное значение прозрачности */
-  transition: opacity 100ms ease-in-out; /* Анимация для свойства opacity */
+  opacity: 1;
+  transition: opacity 100ms ease-in-out;
 }
 
 .grid-container.appear {
@@ -486,7 +479,7 @@ input[type="submit"]:active {
 .grid-container.menu-mode {
   display: flex;
   justify-content: flex-end;
-  padding: 15px 6%;
+  padding: 16px 65px;
   flex-wrap: wrap;
   flex-direction: row-reverse;
   row-gap: 50px;
@@ -794,10 +787,13 @@ input[type="submit"]:active {
 }
 
 .menu-container {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  grid-auto-rows: minmax(50px, auto);
+  display: flex;
+  flex-wrap: wrap;
   gap: 10px;
+}
+
+.menu-container > .menu-item1 {
+  flex-basis: 100%;
 }
 
 .menu-item {
@@ -1096,4 +1092,13 @@ input[type="submit"]:active {
 .adittional-dish-item-button-additional {
   display: flex;
   column-gap: 5px;
+}
+
+@media (width < 1311px) {
+  .grid-container {
+    justify-content: center;
+  }
+  .menu-container {
+    justify-content: center;
+  }
 }

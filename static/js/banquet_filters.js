@@ -968,8 +968,8 @@ function CreateClient() {
   const divElement = document.createElement("div");
   divElement.className = "my_client formaClienta menu-client-btn";
   divElement.classList.add("created");
-  divElement.setAttribute("data-name", "Выберите клиента");
-  localStorage.setItem("current_client_name", "Выберите клиента");
+  divElement.setAttribute("data-name", "Шаблон клиента");
+  localStorage.setItem("current_client_name", "Шаблон клиента");
   // Создаем div для header
   const headerDiv = document.createElement("div");
   headerDiv.className = "formaClienta_header";
@@ -977,7 +977,7 @@ function CreateClient() {
   // Создаем input для имени
   const nameInput = document.createElement("input");
   nameInput.className = "name-input";
-  nameInput.value = "Введите клиента";
+  nameInput.value = "Шаблон клиента";
   nameInput.classList.add("created");
   nameInput.addEventListener("change", function () {
     const client_id = $(this).data("id");
@@ -989,7 +989,7 @@ function CreateClient() {
     }
     if (currentValue.length == 0) {
       // Если длина больше максимальной, обрезаем текст до максимальной длины
-      $(this).val("Введите клиента");
+      $(this).val("Шаблон клиента");
     }
     const name = $(this).val();
     username_id = localStorage.getItem("username_id");
@@ -1135,8 +1135,8 @@ function CreateClient() {
     const divElement = document.createElement("div");
     divElement.className = "my_client formaClienta menu-client-btn";
     divElement.classList.add("created");
-    divElement.setAttribute("data-name", "Выберите клиента");
-    localStorage.setItem("current_client_name", "Выберите клиента");
+    divElement.setAttribute("data-name", "Шаблон клиента");
+    localStorage.setItem("current_client_name", "Шаблон клиента");
     // Создаем div для header
     const headerDiv = document.createElement("div");
     headerDiv.className = "formaClienta_header";
@@ -1144,7 +1144,7 @@ function CreateClient() {
     // Создаем input для имени
     const nameInput = document.createElement("input");
     nameInput.className = "name-input";
-    nameInput.value = "Введите клиента";
+    nameInput.value = "Шаблон клиента";
     nameInput.classList.add("created");
     nameInput.addEventListener("input", function () {
       const client_id = $(this).data("id");
@@ -1218,7 +1218,7 @@ function CreateClient() {
     socket.send(
       JSON.stringify({
         action: "added_client",
-        clientName: "Введите клиента",
+        clientName: "Шаблон клиента",
         clientCount: 0,
         current_user_id: username_id,
       })

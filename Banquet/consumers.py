@@ -365,7 +365,7 @@ class BanquetConsumer(WebsocketConsumer):
                 'action': 'recalc_after_changing',
                 'current_banquet_id':current_banquet.id,
                 'client_id':current_client.id,
-                'order_total_price': current_client.total_client_price() / 2,
+                'order_total_price': current_client.menu_and_orders_price_count() / current_client.quantity,
                 'client_total_price': current_client.menu_and_orders_price_count(), #считает сумму клиента без меню
                 'total_banquet_price': current_banquet.total_price()
             }

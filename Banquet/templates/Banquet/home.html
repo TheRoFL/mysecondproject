@@ -33,9 +33,154 @@
   </h1>
   <div class="body">
     <div class="vseClients" id="all_clients">
-      <!-- prettier-ignore -->
-      {% if banquet.clients.all %} 
-      {% for client in banquet.clients.all %}
+      <div class="banquet-additional-dishes">
+        <div class="banquet-additional-dish-2">
+          <div class="my_client formaClienta menu-client-btn">
+            <div class="formaClienta_header">
+              <div class="extra-dishes">
+                <div class="extra-dishes-text">Дополнительные блюда</div>
+              </div>
+            </div>
+            <div
+              class="vash_zakaz"
+              data-id="{{banquet.id}}"
+              data-name="{{banquet.type}}"
+            >
+              <div class="additional-dishes" data-banquet-id="{{banquet.id}}">
+                {% if banquet.additional.all %}
+                <div class="additional-dishes-sign">
+                  Выбранное дополнительно
+                  <button
+                    class="clear-additional-btn-additional"
+                    data-id="{{banquet.id}}"
+                  >
+                    Очистить
+                  </button>
+                </div>
+                {% for client_dish in banquet.additional.all %}
+                <div class="adittional-dish" data-id="{{client_dish.id}}">
+                  <div class="adittional-dish-item-img">
+                    <img
+                      class="client-img"
+                      data-id="{{client_dish.product.id}}"
+                      data-name="{{client_dish.product.name}}"
+                      data-tittle="{{client_dish.product.create_tittle2}}"
+                      data-weight="{{client_dish.product.weight}}"
+                      data-price="{{client_dish.product.price}}"
+                      data-sostav="{{client_dish.product.ingredients}}"
+                      data-type="{{client_dish.product.type}}"
+                      src="http://localhost:8000/media/{{client_dish.product.image}}"
+                    />
+                  </div>
+                  <div class="adittional-dish-item">
+                    {{client_dish.product.name}}
+                    <div class="client-order-price">
+                      <span
+                        class="client_order_price"
+                        data-id="{{banquet.id}}"
+                        data-order-id="{{client_dish.id}}"
+                        id="{{client_dish.id}}"
+                        >{{client_dish.price_count}}</span
+                      >.00 ₽ ·
+                      <span class="dish-weight"
+                        >{{client_dish.product.weight}} гр.</span
+                      >
+                    </div>
+                  </div>
+                  <div class="adittional-dish-item-button-additional">
+                    <div class="delete-btn-wrapper2-additional">
+                      <button
+                        class="decrease-btn-adittional"
+                        data-id="{{client_dish.id}}"
+                        data-banquetId="{{banquet.id}}"
+                      >
+                        <svg
+                          width="1em"
+                          height="1em"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          xmlns="http://www.w3.org/2000/svg"
+                          class="decrease-btn-svg"
+                        >
+                          <path
+                            fill-rule="evenodd"
+                            clip-rule="evenodd"
+                            d="M6 12a1 1 0 0 0 1 1h10a1 1 0 1 0 0-2H7a1 1 0 0 0-1 1Z"
+                            fill="currentColor"
+                          ></path>
+                        </svg>
+                      </button>
+                      <input
+                        class="dish-number-input-adittional"
+                        data-id="{{banquet.id}}"
+                        data-dish-id="{{client_dish.id}}"
+                        type="text"
+                        value="{{client_dish.quantity}}"
+                      />
+                      <button
+                        class="increase-btn-adittional"
+                        data-id="{{client_dish.id}}"
+                        data-banquetId="{{banquet.id}}"
+                      >
+                        <svg
+                          width="1em"
+                          height="1em"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          xmlns="http://www.w3.org/2000/svg"
+                          class="increase-btn-svg"
+                        >
+                          <path
+                            fill-rule="evenodd"
+                            clip-rule="evenodd"
+                            d="M12 6a1 1 0 0 0-1 1v4H7a1 1 0 1 0 0 2h4v4a1 1 0 1 0 2 0v-4h4a1 1 0 1 0 0-2h-4V7a1 1 0 0 0-1-1Z"
+                            fill="currentColor"
+                          ></path>
+                        </svg>
+                      </button>
+                    </div>
+
+                    <button
+                      class="delete-additional-btn"
+                      data-id="{{client_dish.id}}"
+                    >
+                      <img
+                        data-id="{{client_dish.id}}"
+                        class="musorka-additional"
+                        src="/static/images/trashcan.png"
+                        alt="delete"
+                      />
+                    </button>
+                  </div>
+                </div>
+
+                {% endfor %} {% endif %}
+              </div>
+            </div>
+            <div class="client-total-price-and-menu-btn">
+              <div class="client-total-price">
+                Итого:
+                <span class="order-price-bold">
+                  <span
+                    class="order-price-count-additional"
+                    data-id="{{banquet.id}}"
+                    id="{{banquet.id}}"
+                    >{{banquet.total_price_additional}}</span
+                  >.00 ₽</span
+                >
+              </div>
+              <button
+                class="details-button-additional"
+                data-id="{{banquet.id}}"
+                data-name="Дополнительные блюда"
+              >
+                Редактировать
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% if banquet.clients.all %} {% for client in banquet.clients.all %}
       <div
         class="my_client formaClienta menu-client-btn"
         data-id="{{client.id}}"
@@ -283,153 +428,6 @@
 
       {% endfor %} {% endif %}
       <button id="showFormBtn" class="formaClienta">+</button>
-      <div class="banquet-additional-dishes">
-        <div class="banquet-additional-dish-2">
-          <div class="my_client formaClienta menu-client-btn">
-            <div class="formaClienta_header">
-              <div class="extra-dishes">
-                <div class="extra-dishes-text">Дополнительные блюда</div>
-              </div>
-            </div>
-            <div
-              class="vash_zakaz"
-              data-id="{{banquet.id}}"
-              data-name="{{banquet.type}}"
-            >
-              <div class="additional-dishes" data-banquet-id="{{banquet.id}}">
-                {% if banquet.additional.all %}
-                <div class="additional-dishes-sign">
-                  Выбранное дополнительно
-                  <button
-                    class="clear-additional-btn-additional"
-                    data-id="{{banquet.id}}"
-                  >
-                    Очистить
-                  </button>
-                </div>
-                {% for client_dish in banquet.additional.all %}
-                <div class="adittional-dish" data-id="{{client_dish.id}}">
-                  <div class="adittional-dish-item-img">
-                    <img
-                      class="client-img"
-                      data-id="{{client_dish.product.id}}"
-                      data-name="{{client_dish.product.name}}"
-                      data-tittle="{{client_dish.product.create_tittle2}}"
-                      data-weight="{{client_dish.product.weight}}"
-                      data-price="{{client_dish.product.price}}"
-                      data-sostav="{{client_dish.product.ingredients}}"
-                      data-type="{{client_dish.product.type}}"
-                      src="http://localhost:8000/media/{{client_dish.product.image}}"
-                    />
-                  </div>
-                  <div class="adittional-dish-item">
-                    {{client_dish.product.name}}
-                    <div class="client-order-price">
-                      <span
-                        class="client_order_price"
-                        data-id="{{banquet.id}}"
-                        data-order-id="{{client_dish.id}}"
-                        id="{{client_dish.id}}"
-                        >{{client_dish.price_count}}</span
-                      >.00 ₽ ·
-                      <span class="dish-weight"
-                        >{{client_dish.product.weight}} гр.</span
-                      >
-                    </div>
-                  </div>
-                  <div class="adittional-dish-item-button-additional">
-                    <div class="delete-btn-wrapper2-additional">
-                      <button
-                        class="decrease-btn-adittional"
-                        data-id="{{client_dish.id}}"
-                        data-banquetId="{{banquet.id}}"
-                      >
-                        <svg
-                          width="1em"
-                          height="1em"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          xmlns="http://www.w3.org/2000/svg"
-                          class="decrease-btn-svg"
-                        >
-                          <path
-                            fill-rule="evenodd"
-                            clip-rule="evenodd"
-                            d="M6 12a1 1 0 0 0 1 1h10a1 1 0 1 0 0-2H7a1 1 0 0 0-1 1Z"
-                            fill="currentColor"
-                          ></path>
-                        </svg>
-                      </button>
-                      <input
-                        class="dish-number-input-adittional"
-                        data-id="{{banquet.id}}"
-                        data-dish-id="{{client_dish.id}}"
-                        type="text"
-                        value="{{client_dish.quantity}}"
-                      />
-                      <button
-                        class="increase-btn-adittional"
-                        data-id="{{client_dish.id}}"
-                        data-banquetId="{{banquet.id}}"
-                      >
-                        <svg
-                          width="1em"
-                          height="1em"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          xmlns="http://www.w3.org/2000/svg"
-                          class="increase-btn-svg"
-                        >
-                          <path
-                            fill-rule="evenodd"
-                            clip-rule="evenodd"
-                            d="M12 6a1 1 0 0 0-1 1v4H7a1 1 0 1 0 0 2h4v4a1 1 0 1 0 2 0v-4h4a1 1 0 1 0 0-2h-4V7a1 1 0 0 0-1-1Z"
-                            fill="currentColor"
-                          ></path>
-                        </svg>
-                      </button>
-                    </div>
-
-                    <button
-                      class="delete-additional-btn"
-                      data-id="{{client_dish.id}}"
-                    >
-                      <img
-                        data-id="{{client_dish.id}}"
-                        class="musorka-additional"
-                        src="/static/images/trashcan.png"
-                        alt="delete"
-                      />
-                    </button>
-                  </div>
-                </div>
-
-                {% endfor %} {% endif %}
-              </div>
-            </div>
-            <div class="client-total-price-and-menu-btn">
-              <div class="client-total-price">
-                Итого:
-                <span class="order-price-bold">
-                  <span
-                    class="order-price-count-additional"
-                    data-id="{{banquet.id}}"
-                    id="{{banquet.id}}"
-                    >{{banquet.total_price_additional}}</span
-                  >.00 ₽</span
-                >
-              </div>
-              <button
-                class="details-button-additional"
-                data-id="{{banquet.id}}"
-                data-name="Дополнительные блюда"
-              >
-                Редактировать
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
     </div>
 
     <div class="overflow2 hidden2"></div>
