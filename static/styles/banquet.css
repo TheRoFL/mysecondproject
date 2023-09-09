@@ -80,6 +80,7 @@ input[type="submit"]:active {
 }
 
 .order-sep-button[disabled],
+.order-button-mod[disabled],
 .order-button[disabled] {
   opacity: 0.55;
 }
@@ -137,6 +138,8 @@ input[type="submit"]:active {
   width: 90px;
   border-color: #4a644b;
 }
+
+.delete-btn-wrapper4,
 .delete-btn-wrapper3 {
   display: flex;
   overflow: hidden;
@@ -158,6 +161,14 @@ input[type="submit"]:active {
 
   margin-left: -70px;
 }
+
+.delete-btn-wrapper4 {
+  margin-left: 20px;
+  margin-top: -45px;
+  width: 250px;
+  height: 40px;
+}
+
 .increase-btn2 {
   background-color: #f5f4f2;
   margin-left: 10px;
@@ -274,10 +285,12 @@ input[type="submit"]:active {
 
 .delete-menu-btn:active,
 .delete-btn:active,
+.order-button-mod:active,
 .order-button:active,
 .order-menu-button:active,
 .clear-additional-btn:active,
 .clear-additional-btn-additional:active,
+.menu-filter:active,
 .dish-filter:active {
   transform: scale(0.85);
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
@@ -435,6 +448,7 @@ input[type="submit"]:active {
   display: none;
 }
 
+.menu-filter,
 .dish-filter {
   background-color: #fff;
   color: #4a644b;
@@ -587,6 +601,7 @@ input[type="submit"]:active {
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
 }
 
+.menu-filter.highlighted,
 .dish-filter.highlighted {
   background-color: #4a644b; /* Зеленый цвет фона */
   color: #fff; /* Белый цвет текста */
@@ -616,6 +631,7 @@ input[type="submit"]:active {
   align-self: center;
 }
 .order-sep-button:hover,
+.order-button-mod:hover,
 .order-button:hover,
 .order-menu-button:hover,
 .details-button:hover,
@@ -667,6 +683,10 @@ input[type="submit"]:active {
   animation: fadeIn 0.25s ease-in-out forwards; /* Применяем анимацию при появлении */
 }
 
+.menu-filters.hidden {
+  display: none;
+}
+
 .hidden {
   display: none;
 }
@@ -682,11 +702,13 @@ input[type="submit"]:active {
   }
 }
 
+.menu-filter:hover,
 .dish-filter:hover {
   transform: scale(1.1);
 }
 
 .order-sep-button:hover,
+.order-button-mod:hover,
 .order-button:hover,
 .order-menu-button:hover,
 .details-button:hover,
@@ -695,6 +717,7 @@ input[type="submit"]:active {
 }
 
 .order-sep-button:active,
+.order-button-mod:active,
 .order-button:active,
 .order-menu-button:active,
 .details-button:active,
@@ -990,6 +1013,7 @@ input[type="submit"]:active {
   font-weight: bold;
 }
 
+.order-button-mod,
 .order-button {
   background-color: #4a644b;
   color: white;
@@ -1093,6 +1117,21 @@ input[type="submit"]:active {
 .adittional-dish-item-button-additional {
   display: flex;
   column-gap: 5px;
+}
+
+.flex-mod-img-and-btn {
+  display: flex;
+  gap: 0px;
+  flex-wrap: nowrap;
+  flex-direction: column;
+}
+
+.mod-dish-decription {
+  margin-top: 80px;
+}
+
+.menu-filters {
+  display: flex;
 }
 
 @media (width < 1311px) {

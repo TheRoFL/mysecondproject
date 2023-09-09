@@ -230,7 +230,7 @@ class BanquetConsumer(WebsocketConsumer):
 
             current_banquet = Banquet.objects.get(owner=current_user_profiledata, is_ordered=False)
             
-            current_menu_name = current_menu.type
+            current_menu_name = current_menu.name
             current_menu_dishes = []
             for current_dish in current_menu.dishes.all():
                 current_dish_data = {

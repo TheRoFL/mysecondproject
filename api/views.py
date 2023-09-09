@@ -92,6 +92,7 @@ def ChangeChosenStatusAdditional(request):
 def LoadMenu(request):
     dish_type = request.GET.get('dish-filter')
     dish_name = request.GET.get('dish-name')
+    menu_filter = request.GET.get('menu-filter')
     if dish_type == "all" or dish_type == "null":
         dish_type = "all"
          
@@ -112,13 +113,32 @@ def LoadMenu(request):
             pass
               
     elif dish_type == 'samples':
-        menu_samples = MenuSample.objects.all()
+        if menu_filter:
+            if dish_name != "":
+                 menu_samples = MenuSample.objects.filter(Q(type=menu_filter) &
+                                                          Q(name_tags__icontains=dish_name)|
+                                                          Q(name__icontains=dish_name) )
+            else:
+                menu_samples = MenuSample.objects.filter(type=menu_filter)
+            current_dishes = None
+            if menu_samples == None:
+                menu_samples = MenuSample.objects.all()
+            for menu in menu_samples:
+                for current_dish in menu.dishes.all():
+                    current_dish.product.tittle = current_dish.product.name
+                    current_dish.product.name = current_dish.product.name.replace(" ", "_")
+        else:
+            if dish_name != "":
+                 menu_samples = MenuSample.objects.filter(Q(name_tags__icontains=dish_name) |
+                                                          Q(name__icontains=dish_name))
+            else:
+                menu_samples = MenuSample.objects.all()
 
-        current_dishes = None
-        for menu in menu_samples:
-            for current_dish in menu.dishes.all():
-                current_dish.product.tittle = current_dish.product.name
-                current_dish.product.name = current_dish.product.name.replace(" ", "_")
+            current_dishes = None
+            for menu in menu_samples:
+                for current_dish in menu.dishes.all():
+                    current_dish.product.tittle = current_dish.product.name
+                    current_dish.product.name = current_dish.product.name.replace(" ", "_")
 
     else:
         try:
@@ -149,6 +169,8 @@ def LoadMenu(request):
 
         serialized_menu_dishes = json.dumps(menu_dishes)
 
+    if current_dishes == None:
+        current_dishes = []
     serialized_data = serialize('json', current_dishes)
 
     if serialized_menu_dishes:

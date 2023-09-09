@@ -537,33 +537,62 @@ socket.onmessage = function (e) {
       "data-name": dish_name,
     }).text(`Выбрать для "${current_client_name}"`);
 
-    var orderButtonContainer = $(`.order-btn-container[data-id="${dish_id}"]`);
-    orderButtonContainer.empty();
+    var orderButton2 = $("<button>", {
+      class: "order-button-mod",
+      "data-id": dish_id,
+      "data-name": current_client_name,
+    }).text(`Выбрать для "${current_client_name}"`);
 
+    var orderButtonContainer = $(`.order-btn-container[data-id="${dish_id}"]`);
+    var orderButtonContainer2 = $(
+      `.order-btn-container2[data-id="${dish_id}"]`
+    );
+    orderButtonContainer.empty();
+    orderButtonContainer2.empty();
     orderButtonContainer.append(orderButton);
+    orderButtonContainer2.append(orderButton2);
 
     const orderButtonToAddListener = document.querySelector(
       `.order-button[data-id="${dish_id}"]`
     );
-
+    const orderButtonToAddListener2 = document.querySelector(
+      `.order-button-mod[data-id="${dish_id}"]`
+    );
     if (orderButtonToAddListener) {
       AddBtnAnimation(orderButtonToAddListener);
     }
-
+    if (orderButtonToAddListener2) {
+      AddBtnAnimation(orderButtonToAddListener2);
+    }
     var is_addit = localStorage.getItem("is_additional");
     if (is_addit == "true") {
       orderButtonToAddListener.addEventListener("click", function () {
         handleButtonClickAddittional(this);
       });
+      if (orderButtonToAddListener2) {
+        orderButtonToAddListener2.addEventListener("click", function () {
+          handleButtonClickAddittional(this);
+        });
+      }
     } else {
       orderButtonToAddListener.addEventListener("click", function () {
         handleButtonClick(this);
       });
+      if (orderButtonToAddListener2) {
+        orderButtonToAddListener2.addEventListener("click", function () {
+          handleButtonClick(this);
+        });
+      }
     }
 
     orderButtonToAddListener.addEventListener("click", function () {
       AddBtnAnimation(this);
     });
+    if (orderButtonToAddListener2) {
+      orderButtonToAddListener2.addEventListener("click", function () {
+        AddBtnAnimation(this);
+      });
+    }
   } else if (action === "client_quantity_changed") {
     client_id = data["client_id"];
     banquet_id = data["banquet_id"];
@@ -1457,11 +1486,13 @@ socket.onmessage = function (e) {
     banquetTotalPrice.textContent =
       formatInteger(parseInt(data["total_banquet_price"])) + ".00 ₽";
 
-    const dishNumberInput2 = document.querySelector(
+    const dishNumberInput2 = document.querySelectorAll(
       `.dish-number-input2[data-dish-id="${dishOrder_id}"]`
     );
     if (dishNumberInput2) {
-      dishNumberInput2.textContent = new_quantity;
+      dishNumberInput2.forEach(function (dishNumberInput) {
+        dishNumberInput.textContent = new_quantity;
+      });
     }
   } else if (action == "client_additional_cleared") {
     const additionalDishes = document.querySelector(
@@ -1588,6 +1619,22 @@ socket.onmessage = function (e) {
     );
     CreateQuantityStatusButton(
       container,
+      data.client_id,
+      data.current_dish_order_id,
+      1
+    );
+    const container2 = document.querySelector(
+      `.order-btn-container2[data-id="${current_dish_id}"][data-clientid="${data.client_id}"]`
+    );
+
+    const orderButtonToDelete2 = document.querySelector(
+      `.order-button-mod[data-id="${current_dish_id}"]`
+    );
+    if (orderButtonToDelete2) {
+      orderButtonToDelete2.remove();
+    }
+    CreateQuantityStatusButton(
+      container2,
       data.client_id,
       data.current_dish_order_id,
       1
@@ -1900,7 +1947,8 @@ if (dish_search) {
 
     var name = $(this).val();
     var dish_filter = localStorage.getItem("dish-filter");
-    LoadMenu(dish_filter, name);
+    var menu_filter = localStorage.getItem("menu-filter");
+    LoadMenu(dish_filter, name, menu_filter);
   });
 }
 

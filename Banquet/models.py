@@ -25,13 +25,27 @@ class ClientSampleDishOrder(models.Model):
 class MenuSample(models.Model):
     dishes = models.ManyToManyField(ClientSampleDishOrder)
     quantity = models.PositiveIntegerField()
-    type = models.CharField(max_length=50)
 
+    MENU_TYPE_CHOICES = [
+        ('Новогоднее', 'Новогоднее'),
+        ('Свадебное', 'Свадебное'),
+        ('День рождения', 'День рождения'),
+    ]
+
+    type = models.CharField(
+        max_length=50,
+        choices=MENU_TYPE_CHOICES,
+        default=None, 
+        null=True
+    )
+
+    name = models.CharField(max_length=50, default="Название")
     description = models.TextField()
     rating = models.PositiveIntegerField()
+    name_tags = models.TextField(blank=True, null=True) #тэги меню
 
     def __str__(self):
-        return "Меню " + "''" + str(self.type) + "''" 
+        return "Меню " + "''" + str(self.name) + "''" 
     
     total = 0
     #стоимость меню
@@ -40,6 +54,10 @@ class MenuSample(models.Model):
         for dish in self.dishes.all():
             self.total += int(dish.price_count())
         return self.total
+    
+    # def all_dishes_price(self):
+    #     total = sum(dish.price_count() for dish in self.dishes.all())
+    #     return total
        
 class Client(models.Model):
     dishes = models.ManyToManyField(DishOrder, blank=True)

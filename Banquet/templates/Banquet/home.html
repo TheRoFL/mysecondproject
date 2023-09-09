@@ -478,6 +478,7 @@
         >
           Десерты
         </button>
+
         <div class="dish-search-wrapper" type="text">
           <input
             class="dish-search"
@@ -507,6 +508,18 @@
             </svg>
           </div>
           {% endcomment %}
+        </div>
+
+        <div class="menu-filters hidden">
+          <button class="menu-filter" data-filter="Новогоднее">
+            Новогодние
+          </button>
+
+          <button class="menu-filter" data-filter="Свадебное">Свадебные</button>
+
+          <button class="menu-filter" data-filter="День рождения">
+            День рождения
+          </button>
         </div>
       </div>
       {% if dish_type != 'samples' %}

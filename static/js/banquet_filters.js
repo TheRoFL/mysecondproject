@@ -23,7 +23,8 @@ function CreateQuantityStatusButton(
   container,
   client_id,
   order_id,
-  order_quantity
+  order_quantity,
+  is_mod = false
 ) {
   // Создание обертки для кнопок управления
   const deleteBtnWrapper = document.createElement("div");
@@ -39,7 +40,7 @@ function CreateQuantityStatusButton(
   decreaseBtn.setAttribute("data-clientid", client_id);
 
   const decreaseBtnSvg = document.createElementNS(
-    "http://www.w3.org/2000/svg",
+    "http://www.w3.org/3500/svg",
     "svg"
   );
   decreaseBtnSvg.setAttribute("width", "1em");
@@ -49,7 +50,7 @@ function CreateQuantityStatusButton(
   decreaseBtnSvg.className = "decrease-btn-svg";
 
   const decreaseBtnPath = document.createElementNS(
-    "http://www.w3.org/2000/svg",
+    "http://www.w3.org/3500/svg",
     "path"
   );
   decreaseBtnPath.setAttribute("fill-rule", "evenodd");
@@ -113,7 +114,7 @@ function CreateQuantityStatusButton(
   increaseBtn.setAttribute("data-id", order_id);
   increaseBtn.setAttribute("data-clientid", client_id);
   const increaseBtnSvg = document.createElementNS(
-    "http://www.w3.org/2000/svg",
+    "http://www.w3.org/3500/svg",
     "svg"
   );
   increaseBtnSvg.setAttribute("width", "1em");
@@ -123,7 +124,7 @@ function CreateQuantityStatusButton(
   increaseBtnSvg.className = "increase-btn-svg2";
 
   const increaseBtnPath = document.createElementNS(
-    "http://www.w3.org/2000/svg",
+    "http://www.w3.org/3500/svg",
     "path"
   );
   increaseBtnPath.setAttribute("fill-rule", "evenodd");
@@ -143,8 +144,17 @@ function CreateQuantityStatusButton(
   deleteBtnWrapper2.appendChild(increaseBtn);
   deleteBtnWrapper.appendChild(deleteBtnWrapper2);
 
-  if (container) {
-    container.appendChild(deleteBtnWrapper);
+  if (!is_mod) {
+    if (container) {
+      container.appendChild(deleteBtnWrapper);
+    }
+  } else {
+    const deleteBtnWrapper4 = document.createElement("div");
+    deleteBtnWrapper4.className = "delete-btn-wrapper4";
+    deleteBtnWrapper4.appendChild(decreaseBtn);
+    deleteBtnWrapper4.appendChild(dishNumberInput);
+    deleteBtnWrapper4.appendChild(increaseBtn);
+    // container.appendChild(deleteBtnWrapper4);
   }
 
   var is_addit__ = localStorage.getItem("is_additional");
@@ -365,12 +375,25 @@ function handleSepOrderClick(button) {
   order_sep_button.disabled = true;
 }
 
-function LoadMenu(filter = null, name = null) {
+function LoadMenu(filter = null, name = null, menu_filter = null) {
   localStorage.setItem("dish-filter", filter);
+  const menu_filters = document.querySelector(`.menu-filters`);
+  if (filter != "samples") {
+    setTimeout(function () {
+      menu_filters.classList.add("hidden");
+    }, 10);
+  } else {
+    setTimeout(function () {
+      menu_filters.classList.remove("hidden");
+    }, 100);
+  }
   var requestParams = {
     "dish-filter": filter,
     "dish-name": name,
   };
+  if (menu_filter) {
+    requestParams["menu-filter"] = menu_filter;
+  }
   $.ajax({
     url: "http://127.0.0.1:8000/api/LoadMenu/",
     method: "GET",
@@ -393,6 +416,18 @@ function LoadMenu(filter = null, name = null) {
 
         buttonToHighlight.addClass("highlighted");
 
+        const MenuFilterToUnHighlight =
+          document.querySelectorAll(".menu-filter");
+        MenuFilterToUnHighlight.forEach((button) => {
+          button.classList.remove("highlighted");
+        });
+        var MenuFilterToHighlight = $(
+          'button.menu-filter[data-filter="' + menu_filter + '"]'
+        );
+        if (MenuFilterToHighlight) {
+          MenuFilterToHighlight.addClass("highlighted");
+        }
+
         $(".grid-container").empty();
         var jsonData = data;
         if (jsonData["current_menu"]) {
@@ -400,7 +435,7 @@ function LoadMenu(filter = null, name = null) {
             var MenuGridContainer = $("<div>", { class: "menu-container" });
 
             var h1 = $("<h1>", { class: "menu-item1" });
-            var header = $("<h2>").text(item.fields.type);
+            var header = $("<h2>").text(item.fields.name);
             var current_client_name = localStorage.getItem(
               "current_client_name"
             );
@@ -578,7 +613,7 @@ function LoadMenu(filter = null, name = null) {
             $(".grid-container").append(noResults);
           }
         } else {
-          document.getElementById("dish-search").style.display = "none";
+          // document.getElementById("dish-search").style.display = "none";
         }
 
         const orderButtons = document.querySelectorAll(".order-button");
@@ -614,6 +649,9 @@ function LoadMenu(filter = null, name = null) {
 
         const ws = document.querySelectorAll(".dishes");
         var x, y;
+        var current_client_name = localStorage.getItem("current_client_name");
+        var current_client_id = localStorage.getItem("current_client_id");
+        // console.log(current_client_name);
         for (let i = 0; i < ws.length; i++) {
           var div = `<div class = "overflow hidden" id="${
             "overflow" + ws[i].getAttribute("data-id")
@@ -621,14 +659,18 @@ function LoadMenu(filter = null, name = null) {
               <div class="modWind hidden" id="${
                 "modWind" + ws[i].getAttribute("data-id")
               }">
-                <div class="flex-mod-dish"><img class="dish-img-mod"
-                src="http://localhost:8000/media/menu_images/${ws[
-                  i
-                ].getAttribute("data-type")}/${ws[i].getAttribute(
+                <div class="flex-mod-dish">
+                  <div class="flex-mod-img-and-btn">
+                  <img class="dish-img-mod"
+                  src="http://localhost:8000/media/menu_images/${ws[
+                    i
+                  ].getAttribute("data-type")}/${ws[i].getAttribute(
             "data-tittle"
-          )}.png"
-                </div>
-                <div class="mod-dish-info">
+          )}.png">  
+            
+            </div>                
+                  
+                  <div class="mod-dish-info">
                   <div class="name">${ws[i].getAttribute("data-name")}</div>
                   <div class="grams">${ws[i].getAttribute(
                     "data-weight"
@@ -638,20 +680,32 @@ function LoadMenu(filter = null, name = null) {
                   )} руб</div>
                   <div class="sostav">${ws[i].getAttribute("data-sostav")}</div>
                 </div>
-            </div>
+                  
+                </div>
+                
+           
             <div class="mod-dish-decription">
             <div class="decription">Тут будет описание...</div> 
-            
             </div>
             `;
 
-          //   <button class="order-button mod" data-id="${ws[i].getAttribute(
+          // <div class="order-btn-container2" data-id="${ws[i].getAttribute(
+          //   "data-id"
+          // )}" data-clientid="${current_client_id}">
+          //   <button class="order-button-mod" data-id="${ws[i].getAttribute(
           //     "data-id"
-          //   )}" data-name="${ws[i].getAttribute(
-          //   "data-name"
-          // )}">Выбрать для "${ws[i].getAttribute("data-name")}"</button>
-
+          //   )}"
+          //             data-name="${ws[i].getAttribute("data-name")}">
+          //             Выбрать для "${current_client_name}"</button>
+          // </div>
           document.querySelector("body").insertAdjacentHTML("beforeend", div);
+
+          const orderButtonMod = document.querySelector(
+            `.order-button-mod[data-id="${ws[i].getAttribute("data-id")}"]`
+          );
+          // orderButtonMod.addEventListener("click", function () {
+          //   handleButtonClick(this);
+          // });
 
           ws[i].addEventListener("click", () => {
             const button_id = ws[i].dataset.id;
@@ -858,14 +912,19 @@ function ChangeChosenStatus() {
             const button_to_delete = document.querySelector(
               `.order-button[data-id="${dishId}"]`
             );
-
+            const button_to_delete2 = document.querySelector(
+              `.order-button-mod[data-id="${dishId}"]`
+            );
             const dish_order_id = data[1][dishId];
             const order_quantity = data[2][dish_order_id];
             if (button_to_delete) {
-              button_to_delete.textContent = `Удалить для "${clientName}"`;
+              // button_to_delete.textContent = `Удалить для "${clientName}"`;
 
               const container = document.querySelector(
                 `.order-btn-container[data-id="${dishId}"]`
+              );
+              const container2 = document.querySelector(
+                `.order-btn-container2[data-id="${dishId}"][data-clientid="${clientId}"]`
               );
               CreateQuantityStatusButton(
                 container,
@@ -873,8 +932,19 @@ function ChangeChosenStatus() {
                 dish_order_id,
                 order_quantity
               );
+              CreateQuantityStatusButton(
+                container2,
+                clientId,
+                dish_order_id,
+                order_quantity,
+                true
+              );
               button_to_delete.remove();
               button_to_delete.classList.add("chosen");
+              if (button_to_delete2) {
+                button_to_delete2.remove();
+                button_to_delete2.classList.add("chosen");
+              }
             }
           }
         }
@@ -1048,16 +1118,16 @@ function CreateClient() {
       sum += parseInt(input.value);
     });
 
-    if (sum > 2000) {
-      currentValue = 2000 - (sum - parseInt(currentValue));
+    if (sum > 3500) {
+      currentValue = 3500 - (sum - parseInt(currentValue));
     }
     // Проверяем длину введенного текста
     if (currentValue.length > 4) {
       // Если длина больше максимальной, обрезаем текст до максимальной длины
-      currentValue = 2000;
+      currentValue = 3500;
     }
 
-    const quantity = Math.min(2000, Math.max(0, currentValue)); // Ограничиваем значение до 2000
+    const quantity = Math.min(3500, Math.max(0, currentValue)); // Ограничиваем значение до 3500
     $(this).val(quantity); // Обновляем значение поля ввода
     updateQuantity(client_id, quantity);
   });
@@ -1228,10 +1298,18 @@ function CreateClient() {
 }
 
 $("button.dish-filter").on("click", function () {
-  var filter = $(this).data("filter"); // Получаем значение data-filter
+  var filter = $(this).data("filter");
   localStorage.setItem("dish-filter", filter);
 
   LoadMenu(filter);
+});
+
+$("button.menu-filter").on("click", function () {
+  var filter = "samples";
+  var menu_filter = $(this).data("filter");
+  localStorage.setItem("dish-filter", filter);
+  localStorage.setItem("menu-filter", menu_filter);
+  LoadMenu(filter, null, menu_filter);
 });
 
 var to_delete = document.querySelector(`.dish-filter[data-filter="samples"]`);

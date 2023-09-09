@@ -155,7 +155,7 @@ def home(request, dish_type=None, clientId=None):
             all_mune_dishes.append(mune_dish.id)
         menus[mune.id] = all_mune_dishes
 
-    generate_pdf(order, dishes, menus)
+    # generate_pdf(order, dishes, menus)
 
    
     return render(request, 'Banquet/home.html', contex)    
