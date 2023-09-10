@@ -40,7 +40,7 @@ function CreateQuantityStatusButton(
   decreaseBtn.setAttribute("data-clientid", client_id);
 
   const decreaseBtnSvg = document.createElementNS(
-    "http://www.w3.org/3500/svg",
+    "http://www.w3.org/2000/svg",
     "svg"
   );
   decreaseBtnSvg.setAttribute("width", "1em");
@@ -50,7 +50,7 @@ function CreateQuantityStatusButton(
   decreaseBtnSvg.className = "decrease-btn-svg";
 
   const decreaseBtnPath = document.createElementNS(
-    "http://www.w3.org/3500/svg",
+    "http://www.w3.org/2000/svg",
     "path"
   );
   decreaseBtnPath.setAttribute("fill-rule", "evenodd");
@@ -114,7 +114,7 @@ function CreateQuantityStatusButton(
   increaseBtn.setAttribute("data-id", order_id);
   increaseBtn.setAttribute("data-clientid", client_id);
   const increaseBtnSvg = document.createElementNS(
-    "http://www.w3.org/3500/svg",
+    "http://www.w3.org/2000/svg",
     "svg"
   );
   increaseBtnSvg.setAttribute("width", "1em");
@@ -124,7 +124,7 @@ function CreateQuantityStatusButton(
   increaseBtnSvg.className = "increase-btn-svg2";
 
   const increaseBtnPath = document.createElementNS(
-    "http://www.w3.org/3500/svg",
+    "http://www.w3.org/2000/svg",
     "path"
   );
   increaseBtnPath.setAttribute("fill-rule", "evenodd");
@@ -540,11 +540,13 @@ function LoadMenu(filter = null, name = null, menu_filter = null) {
               });
 
               if (item.fields.name) {
-                var h3 = $("<h3>").html(
-                  `${item.fields.name.replace(/_/g, " ")} / ${
-                    item.fields.price
-                  } ₽`
-                );
+                var h3 = $("<h3>")
+                  .addClass("dish-name-price")
+                  .html(
+                    `${item.fields.name.replace(/_/g, " ")} <br> Цена: ${
+                      item.fields.price
+                    } ₽`
+                  );
               }
 
               var current_client_name = localStorage.getItem(
@@ -659,6 +661,7 @@ function LoadMenu(filter = null, name = null, menu_filter = null) {
               <div class="modWind hidden" id="${
                 "modWind" + ws[i].getAttribute("data-id")
               }">
+              <div class="flex-mod-dish-data">
                 <div class="flex-mod-dish">
                   <div class="flex-mod-img-and-btn">
                   <img class="dish-img-mod"
@@ -666,10 +669,8 @@ function LoadMenu(filter = null, name = null, menu_filter = null) {
                     i
                   ].getAttribute("data-type")}/${ws[i].getAttribute(
             "data-tittle"
-          )}.png">  
-            
-            </div>                
-                  
+          )}.png">   
+            </div>                       
                   <div class="mod-dish-info">
                   <div class="name">${ws[i].getAttribute("data-name")}</div>
                   <div class="grams">${ws[i].getAttribute(
@@ -682,11 +683,12 @@ function LoadMenu(filter = null, name = null, menu_filter = null) {
                 </div>
                   
                 </div>
-                
-           
-            <div class="mod-dish-decription">
-            <div class="decription">Тут будет описание...</div> 
-            </div>
+              
+            
+              <div class="mod-dish-decription">
+              <div class="decription">Тут будет описание...</div> 
+              </div>
+            </div>  
             `;
 
           // <div class="order-btn-container2" data-id="${ws[i].getAttribute(

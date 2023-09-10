@@ -1,7 +1,6 @@
 /* Простой стиль для красивого отображения формы */
 body {
   font-family: YSText, sans-serif;
-  padding-bottom: 2000px; /* Размер пространства внизу body (можно задать нужное значение) */
   background-color: #fddada;
   color: #4a644b;
 }
@@ -434,6 +433,7 @@ input[type="submit"]:active {
   height: 0;
 }
 
+.ordering-window-overflow,
 .overflow2 {
   position: fixed;
   top: 0;
@@ -502,8 +502,8 @@ input[type="submit"]:active {
 .grid-item {
   display: flex;
   flex-direction: column;
-  align-items: center; /* Выравнивание по центру по горизонтали */
-  justify-content: space-evenly;
+  align-items: center;
+  justify-content: space-between;
   border: 1px solid #ccc;
   padding: 10px;
   border-radius: 10px;
@@ -512,7 +512,6 @@ input[type="submit"]:active {
   height: 275px;
   color: #4a644b;
 }
-
 .grid-item-2 {
   display: flex;
   align-items: center; /* Выравнивание по центру по горизонтали */
@@ -535,17 +534,17 @@ input[type="submit"]:active {
   flex-direction: column-reverse;
 }
 .grid-item img {
-  width: 92%;
-  height: 92%;
-  margin: 4%;
+  width: 200px;
+  height: 133px;
   border-radius: 10px;
-  object-fit: cover; /* Масштабируем изображение, чтобы оно полностью заполнило элемент */
+  object-fit: cover;
+  margin-top: 5px;
 }
 
 .grid-item h3 {
   margin-top: 10px;
   font-size: 17px;
-  margin: 4%;
+  height: 50px;
 }
 
 .grid-container2 {
@@ -582,6 +581,7 @@ input[type="submit"]:active {
   margin: 4%;
 }
 
+.confirm-order-modal,
 .confirm-order {
   background-color: #4a644b;
   color: white;
@@ -592,6 +592,7 @@ input[type="submit"]:active {
   transition: background-color 0.3s, transform 0.2s, box-shadow 0.2s;
 }
 
+.confirm-order-modal:hover,
 .confirm-order:hover {
   background-color: #3b513c;
 }
@@ -664,7 +665,7 @@ input[type="submit"]:active {
 
 .modWind img,
 .modWind3 img {
-  width: 400px;
+  width: 300px;
 }
 .overflow3,
 .overflow {
@@ -678,16 +679,13 @@ input[type="submit"]:active {
   animation: fadeIn 0.25s ease-in-out forwards; /* Применяем анимацию при появлении */
 }
 
+.ordering-window-overflow,
 .overflow2 {
   opacity: 0;
   animation: fadeIn 0.25s ease-in-out forwards; /* Применяем анимацию при появлении */
 }
 
 .menu-filters.hidden {
-  display: none;
-}
-
-.hidden {
   display: none;
 }
 
@@ -855,11 +853,11 @@ input[type="submit"]:active {
   gap: 5px;
 }
 .menu-item img {
-  width: 92%;
-  height: 92%;
-  margin: 4%;
+  width: 200px;
+  height: 133px;
   border-radius: 10px;
-  object-fit: cover; /* Масштабируем изображение, чтобы оно полностью заполнило элемент */
+  object-fit: cover;
+  margin-top: 5px;
 }
 
 .my_client,
@@ -910,24 +908,27 @@ input[type="submit"]:active {
   grid-template-columns: 1fr 1fr;
 }
 
+.flex-mod-dish-data {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  gap: 15px;
+}
+
 .flex-mod-dish {
   display: flex;
   flex-direction: row;
   flex-wrap: nowrap;
   align-content: stretch;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: stretch;
-
   height: 250px;
+  column-gap: 50px;
 }
 .dish-img-mod {
-  scale: 0.7;
-  margin: 4%;
+  scale: 1;
   border-radius: 10px;
   object-fit: cover;
-  margin-left: -54px;
-
-  margin-top: -30px;
 }
 
 .dotted-line {
@@ -1127,11 +1128,40 @@ input[type="submit"]:active {
 }
 
 .mod-dish-decription {
-  margin-top: 80px;
+  margin-top: 0px;
 }
 
 .menu-filters {
   display: flex;
+}
+
+.ordering-window {
+  display: flex;
+  flex-direction: column;
+  color: black;
+  background-color: #fff;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  z-index: 10;
+  width: 1200px;
+  height: 600px;
+  max-width: 90%;
+  max-height: 100%;
+  min-width: 720px;
+  transform: translate(-50%, -50%);
+  border-radius: 30px;
+  padding: 15px;
+  border: 5px solid #4a644b;
+  overflow: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  animation: fadeIn 0.25s ease-in-out forwards;
+  justify-content: flex-start;
+}
+
+.hidden {
+  display: none;
 }
 
 @media (width < 1311px) {
@@ -1141,4 +1171,14 @@ input[type="submit"]:active {
   .menu-container {
     justify-content: center;
   }
+}
+
+.map {
+  width: 100%;
+  height: 100%;
+}
+
+.custom-marker {
+  /* Указываете путь к изображению значка метки */
+  cursor: url("/static/images/cursor.png"), auto;
 }

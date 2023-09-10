@@ -2212,6 +2212,20 @@ y1.addEventListener("click", () => {
   my_client_additional.classList.remove("active");
 });
 
+const orderingWindowOverflow = document.querySelector(
+  `.ordering-window-overflow`
+);
+const confirmOrderModal = document.querySelector(`.ordering-window`);
+orderingWindowOverflow.addEventListener("click", function () {
+  orderingWindowOverflow.classList.add("hidden");
+  confirmOrderModal.classList.add("hidden");
+});
+
+const confirmOrderModalBtn = document.querySelector(`.confirm-order-modal`);
+confirmOrderModalBtn.addEventListener("click", function () {
+  confirmOrderModal.classList.remove("hidden");
+  orderingWindowOverflow.classList.remove("hidden");
+});
 // if (
 //   /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
 //     navigator.userAgent

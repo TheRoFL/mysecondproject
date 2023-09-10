@@ -1,6 +1,7 @@
 from pathlib import Path
 import os
 
+# yandex api a799420a-c448-4042-bb87-b186cb5ffcab
 LOGIN_URL = 'login'  # Имя URL для страницы входа
 LOGIN_REDIRECT_URL = '/'  # Имя URL для перенаправления после успешного входа
 
@@ -19,15 +20,6 @@ def verified_callback(user):
     user.is_active = True
 
 
-EMAIL_VERIFIED_CALLBACK = verified_callback
-EMAIL_FROM_ADDRESS = 'example1000@gmail.com'
-EMAIL_MAIL_SUBJECT = 'Confirm your email {{ user.username }}'
-EMAIL_MAIL_HTML = 'registration/mail_body.html'
-EMAIL_MAIL_PLAIN = 'registration/mail_body.txt'
-EMAIL_MAIL_TOKEN_LIFE = 60 * 60
-EMAIL_MAIL_PAGE_TEMPLATE = 'registration/confirm_template.html'
-EMAIL_PAGE_DOMAIN = 'http://127.0.0.1:8000/' # Host
-# EMAIL_MULTI_USER = True  # optional (defaults to False)
 
 # For Django Email Backend
 # EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'

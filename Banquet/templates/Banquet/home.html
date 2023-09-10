@@ -1,7 +1,4 @@
-{% extends 'index.html' %}
-
-<!-- prettier-ignore -->
-{% block content %} {% load static %}
+{% extends 'index.html' %} {% block content %} {% load static %}
 <h1>Формирование банкета</h1>
 <head>
   <script>
@@ -30,6 +27,7 @@
     <button class="confirm-order">
       <a href="/banquet/ordering/">Оформить заказ</a>
     </button>
+    <button class="confirm-order-modal">Оформить</button>
   </h1>
   <div class="body">
     <div class="vseClients" id="all_clients">
@@ -583,11 +581,83 @@
       {% endfor %}
     </div>
 
-      <div class="ordering-window hidden3"></div>
       {% endif %}
     </div>
+    <div class="ordering-window-overflow hidden"></div>
+    <div class="ordering-window hidden">
+      <script
+        src="https://api-maps.yandex.ru/2.1/?apikey=7b0f4d61-5672-4275-903c-8235206c10c7&lang=ru_RU"
+        type="text/javascript"
+      ></script>
 
-    <!-- prettier-ignore -->
+      <div id="map" class="map" style="width: 100%; height: 100%"></div>
+      <script>
+        ymaps.ready(function () {
+          var myMap = new ymaps.Map("map", {
+            center: [58.1, 56.24],
+            zoom: 10,
+            options: {
+              iconCursor: "arrow",
+            },
+          });
+          var cursor = myMap.cursors.push("pointer");
+          var previousPlacemark = null;
+          myMap.events.add("click", function (e) {
+            if (previousPlacemark) {
+              myMap.geoObjects.remove(previousPlacemark);
+            }
+
+            var coords = e.get("coords");
+            localStorage.setItem("current_coords", coords);
+            ymaps.geocode(coords).then(function (res) {
+              // Получаем первый результат геокодирования
+              var firstGeoObject = res.geoObjects.get(0);
+
+              // Извлекаем адрес и выводим его
+              var address = firstGeoObject.getAddressLine();
+              localStorage.setItem("address", address);
+            });
+            var myPlacemark = new ymaps.Placemark(
+              coords,
+              {
+                // Ваш контент для метки, например, подсказка.
+                hintContent: "Метка здесь!",
+              },
+              {
+                // Опции для метки, если необходимо.
+                // Например, устанавливаем курсор в виде стрелки.
+                iconLayout: "default#image",
+                iconImageHref: "/static/images/cursor.png", // Путь к изображению метки
+                iconImageSize: [60, 60], // Размеры изображения метки
+                iconImageOffset: [-32, -32], // Смещение изображения метки
+                iconCursor: "grabbing",
+                draggable: true,
+              }
+            );
+            previousPlacemark = myPlacemark;
+            myMap.geoObjects.add(myPlacemark);
+
+            myPlacemark.events.add("drag", function (e) {
+              cursor = myMap.cursors.push("grab");
+            });
+            myPlacemark.events.add("dragend", function (e) {
+              cursor = myMap.cursors.push("pointer");
+              localStorage.setItem(
+                "current_coords",
+                myPlacemark.geometry.getCoordinates()
+              );
+              var coords = myPlacemark.geometry.getCoordinates();
+              ymaps.geocode(coords).then(function (res) {
+                // Получаем первый результат геокодирования
+                var firstGeoObject = res.geoObjects.get(0);
+                var address = firstGeoObject.getAddressLine();
+                localStorage.setItem("address", address);
+              });
+            });
+          });
+        });
+      </script>
+    </div>
   </div>
 
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
