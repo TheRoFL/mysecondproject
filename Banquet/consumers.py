@@ -753,5 +753,35 @@ class BanquetConsumer(WebsocketConsumer):
             response['total_banquet_price'] = current_banquet.total_price()
             self.send_response(response)
 
+        elif action == "order_surname_update":
+             current_banquet = Banquet.objects.get(owner=current_user_profiledata, is_ordered=False)
+             current_user_profiledata.surname = data["surname"]
+             current_user_profiledata.save()
+
+        elif action == "order_surname_update":
+            current_banquet = Banquet.objects.get(owner=current_user_profiledata, is_ordered=False)
+            current_user_profiledata.surname = data["surname"]
+            current_user_profiledata.save()
+
+        elif action == "order_name_update":
+            current_banquet = Banquet.objects.get(owner=current_user_profiledata, is_ordered=False)
+            current_user_profiledata.name = data["name"]
+            current_user_profiledata.save()
+
+        elif action == "order_patronymic_update":
+            current_banquet = Banquet.objects.get(owner=current_user_profiledata, is_ordered=False)
+            current_user_profiledata.patronymic = data["patronymic"]
+            current_user_profiledata.save()
+
+        elif action == "order_phone_update":
+            current_banquet = Banquet.objects.get(owner=current_user_profiledata, is_ordered=False)
+            current_user_profiledata.number = data["phone"]
+            current_user_profiledata.save()   
+
+        elif action == "order_email_update":
+            current_banquet = Banquet.objects.get(owner=current_user_profiledata, is_ordered=False)
+            current_user_profiledata.email = data["email"]
+            current_user_profiledata.save()   
+            
     def send_response(self, response):
         self.send(text_data=json.dumps(response))

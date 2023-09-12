@@ -15,7 +15,7 @@ class ProfileData(models.Model):
     birthdate = models.DateField(blank=True, null=True)
     city = models.CharField(max_length=50,blank=True, null=True)
     number = models.CharField(max_length=50,blank=True, null=True, default="")
-    
+    email = models.CharField(max_length=50,blank=True, null=True, default="")
     bonuses = models.IntegerField(default=0, blank=True, null=True)
     age = models.IntegerField(default=18, blank=False, null=False)
     

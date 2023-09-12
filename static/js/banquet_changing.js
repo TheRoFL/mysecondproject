@@ -2235,3 +2235,105 @@ confirmOrderModalBtn.addEventListener("click", function () {
 // } else {
 //   console.log("С пк");
 // }
+
+const surname_input = document.querySelector(`.surname-ordering-input`);
+const name_input = document.querySelector(`.name-ordering-input`);
+const patronymic_input = document.querySelector(`.patronymic-ordering-input`);
+const phone_input = document.querySelector(`.phone-ordering-input`);
+const email_input = document.querySelector(`.email-ordering-input`);
+const start_day_input = document.querySelector(`.day-input`);
+const start_month_input = document.querySelector(`.month-input`);
+const start_year_input = document.querySelector(`.year-input`);
+const start_time_input = document.querySelector(`.surname-ordering-input`);
+const duration_time_input = document.querySelector(`.surname-ordering-input`);
+
+surname_input.addEventListener("input", function () {
+  var currentValue = $(this).val();
+  $(this).val = currentValue.trim();
+
+  if (currentValue.length > 15) {
+    $(this).val(currentValue.slice(0, 15));
+  }
+
+  const surname = $(this).val();
+  username_id = localStorage.getItem("username_id");
+  socket.send(
+    JSON.stringify({
+      action: "order_surname_update",
+      current_user_id: username_id,
+      surname: surname,
+    })
+  );
+});
+name_input.addEventListener("input", function () {
+  var currentValue = $(this).val();
+  $(this).val = currentValue.trim();
+  // Проверяем длину введенного текста
+  if (currentValue.length > 15) {
+    // Если длина больше максимальной, обрезаем текст до максимальной длины
+    $(this).val(currentValue.slice(0, 15));
+  }
+  const name = $(this).val();
+  username_id = localStorage.getItem("username_id");
+  socket.send(
+    JSON.stringify({
+      action: "order_name_update",
+      current_user_id: username_id,
+      name: name,
+    })
+  );
+});
+patronymic_input.addEventListener("input", function () {
+  var currentValue = $(this).val();
+  $(this).val = currentValue.trim();
+  // Проверяем длину введенного текста
+  if (currentValue.length > 15) {
+    // Если длина больше максимальной, обрезаем текст до максимальной длины
+    $(this).val(currentValue.slice(0, 15));
+  }
+  const patronymic = $(this).val();
+  username_id = localStorage.getItem("username_id");
+  socket.send(
+    JSON.stringify({
+      action: "order_patronymic_update",
+      current_user_id: username_id,
+      patronymic: patronymic,
+    })
+  );
+});
+email_input.addEventListener("input", function () {
+  var currentValue = $(this).val();
+  $(this).val = currentValue.trim();
+  // Проверяем длину введенного текста
+  if (currentValue.length > 30) {
+    // Если длина больше максимальной, обрезаем текст до максимальной длины
+    $(this).val(currentValue.slice(0, 30));
+  }
+  const email = $(this).val();
+  username_id = localStorage.getItem("username_id");
+  socket.send(
+    JSON.stringify({
+      action: "order_email_update",
+      current_user_id: username_id,
+      email: email,
+    })
+  );
+});
+phone_input.addEventListener("input", function () {
+  var currentValue = $(this).val();
+  $(this).val = currentValue.trim();
+  // Проверяем длину введенного текста
+  if (currentValue.length > 15) {
+    // Если длина больше максимальной, обрезаем текст до максимальной длины
+    $(this).val(currentValue.slice(0, 15));
+  }
+  const phone = $(this).val();
+  username_id = localStorage.getItem("username_id");
+  socket.send(
+    JSON.stringify({
+      action: "order_phone_update",
+      current_user_id: username_id,
+      phone: phone,
+    })
+  );
+});

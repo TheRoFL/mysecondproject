@@ -477,7 +477,7 @@ input[type="submit"]:active {
   padding: 15px 30px;
   flex-wrap: wrap;
   flex-direction: row-reverse;
-
+  margin-left: 10px;
   opacity: 1;
   transition: opacity 100ms ease-in-out;
 }
@@ -493,7 +493,7 @@ input[type="submit"]:active {
 .grid-container.menu-mode {
   display: flex;
   justify-content: flex-end;
-  padding: 16px 65px;
+  padding: 16px 55px;
   flex-wrap: wrap;
   flex-direction: row-reverse;
   row-gap: 50px;
@@ -830,7 +830,7 @@ input[type="submit"]:active {
   font-size: 17px;
 
   width: 250px;
-  height: 250px;
+  height: 215px;
 }
 
 .menu-item1 {
@@ -1220,10 +1220,10 @@ input[type="submit"]:active {
   height: 0;
 }
 
-.map-and-bill {
+.map-and-addres {
   display: flex;
   flex-direction: column;
-  min-width: 300px;
+  width: 650px;
   background-color: white;
   border: 2px solid #4a644b;
   border-radius: 20px;
@@ -1306,4 +1306,22 @@ input[type="submit"]:active {
   height: 40px;
   border: solid 1px #d2d0cc;
   border-radius: 10px;
+}
+
+.event-data {
+  width: 480px;
+}
+.event-data h1 {
+  font-family: YSDisplay, YSText, sans-serif;
+  color: #21201f;
+  font-weight: 700;
+  font-size: 24px;
+}
+.addres {
+  font-family: YSDisplay, YSText, sans-serif;
+  color: #21201f;
+  font-weight: 700;
+  font-size: 24px;
+
+  margin-top: 5px;
 }
