@@ -39,7 +39,7 @@
           >
             <div class="formaClienta_header">
               <div class="extra-dishes">
-                <div class="extra-dishes-text">Дополнительные блюда</div>
+                <div class="extra-dishes-text">Дополнительно</div>
               </div>
             </div>
             <div
@@ -193,23 +193,13 @@
             data-id="{{client.id}}"
             value="{{ client.type }}"
           />
-          <p
-            style="
-              font-size: 10px;
-              display: inline;
-              color: #fff;
-              margin-bottom: 12px;
-            "
-          >
-            x
-          </p>
+          <p class="men-sign-2">x</p>
           <input
             class="quantity-input"
             data-id="{{client.id}}"
             value="{{ client.quantity }}"
-            pattern="[A-Za-z]{3}"
           />
-
+          <p class="men-sign">клиентов</p>
           <button
             class="delete-client-btn"
             data-id="{{client.id}}"
@@ -428,7 +418,9 @@
       </div>
 
       {% endfor %} {% endif %}
-      <button id="showFormBtn" class="formaClienta">+</button>
+      <button id="showFormBtn" class="formaClienta">
+        Нажмите, чтобы добавить шаблон клиента
+      </button>
     </div>
 
     <div class="overflow2 hidden2"></div>
@@ -655,8 +647,15 @@
         <script src="/static/js/banquet_map.js"></script>
 
         <div id="map" class="map"></div>
-        <div class="addres">
+        <div class="addres-details">
           Адрес мероприятия:
+          <input
+            class="addres-input"
+            type="text"
+            id="suggest"
+            placeholder="Введите адрес или выберите на карте нажав ЛКМ..."
+          />
+
           <span class="addres-details"></span>
         </div>
       </div>
@@ -666,7 +665,6 @@
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="/static/js/banquet_changing.js"></script>
   <script src="/static/js/banquet_filters.js"></script>
-  <script src="/static/js/banquet_edit_links.js"></script>
   <script src="/static/js/banquet_event_loaders.js"></script>
 
   <script>

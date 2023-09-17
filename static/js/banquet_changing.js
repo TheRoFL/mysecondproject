@@ -76,7 +76,7 @@ function updateClientsList(data) {
   const quantity_inputs = document.querySelectorAll(".quantity-input");
   function quantity_input_change() {
     const client_id = $(this).data("id");
-    const quantity = Math.max(1, $(this).val()); // Ensure the quantity is not less than 1
+    const quantity = Math.max(0, $(this).val()); // Ensure the quantity is not less than 1
     updateQuantity(client_id, quantity);
   }
 
@@ -646,6 +646,11 @@ socket.onmessage = function (e) {
     );
     client_form_to_change.dataset.name = new_name;
     localStorage.setItem("current_client_name", new_name);
+
+    const detailsButton = document.querySelector(
+      `.details-button[data-id="${client_id}"]`
+    );
+    detailsButton.dataset.name = new_name;
   } else if (action === "client_menu_deleted") {
     client_id = data["client_id"];
     menu_id = data["menu_id"];

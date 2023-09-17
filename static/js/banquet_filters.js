@@ -516,92 +516,60 @@ function LoadMenu(filter = null, name = null, menu_filter = null) {
           GridContainer = document.querySelector(`.grid-container`);
           GridContainer.classList.remove("menu-mode");
           jsonData.forEach(function (item, index) {
-            if (item.model != "Banquet.menusample") {
-              var gridItem = $("<div>", { class: "grid-item-2" });
-              var gridContainer = $("<div>", { class: "grid-item" });
-              var dishDiv = $("<div>", { class: "grid-item-3" });
+            var gridItem = $("<div>", { class: "grid-item-2" });
+            var gridContainer = $("<div>", { class: "grid-item" });
+            var dishDiv = $("<div>", { class: "grid-item-3" });
 
-              var dishDiv2 = $("<div>", {
-                class: "dishes",
-                "data-id": item.pk,
-                "data-name": item.fields.name.replace(/_/g, " "),
-                "data-tittle": item.fields.name,
-                "data-weight": item.fields.weight,
-                "data-price": item.fields.price,
-                "data-sostav": item.fields.ingredients,
-                "data-type": item.fields.type,
-              });
+            var dishDiv2 = $("<div>", {
+              class: "dishes",
+              "data-id": item.pk,
+              "data-name": item.fields.name.replace(/_/g, " "),
+              "data-tittle": item.fields.name,
+              "data-weight": item.fields.weight,
+              "data-price": item.fields.price,
+              "data-sostav": item.fields.ingredients,
+              "data-type": item.fields.type,
+            });
 
-              var img = $("<img>", {
-                class: "grid-dish-img",
-                id: item.pk,
-                "data-id": item.pk,
-                src: "http://localhost:8000/media/" + item.fields.image,
-              });
+            var img = $("<img>", {
+              class: "grid-dish-img",
+              id: item.pk,
+              "data-id": item.pk,
+              src: "http://localhost:8000/media/" + item.fields.image,
+            });
 
-              if (item.fields.name) {
-                var h3 = $("<h3>")
-                  .addClass("dish-name-price")
-                  .html(
-                    `${item.fields.name.replace(/_/g, " ")} <br> Цена: ${
-                      item.fields.price
-                    } ₽`
-                  );
-              }
-
-              var current_client_name = localStorage.getItem(
-                "current_client_name"
-              );
-
-              var orderButton = $("<button>", {
-                class: "order-button",
-                "data-id": item.pk,
-                "data-name": item.fields.name,
-              }).text(`Выбрать для "${current_client_name}"`);
-
-              dishDiv2.append(img, h3);
-              var orderButtonContainer = document.createElement("div");
-              orderButtonContainer = $(
-                "<div class='order-btn-container'>"
-              ).append(orderButton);
-              orderButtonContainer.attr("data-id", item.pk);
-              // orderButtonContainer.attr("data-dishOrder-id", item.pk);
-              dishDiv.append(dishDiv2);
-              dishDiv.append(orderButtonContainer);
-              gridItem.append(dishDiv);
-
-              gridContainer.append(gridItem);
-            } else {
-              var gridItem = $("<div>");
-              var gridContainer = $("<div>", { class: "grid-item2" });
-              var dishDiv = $("<div>", {
-                class: "dishes",
-                "data-id": item.pk,
-                "data-name": item.fields.name,
-                "data-tittle": item.fields.name,
-                "data-weight": item.fields.weight,
-                "data-price": item.fields.price,
-                "data-sostav": item.fields.ingredients,
-                "data-type": item.fields.type,
-              });
-
-              var h1 = document.createElement("h1");
-              h1.textContent = item.fields.type;
-              dishDiv.append(h1);
-              var current_client_name = localStorage.getItem(
-                "current_client_name"
-              );
-
-              var orderButton = $("<button>", {
-                class: "order-button",
-                "data-id": item.pk,
-                "data-name": item.fields.type,
-              }).text(`Выбрать для "${current_client_name}"`);
-
-              gridItem.append(dishDiv, $("<h2>").append(orderButton));
-
-              gridContainer.append(gridItem);
+            if (item.fields.name) {
+              var h3 = $("<h3>")
+                .addClass("dish-name-price")
+                .html(
+                  `${item.fields.name.replace(/_/g, " ")} <br> Цена: ${
+                    item.fields.price
+                  } ₽`
+                );
             }
+
+            var current_client_name = localStorage.getItem(
+              "current_client_name"
+            );
+            var orderButton = $("<button>", {
+              class: "order-button",
+              "data-id": item.pk,
+              "data-name": item.fields.name,
+            }).text(`Выбрать для "${current_client_name}"`);
+
+            dishDiv2.append(img, h3);
+            var orderButtonContainer = document.createElement("div");
+            orderButtonContainer = $(
+              "<div class='order-btn-container'>"
+            ).append(orderButton);
+            orderButtonContainer.attr("data-id", item.pk);
+            // orderButtonContainer.attr("data-dishOrder-id", item.pk);
+            dishDiv.append(dishDiv2);
+            dishDiv.append(orderButtonContainer);
+            gridItem.append(dishDiv);
+
+            gridContainer.append(gridItem);
+
             $(".grid-container").append(gridContainer);
           });
         }
@@ -651,102 +619,204 @@ function LoadMenu(filter = null, name = null, menu_filter = null) {
 
         const ws = document.querySelectorAll(".dishes");
         var x, y;
-        var current_client_name = localStorage.getItem("current_client_name");
-        var current_client_id = localStorage.getItem("current_client_id");
-        // console.log(current_client_name);
         for (let i = 0; i < ws.length; i++) {
-          var div = `<div class = "overflow hidden" id="${
-            "overflow" + ws[i].getAttribute("data-id")
-          }"></div>
-              <div class="modWind hidden" id="${
-                "modWind" + ws[i].getAttribute("data-id")
-              }">
-              <div class="flex-mod-dish-data">
-                <div class="flex-mod-dish">
-                  <div class="flex-mod-img-and-btn">
-                  <img class="dish-img-mod"
-                  src="http://localhost:8000/media/menu_images/${ws[
-                    i
-                  ].getAttribute("data-type")}/${ws[i].getAttribute(
-            "data-tittle"
-          )}.png">   
-            </div>                       
-                  <div class="mod-dish-info">
-                  <div class="name">${ws[i].getAttribute("data-name")}</div>
-                  <div class="grams">${ws[i].getAttribute(
-                    "data-weight"
-                  )} гр</div>
-                  <div class="price">${ws[i].getAttribute(
-                    "data-price"
-                  )} руб</div>
-                  <div class="sostav">${ws[i].getAttribute("data-sostav")}</div>
-                </div>
-                  
-                </div>
-              
-            
-              <div class="mod-dish-decription">
-              <div class="decription">Тут будет описание...</div> 
-              </div>
-            </div>  
-            `;
-
-          // <div class="order-btn-container2" data-id="${ws[i].getAttribute(
-          //   "data-id"
-          // )}" data-clientid="${current_client_id}">
-          //   <button class="order-button-mod" data-id="${ws[i].getAttribute(
-          //     "data-id"
-          //   )}"
-          //             data-name="${ws[i].getAttribute("data-name")}">
-          //             Выбрать для "${current_client_name}"</button>
-          // </div>
-          document.querySelector("body").insertAdjacentHTML("beforeend", div);
-
-          const orderButtonMod = document.querySelector(
-            `.order-button-mod[data-id="${ws[i].getAttribute("data-id")}"]`
+          var if_exists = document.getElementById(
+            `modWind${ws[i].getAttribute("data-id")}`
           );
-          // orderButtonMod.addEventListener("click", function () {
-          //   handleButtonClick(this);
-          // });
+          var current_client_name = localStorage.getItem("current_client_name");
+          if (!if_exists) {
+            var div = `<div class = "overflow hidden" id="${
+              "overflow" + ws[i].getAttribute("data-id")
+            }"></div>
+                <div class="modWind hidden" id="${
+                  "modWind" + ws[i].getAttribute("data-id")
+                }">
+                <div class="flex-mod-dish-data">
+                  <div class="flex-mod-dish">
+                    <div class="flex-mod-img-and-btn">
+                    <img class="dish-img-mod"
+                    src="http://localhost:8000/media/menu_images/${ws[
+                      i
+                    ].getAttribute("data-type")}/${ws[i].getAttribute(
+              "data-tittle"
+            )}.png">
+            <div class="order-btn-container2" data-id="${ws[i].getAttribute(
+              "data-id"
+            )}" data-clientid="${current_client_id}">
+              <button class="order-button-mod" data-id="${ws[i].getAttribute(
+                "data-id"
+              )}"
+                        data-name="${ws[i].getAttribute("data-name")}">
+                        Выбрать для "${current_client_name}"</button>
+            </div>   
+              </div>                       
+                    <div class="mod-dish-info">
+                    <div class="name">${ws[i].getAttribute("data-name")}</div>
+                    <div class="grams">${ws[i].getAttribute(
+                      "data-weight"
+                    )} гр</div>
+                    <div class="price">${ws[i].getAttribute(
+                      "data-price"
+                    )} руб</div>
+                    <div class="sostav">${ws[i].getAttribute(
+                      "data-sostav"
+                    )}</div>
+                  </div>
+                    
+                  </div>
+                
+              
+                <div class="mod-dish-decription">
+                <div class="decription">Тут будет описание...</div> 
+                </div>
+              </div>  
+              `;
+
+            document.querySelector("body").insertAdjacentHTML("beforeend", div);
+
+            var mod = `<div class = "overflow hidden" id="${
+              "overflowAdditonal" + ws[i].getAttribute("data-id")
+            }"></div>
+                <div class="modWindAdditonal hidden" id="${
+                  "modWindAdditonal" + ws[i].getAttribute("data-id")
+                }">
+                <div class="flex-mod-dish-data">
+                  <div class="flex-mod-dish">
+                    <div class="flex-mod-img-and-btn">
+                    <img class="dish-img-mod"
+                    src="http://localhost:8000/media/menu_images/${ws[
+                      i
+                    ].getAttribute("data-type")}/${ws[i].getAttribute(
+              "data-tittle"
+            )}.png">
+            <div class="order-btn-container2" data-id="${ws[i].getAttribute(
+              "data-id"
+            )}" data-clientid="${current_client_id}">
+              <button class="order-button-mod-additional" data-id="${ws[
+                i
+              ].getAttribute("data-id")}"
+                        data-name="${ws[i].getAttribute("data-name")}">
+                        Выбрать для "Дополнительно"</button>
+            </div>   
+              </div>                       
+                    <div class="mod-dish-info">
+                    <div class="name">${ws[i].getAttribute("data-name")}</div>
+                    <div class="grams">${ws[i].getAttribute(
+                      "data-weight"
+                    )} гр</div>
+                    <div class="price">${ws[i].getAttribute(
+                      "data-price"
+                    )} руб</div>
+                    <div class="sostav">${ws[i].getAttribute(
+                      "data-sostav"
+                    )}</div>
+                  </div>
+                    
+                  </div>
+                
+              
+                <div class="mod-dish-decription">
+                <div class="decription">Тут будет описание...</div> 
+                </div>
+              </div>  
+              `;
+
+            document.querySelector("body").insertAdjacentHTML("beforeend", mod);
+
+            const orderButtonMod = document.querySelector(
+              `.order-button-mod[data-id="${ws[i].getAttribute("data-id")}"]`
+            );
+            if (orderButtonMod) {
+              orderButtonMod.addEventListener("click", function () {
+                handleButtonClick(this);
+              });
+            }
+            const orderButtonModAdditional = document.querySelector(
+              `.order-button-mod-additional[data-id="${ws[i].getAttribute(
+                "data-id"
+              )}"]`
+            );
+            if (orderButtonModAdditional) {
+              orderButtonModAdditional.addEventListener("click", function () {
+                handleButtonClickAddittional(this);
+              });
+            }
+          }
+
+          var is_addit = localStorage.getItem("is_additional");
 
           ws[i].addEventListener("click", () => {
-            const button_id = ws[i].dataset.id;
-            const current_dish = document.querySelector(
-              `.grid-dish-img[data-id="${button_id}"]`
-            );
-            current_dish.classList.add("active");
-            x = document.getElementById(
-              "overflow" + ws[i].getAttribute("data-id")
-            );
-            y = document.getElementById(
-              "modWind" + ws[i].getAttribute("data-id")
-            );
+            if (is_addit == "false") {
+              const button_id = ws[i].dataset.id;
+              const current_dish = document.querySelector(
+                `.grid-dish-img[data-id="${button_id}"]`
+              );
+              current_dish.classList.add("active");
+              x = document.getElementById(
+                "overflow" + ws[i].getAttribute("data-id")
+              );
+              y = document.getElementById(
+                "modWind" + ws[i].getAttribute("data-id")
+              );
 
-            const gridContainer = document.querySelector(".menuu");
-            const overflowElement = document.querySelector(".overflow");
-            // overflowElement.style.height = `${gridContainer.offsetHeight}px`;
+              x.classList.remove("hidden");
+              y.classList.remove("hidden");
 
-            x.classList.remove("hidden");
-            y.classList.remove("hidden");
-          });
+              const exit = document.getElementById(
+                "overflow" + ws[i].getAttribute("data-id")
+              );
 
-          const exit = document.getElementById(
-            "overflow" + ws[i].getAttribute("data-id")
-          );
+              exit.addEventListener("click", () => {
+                const current_dishes =
+                  document.querySelectorAll(`.grid-dish-img`);
+                current_dishes.forEach((button) => {
+                  button.classList.remove("active");
+                });
+                x = document.getElementById(
+                  "overflow" + ws[i].getAttribute("data-id")
+                );
+                y = document.getElementById(
+                  "modWind" + ws[i].getAttribute("data-id")
+                );
+                x.classList.add("hidden");
+                y.classList.add("hidden");
+              });
+            } else {
+              const button_id = ws[i].dataset.id;
+              const current_dish = document.querySelector(
+                `.grid-dish-img[data-id="${button_id}"]`
+              );
+              current_dish.classList.add("active");
+              x = document.getElementById(
+                "overflowAdditonal" + ws[i].getAttribute("data-id")
+              );
+              y = document.getElementById(
+                "modWindAdditonal" + ws[i].getAttribute("data-id")
+              );
 
-          exit.addEventListener("click", () => {
-            const current_dishes = document.querySelectorAll(`.grid-dish-img`);
-            current_dishes.forEach((button) => {
-              button.classList.remove("active");
-            });
-            x = document.getElementById(
-              "overflow" + ws[i].getAttribute("data-id")
-            );
-            y = document.getElementById(
-              "modWind" + ws[i].getAttribute("data-id")
-            );
-            x.classList.add("hidden");
-            y.classList.add("hidden");
+              x.classList.remove("hidden");
+              y.classList.remove("hidden");
+
+              const exit = document.getElementById(
+                "overflowAdditonal" + ws[i].getAttribute("data-id")
+              );
+
+              exit.addEventListener("click", () => {
+                const current_dishes =
+                  document.querySelectorAll(`.grid-dish-img`);
+                current_dishes.forEach((button) => {
+                  button.classList.remove("active");
+                });
+                x = document.getElementById(
+                  "overflowAdditonal" + ws[i].getAttribute("data-id")
+                );
+                y = document.getElementById(
+                  "modWindAdditonal" + ws[i].getAttribute("data-id")
+                );
+                x.classList.add("hidden");
+                y.classList.add("hidden");
+              });
+            }
           });
         }
 
@@ -772,18 +842,6 @@ function LoadMenu(filter = null, name = null, menu_filter = null) {
 
       const mainGrid = document.querySelector(".grid-container");
 
-      // if (name == null) {
-      //   mainGrid.classList.add("disappear");
-
-      //   setTimeout(() => {
-      //     mainGrid.classList.remove("disappear");
-      //     mainGrid.classList.add("appear");
-      //   }, 250);
-      //   setTimeout(() => {
-      //     mainGrid.classList.remove("appear");
-      //   }, 1);
-      // }
-
       mainGrid.classList.add("disappear");
 
       setTimeout(() => {
@@ -793,19 +851,6 @@ function LoadMenu(filter = null, name = null, menu_filter = null) {
       setTimeout(() => {
         mainGrid.classList.remove("appear");
       }, 1);
-
-      // setTimeout(function () {
-      //   const GridItems = document.querySelectorAll(".grid-item");
-      //   GridItems.forEach((item, index) => {
-      //     console.log(item);
-      //     setTimeout(() => {
-      //       item.classList.add("appear");
-      //     }, 250 * index);
-      //     setTimeout(() => {
-      //       item.classList.remove("appear");
-      //     }, 1);
-      //   });
-      // }, 1);
     },
     error: function (xhr, status, error) {
       console.error(error);
@@ -1097,16 +1142,17 @@ function CreateClient() {
   });
 
   const pElement = document.createElement("p");
-  pElement.style.fontSize = "10px";
-  pElement.style.display = "inline";
-  pElement.style.color = "#fff";
-  pElement.style.marginBottom = "12px";
   pElement.textContent = "x";
+  pElement.classList.add("men-sign-2");
 
   const quantityInput = document.createElement("input");
   quantityInput.className = "quantity-input";
   quantityInput.value = "0";
   quantityInput.classList.add("created");
+
+  const menSignElement = document.createElement("p");
+  menSignElement.textContent = "клиентов";
+  menSignElement.classList.add("men-sign");
 
   quantityInput.addEventListener("input", function () {
     const client_id = $(this).data("id");
@@ -1150,6 +1196,7 @@ function CreateClient() {
   headerDiv.appendChild(nameInput);
   headerDiv.appendChild(pElement);
   headerDiv.appendChild(quantityInput);
+  headerDiv.appendChild(menSignElement);
   headerDiv.appendChild(deleteClientButton);
   divElement.appendChild(headerDiv);
 

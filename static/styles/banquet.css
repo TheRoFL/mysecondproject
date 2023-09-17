@@ -316,7 +316,7 @@ input[type="submit"]:active {
 }
 
 #showFormBtn {
-  font-size: 70px;
+  font-size: 35px;
   display: inline;
   color: #000000a7;
 }
@@ -364,7 +364,7 @@ input[type="submit"]:active {
   width: 0; /* Вы можете настроить толщину */
 }
 .name-input {
-  width: 170px;
+  width: 130px;
   height: 25px;
   font-size: 14px;
   border-radius: 10px;
@@ -372,11 +372,27 @@ input[type="submit"]:active {
 }
 
 .quantity-input {
-  width: 70px;
+  width: 45px;
   height: 25px;
   font-size: 14px;
   border-radius: 10px;
   text-align: center;
+}
+
+.men-sign-2,
+.men-sign {
+  font-size: 14px;
+  display: inline;
+  color: #fff;
+  margin-bottom: 12px;
+}
+
+.men-sign {
+  font-size: 14px;
+  display: inline;
+  color: #fff;
+  margin-bottom: 12px;
+  margin-right: 5px;
 }
 
 .delete-client-btn {
@@ -644,6 +660,7 @@ input[type="submit"]:active {
   text-align: center;
 }
 
+.modWindAdditonal,
 .modWind,
 .modWind3 {
   text-align: left;
@@ -663,6 +680,7 @@ input[type="submit"]:active {
   margin: -250px 0 0 -300px;
 }
 
+.modWindAdditonal img,
 .modWind img,
 .modWind3 img {
   width: 300px;
@@ -1029,6 +1047,9 @@ input[type="submit"]:active {
     box-shadow 0.3s ease;
 }
 
+.order-button-mod {
+  width: 300px;
+}
 .dish-search-wrapper {
   display: flex;
   justify-content: center;
@@ -1104,7 +1125,8 @@ input[type="submit"]:active {
 }
 
 .extra-dishes-text {
-  margin-left: 65px;
+  display: flex;
+  margin-left: 90px;
 }
 
 .increase-btn-adittional {
@@ -1196,7 +1218,7 @@ input[type="submit"]:active {
   height: 400px;
   border-radius: 20px;
   margin: 5px;
-  background-color: rgb(227, 0, 0);
+  background-color: rgb(255, 255, 255);
   overflow: auto;
   scrollbar-width: none;
   -ms-overflow-style: none;
@@ -1204,9 +1226,8 @@ input[type="submit"]:active {
 
 .credentials {
   display: flex;
-  height: 100%;
-  width: 100%;
-  min-width: 300px;
+  width: 650px;
+  height: 565px;
   background-color: white;
   border: 2px solid #4a644b;
   border-radius: 20px;
@@ -1224,6 +1245,7 @@ input[type="submit"]:active {
   display: flex;
   flex-direction: column;
   width: 650px;
+  height: 565px;
   background-color: white;
   border: 2px solid #4a644b;
   border-radius: 20px;
@@ -1324,4 +1346,17 @@ input[type="submit"]:active {
   font-size: 24px;
 
   margin-top: 5px;
+}
+
+.addres-input {
+  display: inline-block;
+  width: 500px;
+  font-size: 16px;
+}
+
+.addres-details {
+  font-family: YSDisplay, YSText, sans-serif;
+  color: #21201f;
+  font-weight: 700;
+  font-size: 24px;
 }
