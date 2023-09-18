@@ -748,7 +748,6 @@ input[type="submit"]:active {
 }
 
 .grid-dish-img.active {
-  box-shadow: 0 0 45px rgba(74, 100, 75, 2); /* Зеленая тень при наведении */
   transform: scale(1.125);
 }
 
@@ -918,7 +917,12 @@ input[type="submit"]:active {
   align-items: baseline;
   margin-top: 7px;
   margin-bottom: 5px;
-  justify-content: space-evenly;
+  justify-content: space-around;
+}
+
+.client-menu-btn h1 {
+  font-style: italic;
+  font-weight: 500;
 }
 
 .all_banquets {
@@ -930,7 +934,7 @@ input[type="submit"]:active {
   display: flex;
   flex-direction: column;
   flex-wrap: nowrap;
-  gap: 15px;
+  gap: 50px;
 }
 
 .flex-mod-dish {
@@ -993,6 +997,11 @@ input[type="submit"]:active {
   align-items: center;
 }
 
+.order-btn-container2 {
+  margin-top: 11px;
+  margin-left: 109px;
+}
+
 .client-total-price-and-menu-btn {
   display: flex;
   flex-direction: column;
@@ -1049,6 +1058,7 @@ input[type="submit"]:active {
 
 .order-button-mod {
   width: 300px;
+  margin-left: -110px;
 }
 .dish-search-wrapper {
   display: flex;
@@ -1085,7 +1095,7 @@ input[type="submit"]:active {
   display: flex;
   justify-content: space-evenly;
   align-items: baseline;
-
+  font-style: italic;
   margin-top: 5px;
   margin-bottom: 5px;
 }
@@ -1359,4 +1369,13 @@ input[type="submit"]:active {
   color: #21201f;
   font-weight: 700;
   font-size: 24px;
+}
+
+.ymaps-2-1-79-controls__control,
+.ymaps-2-1-79-copyright,
+.ymaps-2-1-79-traffic,
+.ymaps-2-1-79-copyright,
+.ymaps-2-1-79-listbox__button,
+.ymaps-2-1-79-map-copyrights-promo {
+  display: none !important;
 }

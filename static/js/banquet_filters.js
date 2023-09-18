@@ -970,8 +970,9 @@ function ChangeChosenStatus() {
               const container = document.querySelector(
                 `.order-btn-container[data-id="${dishId}"]`
               );
+              const is_addit = localStorage.getItem("is_additional");
               const container2 = document.querySelector(
-                `.order-btn-container2[data-id="${dishId}"][data-clientid="${clientId}"]`
+                `.order-btn-container2[data-id="${dishId}"]`
               );
               CreateQuantityStatusButton(
                 container,
@@ -979,19 +980,21 @@ function ChangeChosenStatus() {
                 dish_order_id,
                 order_quantity
               );
-              CreateQuantityStatusButton(
-                container2,
-                clientId,
-                dish_order_id,
-                order_quantity,
-                true
-              );
+              if (is_addit == "false") {
+                if (button_to_delete2) {
+                  CreateQuantityStatusButton(
+                    container2,
+                    clientId,
+                    dish_order_id,
+                    order_quantity
+                  );
+                  button_to_delete2.remove();
+                  button_to_delete2.classList.add("chosen");
+                }
+              }
+
               button_to_delete.remove();
               button_to_delete.classList.add("chosen");
-              if (button_to_delete2) {
-                button_to_delete2.remove();
-                button_to_delete2.classList.add("chosen");
-              }
             }
           }
         }

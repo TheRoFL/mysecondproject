@@ -6,6 +6,7 @@ ymaps.ready(function () {
       iconCursor: "arrow",
     },
   });
+  cursor = myMap.cursors.push("pointer");
 
   var suggestView = new ymaps.SuggestView("suggest", {
     provider: {
@@ -110,7 +111,7 @@ ymaps.ready(function () {
         iconImageHref: "/static/images/cursor.png", // Путь к изображению метки
         iconImageSize: [40, 40], // Размеры изображения метки
         iconImageOffset: [-32, -32], // Смещение изображения метки
-        iconCursor: "grabbing",
+        iconCursor: "grab",
         draggable: true,
       }
     );
@@ -118,7 +119,7 @@ ymaps.ready(function () {
     myMap.geoObjects.add(myPlacemark);
 
     myPlacemark.events.add("drag", function (e) {
-      cursor = myMap.cursors.push("grab");
+      cursor = myMap.cursors.push("grabbing");
     });
     myPlacemark.events.add("dragend", function (e) {
       cursor = myMap.cursors.push("pointer");

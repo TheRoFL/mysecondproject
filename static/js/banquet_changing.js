@@ -1628,22 +1628,24 @@ socket.onmessage = function (e) {
       data.current_dish_order_id,
       1
     );
-    const container2 = document.querySelector(
-      `.order-btn-container2[data-id="${current_dish_id}"][data-clientid="${data.client_id}"]`
-    );
-
-    const orderButtonToDelete2 = document.querySelector(
-      `.order-button-mod[data-id="${current_dish_id}"]`
-    );
-    if (orderButtonToDelete2) {
-      orderButtonToDelete2.remove();
+    const is_addit = localStorage.getItem("is_additional");
+    if (is_addit == "false") {
+      const container2 = document.querySelector(
+        `.order-btn-container2[data-id="${current_dish_id}"]`
+      );
+      const orderButtonToDelete2 = document.querySelector(
+        `.order-button-mod[data-id="${current_dish_id}"]`
+      );
+      if (orderButtonToDelete2) {
+        orderButtonToDelete2.remove();
+      }
+      CreateQuantityStatusButton(
+        container2,
+        data.client_id,
+        data.current_dish_order_id,
+        1
+      );
     }
-    CreateQuantityStatusButton(
-      container2,
-      data.client_id,
-      data.current_dish_order_id,
-      1
-    );
   }
 };
 
