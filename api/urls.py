@@ -5,4 +5,5 @@ urlpatterns = [
     path('ChangeChosenStatus/', views.ChangeChosenStatus),
     path('ChangeChosenStatusAdditional/', views.ChangeChosenStatusAdditional),
     path('LoadMenu/', views.LoadMenu),
+    path('QauntityStatusMod/', views.QauntityStatusMod),
 ]

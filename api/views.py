@@ -181,3 +181,29 @@ def LoadMenu(request):
         serialized_combined_data = json.dumps(combined_data)
         return JsonResponse(serialized_combined_data, safe=False)
     else: return JsonResponse(serialized_data, safe=False)
+
+def QauntityStatusMod(request):
+    dish_id = request.GET.get("dish_id")
+    client_id = request.GET.get("client_id")
+
+    current_dish = Dish.objects.get(id=dish_id)
+    current_client = Client.objects.get(id=client_id)
+
+    current_quantity = 0
+    current_dish_order_id = None
+    dish_name = None
+    for dish_order in current_client.dishes.all():
+        if dish_order.product.id == current_dish.id:
+            current_quantity = dish_order.quantity
+            current_dish_order_id = dish_order.id
+            dish_name = dish_order.product.name
+            break
+
+    response = json.dumps({
+        "current_quantity": current_quantity,
+        "current_dish_order_id": current_dish_order_id,
+        "dish_id":dish_id, 
+        "dish_name":dish_name
+        })
+
+    return JsonResponse(response, safe=False)

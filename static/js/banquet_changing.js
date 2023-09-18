@@ -1,251 +1,3 @@
-function updateClientsList(data) {
-  type = data.type;
-  quantity = data.quantity;
-  client_id = data.client_id;
-  client_name = data.client_name;
-  var newDiv = $("<div>", { class: "my_client", "data-id": client_id });
-
-  var nameInput = $("<input>", {
-    class: "name-input",
-    "data-id": client_id,
-    value: type,
-  });
-  var quantityInput = $("<input>", {
-    class: "quantity-input",
-    "data-id": client_id,
-    value: quantity,
-  });
-
-  function updateQuantity(client_id, quantity) {
-    username_id = localStorage.getItem("username_id");
-    socket.send(
-      JSON.stringify({
-        action: "client_quantity_update",
-        client_id: client_id,
-        current_user_id: username_id,
-        quantity: quantity,
-      })
-    );
-  }
-
-  var quantityLabel = $("<span>", { text: " человек " });
-
-  var deleteBtn = $("<button>", {
-    class: "delete-client-btn",
-    "data-id": client_id,
-    text: " Удалить ",
-  });
-  var menuBtn = $("<button>", {
-    class: "menu-client-btn",
-    "data-id": client_id,
-    text: " Выбрать для редактирования ",
-  });
-
-  // Добавляем элементы внутрь созданного div
-  newDiv.append(
-    nameInput,
-    " в количестве ",
-    quantityInput,
-    quantityLabel,
-    deleteBtn,
-    menuBtn
-  );
-
-  // Добавляем созданный div внутрь <div class="my_extra_clients">
-  $(".my_extra_clients").append(newDiv);
-
-  const deleteButtons = document.querySelectorAll(".delete-client-btn");
-
-  function handleDeleteClientButtonClick(event) {
-    const client_id = event.target.dataset.id; // Получаем id клиента из атрибута data-id
-    username_id = localStorage.getItem("username_id");
-    current_client_id = localStorage.getItem("current_client_id");
-    socket.send(
-      JSON.stringify({
-        action: "client_delete",
-        client_id: client_id,
-        current_user_id: username_id,
-        current_client_id: current_client_id,
-      })
-    );
-  }
-
-  const lastDeleteButton = deleteButtons[deleteButtons.length - 1];
-  lastDeleteButton.addEventListener("click", handleDeleteClientButtonClick);
-
-  const quantity_inputs = document.querySelectorAll(".quantity-input");
-  function quantity_input_change() {
-    const client_id = $(this).data("id");
-    const quantity = Math.max(0, $(this).val()); // Ensure the quantity is not less than 1
-    updateQuantity(client_id, quantity);
-  }
-
-  // Присваиваем обработчик события "click" каждому input из массива quantity_inputs
-  quantity_inputs.forEach((input) => {
-    input.addEventListener("click", quantity_input_change);
-  });
-
-  // Создаем элементы
-  var clientHeader = $("<div>", {
-    class: "client-header",
-    "data-id": client_id,
-  });
-  var clientInfo = $("<div>", { class: "client-info" });
-  var clientInfoH1 = $("<h1>", {
-    class: "client-info-h1",
-    "data-id": client_id,
-  });
-  clientInfoH1.html(
-    `Меню для клиента типа "<span class='client-name' data-id='${client_id}'>${client_name}</span>" 
-    в количестве <span class='client-quantity' data-id='${client_id}'>${quantity}</span> человек`
-  );
-  clientInfo.append(clientInfoH1);
-
-  var clientContainer = $("<div>", {
-    class: `client-container-${client_id}`,
-    id: `client-container-${client_id}`,
-  });
-
-  var clientTotalPrice = $("<h2>", {
-    class: "client-total-price",
-    style: "margin-top: 50px; margin-left: 20px",
-  });
-  clientTotalPrice.html(
-    `Итого за всех клиентов: <span class='order-price-count' data-id='${client_id}' 
-    id='${client_id}'>0</span>.00 ₽ x <span class='client-quantity-2'
-     data-id='${client_id}'>${quantity}</span> человек = <span class='client-price-count' 
-     data-id='${client_id}' id='${client_id}'>0</span>.00 ₽`
-  );
-
-  // Добавляем элементы на страницу
-  clientHeader.append(clientInfo, clientContainer, clientTotalPrice);
-  clientHeader.append("<h1>&nbsp;</h1>");
-  var allClientsDiv = $(".all_clients");
-  allClientsDiv.append(clientHeader);
-
-  // Добавляем элемент <h1>&nbsp;</h1> как указано в вашем коде
-}
-
-function handleNewClientClick(button) {
-  var main = document.querySelectorAll(`.my_client`);
-  main.forEach((btn) => {
-    btn.classList.remove("active");
-  });
-
-  var main = document.querySelector(
-    `.my_client[data-id="${button.dataset.id}"]`
-  );
-  main.classList.add("active");
-
-  var filter = $(button).data("filter"); // Получаем значение data-filter
-  localStorage.setItem("dish-filter", filter);
-  var requestParams = {
-    "dish-filter": filter, // Используем полученное значение для параметра запроса
-  };
-
-  $.ajax({
-    url: "http://127.0.0.1:8000/banquet/",
-    method: "GET",
-    data: requestParams,
-    dataType: "json",
-    success: function (data) {
-      data = JSON.parse(data);
-
-      // Остальной код обработки данных
-
-      const orderButtons = document.querySelectorAll(".order-button");
-      var clientId = localStorage.getItem("current_client_id");
-
-      orderButtons.forEach((button) => {
-        const dishId = button.dataset.id;
-        const dishTittle = button.dataset.name;
-
-        button.addEventListener("click", function () {
-          var username_id = localStorage.getItem("username_id");
-          var clientId = localStorage.getItem("current_client_id");
-          var clientName = localStorage.getItem("current_client_name");
-          var current_dish_filter = localStorage.getItem("dish-filter");
-          const data_to_send = {
-            action: "added_dish",
-            message: `Заказ "${dishTittle}" добавлен`,
-            current_dish_id: dishId,
-            current_user_id: username_id,
-            current_client_id: clientId,
-          };
-          dish_filter = current_dish_filter;
-          var is_menu = false;
-          if (dish_filter == "samples") {
-            is_menu = true;
-          }
-          if (button.classList.contains("chosen")) {
-            handleDeleteDishButtonClickFromMenu(button);
-            button.classList.remove("chosen");
-            button.textContent = `Выбрать для "${clientName}"`;
-          } else {
-            if (is_menu) {
-              const new_data_to_send = {
-                action: "menu_add",
-                message: `Заказ "${button.dataset.name}" добавлен`,
-                current_menu_id: button.dataset.id,
-                current_user_id: username_id,
-                current_client_id: clientId,
-              };
-              socket.send(JSON.stringify(new_data_to_send));
-            } else {
-              button.classList.add("chosen");
-              button.textContent = `Удалить для "${clientName}"`;
-              socket.send(JSON.stringify(data_to_send));
-            }
-          }
-        });
-      });
-
-      var animate_orderButtons = document.querySelectorAll(".order-button");
-      animate_orderButtons.forEach((button) => {
-        button.addEventListener("click", function () {
-          var dishImage = document.querySelector(
-            `.grid-dish-img[data-id="${button.dataset.id}"]`
-          );
-          dishImage.classList.add("highlight-image");
-
-          setTimeout(function () {
-            dishImage.classList.remove("highlight-image");
-          }, 300);
-        });
-      });
-    },
-    error: function (xhr, status, error) {
-      console.error(error);
-    },
-  });
-
-  localStorage.setItem("current_client_id", button.dataset.id);
-  localStorage.setItem("current_client_name", button.dataset.name);
-  menuButtons.forEach((btn) => {
-    var current_client_id = localStorage.getItem("current_client_id");
-    if (btn.dataset.id == current_client_id) {
-      btn.classList.add("active");
-    } else {
-      btn.classList.remove("active");
-    }
-  });
-
-  x1.classList.remove("hidden2");
-  y1.classList.remove("hidden2");
-}
-
-function updateQuantity(client_id, quantity) {
-  username_id = localStorage.getItem("username_id");
-  socket.send(
-    JSON.stringify({
-      action: "client_quantity_update",
-      client_id: client_id,
-      current_user_id: username_id,
-      quantity: quantity,
-    })
-  );
-}
-
 const socket = new ReconnectingWebSocket(
   "ws://" + window.location.host + "/ws/BanquetEditingSocket/"
 );
@@ -528,71 +280,7 @@ socket.onmessage = function (e) {
     total_banquet_price.textContent =
       formatInteger(parseInt(data["total_banquet_price"])) + ".00 ₽";
 
-    const current_client_name = localStorage.getItem("current_client_name");
-    const dish_id = data["dish_id"];
-    const dish_name = data["dish_name"];
-    var orderButton = $("<button>", {
-      class: "order-button",
-      "data-id": dish_id,
-      "data-name": dish_name,
-    }).text(`Выбрать для "${current_client_name}"`);
-
-    var orderButton2 = $("<button>", {
-      class: "order-button-mod",
-      "data-id": dish_id,
-      "data-name": current_client_name,
-    }).text(`Выбрать для "${current_client_name}"`);
-
-    var orderButtonContainer = $(`.order-btn-container[data-id="${dish_id}"]`);
-    var orderButtonContainer2 = $(
-      `.order-btn-container2[data-id="${dish_id}"]`
-    );
-    orderButtonContainer.empty();
-    orderButtonContainer2.empty();
-    orderButtonContainer.append(orderButton);
-    orderButtonContainer2.append(orderButton2);
-
-    const orderButtonToAddListener = document.querySelector(
-      `.order-button[data-id="${dish_id}"]`
-    );
-    const orderButtonToAddListener2 = document.querySelector(
-      `.order-button-mod[data-id="${dish_id}"]`
-    );
-    if (orderButtonToAddListener) {
-      AddBtnAnimation(orderButtonToAddListener);
-    }
-    if (orderButtonToAddListener2) {
-      AddBtnAnimation(orderButtonToAddListener2);
-    }
-    var is_addit = localStorage.getItem("is_additional");
-    if (is_addit == "true") {
-      orderButtonToAddListener.addEventListener("click", function () {
-        handleButtonClickAddittional(this);
-      });
-      if (orderButtonToAddListener2) {
-        orderButtonToAddListener2.addEventListener("click", function () {
-          handleButtonClickAddittional(this);
-        });
-      }
-    } else {
-      orderButtonToAddListener.addEventListener("click", function () {
-        handleButtonClick(this);
-      });
-      if (orderButtonToAddListener2) {
-        orderButtonToAddListener2.addEventListener("click", function () {
-          handleButtonClick(this);
-        });
-      }
-    }
-
-    orderButtonToAddListener.addEventListener("click", function () {
-      AddBtnAnimation(this);
-    });
-    if (orderButtonToAddListener2) {
-      orderButtonToAddListener2.addEventListener("click", function () {
-        AddBtnAnimation(this);
-      });
-    }
+    DeleteQuantityButton(data["dish_id"], data["dish_name"]);
   } else if (action === "client_quantity_changed") {
     client_id = data["client_id"];
     banquet_id = data["banquet_id"];
@@ -1463,7 +1151,7 @@ socket.onmessage = function (e) {
     const clientOrderQuantity = document.getElementById(dishOrder_id);
     clientOrderQuantity.textContent = new_quantity;
     if (DishNumberInput) {
-      DishNumberInput.textContent = new_quantity;
+      DishNumberInput.textContent = formatInteger(parseInt(new_quantity));
     }
 
     if (DishNumberInput2) {
@@ -1478,7 +1166,9 @@ socket.onmessage = function (e) {
     );
 
     const orderPriceCount = document.getElementById(client_id);
-    orderPriceCount.textContent = data["order_total_price"];
+    orderPriceCount.textContent = formatInteger(
+      parseInt(data["order_total_price"])
+    );
 
     const clientPriceCount = document.querySelector(
       `.client-price-count[data-id="${client_id}"]`
@@ -1637,7 +1327,7 @@ socket.onmessage = function (e) {
         `.order-button-mod[data-id="${current_dish_id}"]`
       );
       if (orderButtonToDelete2) {
-        orderButtonToDelete2.remove();
+        orderButtonToDelete2.style.display = "none";
       }
       CreateQuantityStatusButton(
         container2,
