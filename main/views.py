@@ -7,6 +7,9 @@ from django.shortcuts import render
 from django.http import JsonResponse
 
 def home(request):
+    if not request.session or not request.session.session_key:
+        request.session.save()
+
     if "application/json" in request.META.get("HTTP_ACCEPT", ""):
         print(request.GET)
         email_to_check = request.GET.get("email")

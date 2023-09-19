@@ -20,6 +20,9 @@ def verified_callback(user):
     user.is_active = True
 
 
+SESSION_COOKIE_AGE = 36000
+SESSION_ENGINE = 'django.contrib.sessions.backends.db'
+SESSION_SAVE_EVERY_REQUEST = True
 
 # For Django Email Backend
 # EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
@@ -108,6 +111,10 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+
+    'Banquet.middleware.SessionEndMiddleware',
+    'Banquet.middleware.SessionStartMiddleware',
+    'Banquet.middleware.SessionExpiredMiddleware',
 ]
 
 ROOT_URLCONF = 'secondproject.urls'

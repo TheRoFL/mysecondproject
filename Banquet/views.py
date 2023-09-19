@@ -29,6 +29,9 @@ from django_ratelimit.decorators import ratelimit
 @ratelimit(key='ip', rate='600/m', method='POST', block=True)
 @ratelimit(key='ip', rate='600/m', method='GET', block=True)
 def home(request, dish_type=None, clientId=None):
+    if not request.session or not request.session.session_key:
+        request.session.save()
+        
     clientId = request.GET.get('editting-clientId')
     if clientId == "null":
         clientId=None

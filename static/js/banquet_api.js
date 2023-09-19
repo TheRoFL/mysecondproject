@@ -135,6 +135,8 @@ function RecievedBanquetData(data) {
         });
       }
     });
+    detailsButton.classList.remove("created");
+
     const newClientNameInput = document.querySelector(".name-input.created");
     newClientNameInput.setAttribute("data-id", client_id);
     newClientNameInput.classList.remove("created");
@@ -817,6 +819,41 @@ function RecievedBanquetData(data) {
         });
       }
     });
+
+    const OrderTotalPrice = document.querySelector(
+      `span.order-price-count[data-id="${data.client_id}"]`
+    );
+
+    if (OrderTotalPrice) {
+      OrderTotalPrice.textContent = formatInteger(
+        parseInt(data.order_total_price)
+      );
+    }
+
+    const order_total_price = document.querySelector(
+      `span.order-price-count[data-id="${data.client_id}"]`
+    );
+
+    if (order_total_price) {
+      order_total_price.textContent = formatInteger(
+        parseInt(data.order_total_price)
+      );
+    }
+
+    const client_price_count = document.querySelector(
+      `span.client-price-count[data-id="${data.client_id}"]`
+    );
+    if (client_price_count) {
+      client_price_count.textContent = formatInteger(
+        parseInt(data.client_total_price)
+      );
+    }
+
+    const total_banquet_price = document.querySelector(
+      `.banquet-total-price[data-id="${data.current_banquet_id}"]`
+    );
+    total_banquet_price.textContent =
+      formatInteger(parseInt(data["total_banquet_price"])) + ".00 ₽";
   } else if (action === "new_additional_dish_added") {
     var dish_data = data["current_dish_data"];
     dish_data = JSON.parse(dish_data);

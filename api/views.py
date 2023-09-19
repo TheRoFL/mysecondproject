@@ -549,6 +549,9 @@ def ChangeBanquetData(request):
                 'all_dishes':final_response,
                 'current_banquet_id':current_banquet.id,
                 'client_id':current_client.id,
+                'order_total_price': current_client.total_client_price(),
+                'client_total_price': current_client.menu_and_orders_price_count(),
+                'total_banquet_price': current_banquet.total_price()
             }
             response = json.dumps(response)
             return JsonResponse(response, safe=False)
@@ -993,3 +996,4 @@ def ChangeBanquetData(request):
     except:
         response = json.dumps("Error")
         JsonResponse(response, safe=False)
+        
