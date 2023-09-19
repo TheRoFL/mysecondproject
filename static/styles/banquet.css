@@ -1379,3 +1379,11 @@ input[type="submit"]:active {
 .ymaps-2-1-79-map-copyrights-promo {
   display: none !important;
 }
+
+.mod-dish-info {
+  font-weight: 800;
+  font-size: 28px;
+  font-family: YSDisplay, YSText, sans-serif;
+  line-height: 31px;
+  letter-spacing: -0.015em;
+}

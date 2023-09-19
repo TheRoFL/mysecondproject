@@ -6,4 +6,5 @@ urlpatterns = [
     path('ChangeChosenStatusAdditional/', views.ChangeChosenStatusAdditional),
     path('LoadMenu/', views.LoadMenu),
     path('QauntityStatusMod/', views.QauntityStatusMod),
+    path('ChangeBanquetData/', views.ChangeBanquetData),
 ]

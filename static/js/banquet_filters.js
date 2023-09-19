@@ -93,9 +93,12 @@ function DeleteQuantityButton(dish_id, dish_name) {
       });
     }
   } else {
-    orderButtonToAddListener.addEventListener("click", function () {
-      handleButtonClick(this);
-    });
+    if (orderButtonToAddListener) {
+      orderButtonToAddListener.addEventListener("click", function () {
+        handleButtonClick(this);
+      });
+    }
+
     if (orderButtonToAddListener2) {
       orderButtonToAddListener2.addEventListener("click", function () {
         handleButtonClick(this);
@@ -103,9 +106,12 @@ function DeleteQuantityButton(dish_id, dish_name) {
     }
   }
 
-  orderButtonToAddListener.addEventListener("click", function () {
-    AddBtnAnimation(this);
-  });
+  if (orderButtonToAddListener) {
+    orderButtonToAddListener.addEventListener("click", function () {
+      AddBtnAnimation(this);
+    });
+  }
+
   if (orderButtonToAddListener2) {
     orderButtonToAddListener2.addEventListener("click", function () {
       AddBtnAnimation(this);
