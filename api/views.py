@@ -222,11 +222,12 @@ def ChangeBanquetData(request):
     print(data)
 
     action = data["action"]
-    current_user_id = data["current_user_id"]
+    current_user_id = int(data["current_user_id"])
     try:
         current_user = User.objects.get(id=current_user_id)
         current_user_profiledata = ProfileData.objects.get(user=current_user)
-    except ProfileData.DoesNotExist:
+    except Exception as e:
+        # print(e) 
         pass
 
     try:
@@ -234,7 +235,10 @@ def ChangeBanquetData(request):
             clientName = data["clientName"]
             clientCount = data["clientCount"]
 
-            current_banquet = Banquet.objects.get(owner=current_user_profiledata, is_ordered=False)
+            try:
+                current_banquet = Banquet.objects.get(owner=current_user_profiledata, is_ordered=False)
+            except Exception as e:
+                print(e)       
 
             if current_banquet:
                 pass
@@ -251,6 +255,7 @@ def ChangeBanquetData(request):
                         }
             
             response = json.dumps(response)
+     
             return JsonResponse(response, safe=False)
 
         elif action == "client_quantity_update":
@@ -576,7 +581,7 @@ def ChangeBanquetData(request):
                         'order_total_price': new_current_client.total_client_price(),
                         'client_total_price': new_current_client.menu_and_orders_price_count(),
                         'client_id':my_current_client_id,
-                        'banqet_id':current_banquet.id,
+                        'current_banquet_id':current_banquet.id,
                         'total_banquet_price':current_banquet.total_price()
                         }
             
@@ -605,7 +610,7 @@ def ChangeBanquetData(request):
                         'order_total_price': new_current_client.total_client_price(),
                         'client_total_price': new_current_client.menu_and_orders_price_count(),
                         'client_id':my_current_client_id,
-                        'banqet_id':current_banquet.id,
+                        'current_banquet_id':current_banquet.id,
                         'total_banquet_price':current_banquet.total_price()
                         }
             
@@ -649,7 +654,7 @@ def ChangeBanquetData(request):
                         "client_id": current_client.id,
                         'current_dish_order_id':current_dish_order.id,
                         'new_quantity':current_dish_order.quantity,
-                        'banqet_id':current_banquet.id,
+                        'current_banquet_id':current_banquet.id,
                         'current_dish_order_price_count':current_dish_order.price_count(),
                         'order_total_price': current_client.total_client_price(),
                         'client_total_price': current_client.menu_and_orders_price_count(), #считает сумму клиента без меню
@@ -675,7 +680,7 @@ def ChangeBanquetData(request):
                             "client_id": current_client.id,
                             'current_dish_order_id':current_dish_order.id,
                             'new_quantity':current_dish_order.quantity,
-                            'banqet_id':current_banquet.id,
+                            'current_banquet_id':current_banquet.id,
                             'current_dish_order_price_count':current_dish_order.price_count(),
                             'order_total_price': current_client.total_client_price(),
                             'client_total_price': current_client.menu_and_orders_price_count(), #считает сумму клиента без меню
@@ -694,7 +699,7 @@ def ChangeBanquetData(request):
                             'order_total_price': current_client.total_client_price(),
                             'client_total_price': current_client.menu_and_orders_price_count(),
                             'client_id':current_client.id,
-                            'banqet_id':current_banquet.id,
+                            'current_banquet_id':current_banquet.id,
                             'total_banquet_price':current_banquet.total_price()
                             }
                 current_dish_order.delete()
@@ -718,7 +723,7 @@ def ChangeBanquetData(request):
             response = {
                             "action":"client_additional_cleared", 
                             'client_id':current_client.id,
-                            'banqet_id':current_banquet.id,
+                            'current_banquet_id':current_banquet.id,
                             'order_total_price': current_client.total_client_price(),
                             'client_total_price': current_client.menu_and_orders_price_count(),
                             'total_banquet_price':current_banquet.total_price()
@@ -808,7 +813,7 @@ def ChangeBanquetData(request):
             
             response = {
                             "action":"banquet_additional_cleared", 
-                            'banqet_id':current_banquet.id,
+                            'current_banquet_id':current_banquet.id,
                             'additinal_price':current_banquet.total_price_additional(),
                             'total_banquet_price': current_banquet.total_price()
                         }
@@ -828,7 +833,7 @@ def ChangeBanquetData(request):
                             'current_dish_order_id':current_dish_order.id,
                             'new_quantity':current_dish_order.quantity,
                             'additinal_price':current_banquet.total_price_additional(),
-                            'banqet_id':current_banquet.id,
+                            'current_banquet_id':current_banquet.id,
                             'current_dish_order_price_count':current_dish_order.price_count(),
                             'total_banquet_price': current_banquet.total_price()
                         }
@@ -850,7 +855,7 @@ def ChangeBanquetData(request):
                             'current_dish_order_id':current_dish_order.id,
                             'new_quantity':current_dish_order.quantity,
                             'additinal_price':current_banquet.total_price_additional(),
-                            'banqet_id':current_banquet.id,
+                            'current_banquet_id':current_banquet.id,
                             'current_dish_order_price_count':current_dish_order.price_count(),
                             'total_banquet_price': current_banquet.total_price()
                     }
@@ -863,7 +868,7 @@ def ChangeBanquetData(request):
                             'dish_id':current_dish_order.product.id,
                             'dish_name':current_dish_order.product.name,
                             'additinal_price':current_banquet.total_price_additional(),
-                            'banqet_id':current_banquet.id,
+                            'current_banquet_id':current_banquet.id,
                             'total_banquet_price':current_banquet.total_price()
                             }
                 current_dish_order.delete()
@@ -892,7 +897,7 @@ def ChangeBanquetData(request):
                                 "action":"additional_order_increased_additional",
                                 'current_dish_order_id':current_dish_order.id,
                                 'new_quantity':current_dish_order.quantity,
-                                'banqet_id':current_banquet.id,
+                                'current_banquet_id':current_banquet.id,
                                 'additinal_price':current_banquet.total_price_additional(),
                                 'current_dish_order_price_count':current_dish_order.price_count(),
                                 'total_banquet_price': current_banquet.total_price()
@@ -905,7 +910,7 @@ def ChangeBanquetData(request):
                 response = {"action":"order_deleted", 
                             'dish_id':current_dish_order.product.id,
                             "order_id": current_dish_order.id,
-                            'banqet_id':current_banquet.id,
+                            'current_banquet_id':current_banquet.id,
                             'additinal_price':current_banquet.total_price_additional(),
                             'total_banquet_price':current_banquet.total_price()
                             }
@@ -932,7 +937,7 @@ def ChangeBanquetData(request):
                             "action":"additional_order_deleted",
                             'current_dish_order_id':current_dish_order.id,
                             'new_quantity':current_dish_order.quantity,
-                            'banqet_id':current_banquet.id,
+                            'current_banquet_id':current_banquet.id,
                         }
             current_dish_order.delete()
             is_left = current_banquet.additional.all()
@@ -996,4 +1001,3 @@ def ChangeBanquetData(request):
     except:
         response = json.dumps("Error")
         JsonResponse(response, safe=False)
-        

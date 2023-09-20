@@ -25,36 +25,56 @@ from django_ratelimit.decorators import ratelimit
 
 
 
-@login_required(login_url='/login/')
 @ratelimit(key='ip', rate='600/m', method='POST', block=True)
 @ratelimit(key='ip', rate='600/m', method='GET', block=True)
 def home(request, dish_type=None, clientId=None):
-    if not request.session or not request.session.session_key:
-        request.session.save()
+    anonymous_user_id = None
+
+    # если неавторизованный 
+    if not request.user.id:
+        # если нету сессии
+        if not request.session or not request.session.session_key:
+            request.session.save()
+            user = User.objects.create_user(username=request.session.session_key, password=None)
+            anonymous_user_id = user.id
+        # если есть сессия
+        else: 
+            try:
+                user = User.objects.get(username=request.session.session_key)
+                anonymous_user_id = user.id
+            except User.DoesNotExist:
+                user = User.objects.create_user(username=request.session.session_key, password=None)
+                anonymous_user_id = user.id
+
+   
+    if not anonymous_user_id:
+        current_user = User.objects.get(id=request.user.id)
+    else:
+        current_user = User.objects.get(id=anonymous_user_id)
+
+    try:
+        current_user_profiledata = ProfileData.objects.get(user=current_user)
+    except ProfileData.DoesNotExist:
+        current_user = User.objects.get(id=anonymous_user_id)
+        current_user_profiledata = ProfileData.objects.create(user=current_user, name="Введите имя",
+                                                                surname="Введите фамилию", sex='m', 
+                                                                patronymic="Введите отчество",
+                                                                birthdate = None, number="Введите номер")
         
+    try:
+        banquet = Banquet.objects.get(owner=current_user_profiledata, is_ordered=False)
+    except Banquet.DoesNotExist:
+        banquet = Banquet.objects.create(owner=current_user_profiledata, is_ordered=False)
+    
+
+
     clientId = request.GET.get('editting-clientId')
     if clientId == "null":
         clientId=None
     dish_type = request.GET.get('dish-filter')
     if dish_type == "all" or dish_type == "null":
         dish_type = None
-    try:
-        current_user = User.objects.get(id=request.user.id)
-        current_user_profiledata = ProfileData.objects.get(user=current_user)
-    except ProfileData.DoesNotExist:
-        current_user = User.objects.get(id=request.user.id)
-        current_user_profiledata = ProfileData.objects.create(user=current_user, name="Введите имя",
-                                                                surname="Введите фамилию", sex='m', 
-                                                                patronymic="Введите отчество",
-                                                                birthdate = None, number="Введите номер")
         
-    
-    try:
-        banquet = Banquet.objects.get(owner=current_user_profiledata, is_ordered=False)
-    except Banquet.DoesNotExist:
-        banquet = Banquet.objects.create(owner=current_user_profiledata, is_ordered=False)
-
-    
     if dish_type == None:
         try:
             current_dishes = Dish.objects.all()
@@ -99,15 +119,13 @@ def home(request, dish_type=None, clientId=None):
             "banquet":banquet
         }
 
-
     if clientId:
         try:
             current_client = Client.objects.get(id=clientId)
             contex["current_client"] =  current_client
         except Client.DoesNotExist:
             pass
-     
-    
+      
     client_data = []
     for client in banquet.clients.all():
         client_dishes = {}
@@ -160,7 +178,9 @@ def home(request, dish_type=None, clientId=None):
 
     # generate_pdf(order, dishes, menus)
 
-   
+    if anonymous_user_id:
+        contex["anonymous_user_id"] = anonymous_user_id
+
     return render(request, 'Banquet/home.html', contex)    
 
 @ratelimit(key='ip', rate='600/m', method='POST', block=True)
@@ -294,9 +314,10 @@ def ordering(request):
     contex = {
         'current_banquet':current_banquet,
         'occupied_dates':occupied_dates,
-        'total':total
+        'total':total,
         }
     
+
     return render(request, 'Banquet/ordering.html', contex)       
 
    

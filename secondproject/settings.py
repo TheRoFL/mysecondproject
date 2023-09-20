@@ -19,8 +19,8 @@ DATE_INPUT_FORMATS = ['%d-%m-%Y']
 def verified_callback(user):
     user.is_active = True
 
-
-SESSION_COOKIE_AGE = 36000
+# удаление всех временных файлов через 24 часа после создания
+SESSION_COOKIE_AGE = 86400
 SESSION_ENGINE = 'django.contrib.sessions.backends.db'
 SESSION_SAVE_EVERY_REQUEST = True
 

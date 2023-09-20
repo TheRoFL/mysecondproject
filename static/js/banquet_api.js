@@ -204,14 +204,14 @@ function RecievedBanquetData(data) {
     localStorage.setItem("current_client_id", client_id);
   } else if (action === "client_deleted") {
     var client_id = data["client_id"];
-    var banqet_id = data["current_banquet_id"];
+    var current_banquet_id = data["current_banquet_id"];
     const clientElement = document.querySelector(
       `.my_client[data-id="${client_id}"]`
     );
-    const banqet_id_element = document.querySelector(
-      `.banquet-total-price[data-id="${banqet_id}"]`
+    const current_banquet_id_element = document.querySelector(
+      `.banquet-total-price[data-id="${current_banquet_id}"]`
     );
-    banqet_id_element.textContent =
+    current_banquet_id_element.textContent =
       formatInteger(parseInt(data["total_banquet_price"])) + ".00 ₽";
     if (clientElement) {
       clientElement.remove();
@@ -228,7 +228,7 @@ function RecievedBanquetData(data) {
       clientOrdersElement.remove();
       if (data.orders_left == "false") {
         var clientAdditional = document.querySelector(
-          `.additional-dishes[data-banquet-id="${data.banqet_id}"]`
+          `.additional-dishes[data-banquet-id="${data.current_banquet_id}"]`
         );
         var common_additional = document.querySelector(
           `.additional-dishes[data-id="${data.client_id}"]`
@@ -261,7 +261,7 @@ function RecievedBanquetData(data) {
     }
 
     const new_client_total_price = document.querySelector(
-      `span.order-price-count-additional[data-id="${data.banqet_id}"]`
+      `span.order-price-count-additional[data-id="${data.current_banquet_id}"]`
     );
     if (new_client_total_price && data.additinal_price) {
       new_client_total_price.textContent = formatInteger(
@@ -270,8 +270,9 @@ function RecievedBanquetData(data) {
     }
 
     const total_banquet_price = document.querySelector(
-      `.banquet-total-price[data-id="${data.banqet_id}"]`
+      `.banquet-total-price[data-id="${data.current_banquet_id}"]`
     );
+
     total_banquet_price.textContent =
       formatInteger(parseInt(data["total_banquet_price"])) + ".00 ₽";
 
@@ -418,7 +419,7 @@ function RecievedBanquetData(data) {
     items = data["current_menu_dishes"];
 
     const client_id2 = data["client_id"];
-    var banqet_id = data["current_banquet_id"];
+    var current_banquet_id = data["current_banquet_id"];
 
     dishes_data.forEach(function (dish_data) {
       dish_data = JSON.parse(dish_data);
@@ -1343,20 +1344,20 @@ function RecievedBanquetData(data) {
 
     if (data.is_left == false) {
       var clientAdditional = document.querySelector(
-        `.additional-dishes[data-banquet-id="${data.banqet_id}"]`
+        `.additional-dishes[data-banquet-id="${data.current_banquet_id}"]`
       );
       while (clientAdditional.firstChild) {
         clientAdditional.removeChild(clientAdditional.firstChild);
       }
     }
     var orderPriceCountAdditional = document.querySelector(
-      `.order-price-count-additional[data-id="${data["banqet_id"]}"`
+      `.order-price-count-additional[data-id="${data["current_banquet_id"]}"`
     );
     orderPriceCountAdditional.textContent = formatInteger(
       parseInt(data["current_banquet_additional_price"][0])
     );
     var banquetTotalPrice = document.querySelector(
-      `.banquet-total-price[data-id="${data["banqet_id"]}"]`
+      `.banquet-total-price[data-id="${data["current_banquet_id"]}"]`
     );
     banquetTotalPrice.textContent =
       formatInteger(parseInt(data["total_banquet_price"])) + ".00 ₽";
@@ -1367,7 +1368,7 @@ function RecievedBanquetData(data) {
     client_id = data["client_id"];
     dishOrder_id = data["current_dish_order_id"];
     new_quantity = data["new_quantity"];
-    banqet_id = data["banqet_id"];
+    current_banquet_id = data["current_banquet_id"];
     const DishNumberInput = document.querySelector(
       `.dish-number-input[data-dish-id="${dishOrder_id}"]`
     );
@@ -1403,7 +1404,7 @@ function RecievedBanquetData(data) {
       parseInt(data["client_total_price"])
     );
 
-    const banquetTotalPrice = document.getElementById(banqet_id);
+    const banquetTotalPrice = document.getElementById(current_banquet_id);
     banquetTotalPrice.textContent =
       formatInteger(parseInt(data["total_banquet_price"])) + ".00 ₽";
 
@@ -1455,13 +1456,13 @@ function RecievedBanquetData(data) {
     }
 
     const total_banquet_price = document.querySelector(
-      `.banquet-total-price[data-id="${data.banqet_id}"]`
+      `.banquet-total-price[data-id="${data.current_banquet_id}"]`
     );
     total_banquet_price.textContent =
       formatInteger(parseInt(data["total_banquet_price"])) + ".00 ₽";
   } else if (action == "banquet_additional_cleared") {
     const additionalDishes = document.querySelector(
-      `.additional-dishes[data-banquet-id="${data["banqet_id"]}"]`
+      `.additional-dishes[data-banquet-id="${data["current_banquet_id"]}"]`
     );
     if (additionalDishes) {
       while (additionalDishes.firstChild) {
@@ -1469,7 +1470,7 @@ function RecievedBanquetData(data) {
       }
     }
     var additional_order_price = document.querySelector(
-      `.order-price-count-additional[data-id="${data.banqet_id}"]`
+      `.order-price-count-additional[data-id="${data.current_banquet_id}"]`
     );
     additional_order_price.textContent = formatInteger(
       parseInt(data.additinal_price)
@@ -1510,7 +1511,7 @@ function RecievedBanquetData(data) {
     );
 
     var additional_order_price = document.querySelector(
-      `.order-price-count-additional[data-id="${data.banqet_id}"]`
+      `.order-price-count-additional[data-id="${data.current_banquet_id}"]`
     );
     additional_order_price.textContent = formatInteger(
       parseInt(data.additinal_price)

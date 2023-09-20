@@ -3,6 +3,10 @@
 <head>
   <script>
     var username_id_added = "{{user.id}}";
+    if (username_id_added == "None") {
+      username_id_added = "{{anonymous_user_id}}";
+    }
+
     var current_client_id_added = "{{current_client.id}}";
     var current_client_name = "{{current_client.type}}";
     localStorage.setItem("username_id", username_id_added);
