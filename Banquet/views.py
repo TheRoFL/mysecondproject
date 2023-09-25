@@ -183,8 +183,8 @@ def home(request, dish_type=None, clientId=None):
 
     return render(request, 'Banquet/home.html', contex)    
 
-@ratelimit(key='ip', rate='600/m', method='POST', block=True)
-@ratelimit(key='ip', rate='600/m', method='GET', block=True)
+# @ratelimit(key='ip', rate='600/m', method='POST', block=True)
+# @ratelimit(key='ip', rate='600/m', method='GET', block=True)
 def ordering(request):
     try:
         current_user = User.objects.get(id=request.user.id)

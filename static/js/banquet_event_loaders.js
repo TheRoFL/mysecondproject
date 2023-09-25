@@ -270,3 +270,32 @@ function handleNewClientClick(button) {
   x1.classList.remove("hidden2");
   y1.classList.remove("hidden2");
 }
+
+function handleDishImgClick(event) {
+  const adittionalDish = event.target;
+  adittionalDish.classList.add("active");
+  x = document.getElementById(
+    "overflow" + adittionalDish.getAttribute("data-id")
+  );
+  y = document.getElementById(
+    "modWind" + adittionalDish.getAttribute("data-id")
+  );
+
+  x.classList.remove("hidden");
+  y.classList.remove("hidden");
+
+  var exit = document.getElementById(
+    "overflow" + adittionalDish.getAttribute("data-id")
+  );
+
+  exit.addEventListener("click", () => {
+    x = document.getElementById(
+      "overflow" + adittionalDish.getAttribute("data-id")
+    );
+    y = document.getElementById(
+      "modWind" + adittionalDish.getAttribute("data-id")
+    );
+    x.classList.add("hidden");
+    y.classList.add("hidden");
+  });
+}

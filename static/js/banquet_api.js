@@ -432,7 +432,6 @@ function RecievedBanquetData(data) {
       const dish_sostav = dish_data["sostav"];
       const dish_type = dish_data["type"];
       const dish_image = dish_data["image"];
-      const dish_image_decoded = decodeURIComponent(dish_image);
       var adittionalDish = `
       <div class="client-menu-dish">
     <div class="adittional-dish-item-img">
@@ -453,92 +452,11 @@ function RecievedBanquetData(data) {
       temp.innerHTML += adittionalDish;
       menuDiv.append(temp);
 
-      var adittionalDish = document.querySelector(
-        `.client-img[data-client-id="${client_id2}"][data-id="${dish_id}"]`
-      );
+      // var adittionalDish = document.querySelector(
+      //   `.client-img[data-client-id="${client_id2}"][data-id="${dish_id}"]`
+      // );
 
-      var is_mod = document.getElementById(
-        `overflow3${adittionalDish.getAttribute("data-id")}`
-      );
-      if (!is_mod) {
-        var x, y;
-        var div = `<div class = "overflow3 hidden" id="${
-          "overflow3" + adittionalDish.getAttribute("data-id")
-        }"></div>
-              <div class="modWind3 hidden" id="${
-                "modWind3" + adittionalDish.getAttribute("data-id")
-              }">
-                <div class="flex-mod-dish"><img class="dish-img-mod"
-                src="http://localhost:8000${dish_image_decoded}"
-                </div>
-                <div class="mod-dish-info3">
-                  <div class="name">${adittionalDish.getAttribute(
-                    "data-name"
-                  )}</div>
-                  <div class="grams">${adittionalDish.getAttribute(
-                    "data-weight"
-                  )} гр</div>
-                  <div class="price">${adittionalDish.getAttribute(
-                    "data-price"
-                  )} руб</div>
-                  <div class="sostav">${adittionalDish.getAttribute(
-                    "data-sostav"
-                  )}</div>
-                </div>
-            </div>
-            <div class="mod-dish-decription">
-            <div class="decription">Тут будет описание...</div> 
-            
-            </div>
-            `;
-
-        document.querySelector("body").insertAdjacentHTML("beforeend", div);
-
-        var exit = document.getElementById(
-          "overflow3" + adittionalDish.getAttribute("data-id")
-        );
-
-        exit.addEventListener("click", () => {
-          x = document.getElementById(
-            "overflow3" + adittionalDish.getAttribute("data-id")
-          );
-          y = document.getElementById(
-            "modWind3" + adittionalDish.getAttribute("data-id")
-          );
-          x.classList.add("hidden");
-          y.classList.add("hidden");
-        });
-      }
-
-      adittionalDish.addEventListener("click", () => {
-        adittionalDish.classList.add("active");
-        x = document.getElementById(
-          "overflow3" + adittionalDish.getAttribute("data-id")
-        );
-        y = document.getElementById(
-          "modWind3" + adittionalDish.getAttribute("data-id")
-        );
-
-        x.classList.remove("hidden");
-        y.classList.remove("hidden");
-
-        // my_client = document.querySelector(`.my_client[data-id="${client_imges[i].}"]`)
-      });
-
-      adittionalDish.addEventListener("click", () => {
-        adittionalDish.classList.add("active");
-        x = document.getElementById(
-          "overflow3" + adittionalDish.getAttribute("data-id")
-        );
-        y = document.getElementById(
-          "modWind3" + adittionalDish.getAttribute("data-id")
-        );
-
-        x.classList.remove("hidden");
-        y.classList.remove("hidden");
-
-        // my_client = document.querySelector(`.my_client[data-id="${client_imges[i].}"]`)
-      });
+      // adittionalDish.addEventListener("click", handleDishImgClick);
     });
 
     var dottedLine = `<div class="dotted-line"></div>`;
@@ -711,75 +629,11 @@ function RecievedBanquetData(data) {
         temp.innerHTML += adittionalDish;
         additional_dishes.append(temp);
 
-        var adittionalDish = document.querySelector(
-          `.client-img[data-client-id="${client_id2}"][data-id="${dish_id}"].additional`
-        );
+        // var adittionalDish = document.querySelector(
+        //   `.client-img[data-client-id="${client_id2}"][data-id="${dish_id}"].additional`
+        // );
 
-        var is_mod = document.getElementById(
-          `overflow3${adittionalDish.getAttribute("data-id")}`
-        );
-        if (!is_mod) {
-          var x, y;
-          var div = `<div class = "overflow3 hidden" id="${
-            "overflow3" + adittionalDish.getAttribute("data-id")
-          }"></div>
-            <div class="modWind3 hidden" id="${
-              "modWind3" + adittionalDish.getAttribute("data-id")
-            }">
-              <div class="flex-mod-dish"><img class="dish-img-mod"
-              src="http://localhost:8000${dish_image_decoded}"
-              </div>
-              <div class="mod-dish-info3">
-                <div class="name">${adittionalDish.getAttribute(
-                  "data-name"
-                )}</div>
-                <div class="grams">${adittionalDish.getAttribute(
-                  "data-weight"
-                )} гр</div>
-                <div class="price">${adittionalDish.getAttribute(
-                  "data-price"
-                )} руб</div>
-                <div class="sostav">${adittionalDish.getAttribute(
-                  "data-sostav"
-                )}</div>
-              </div>
-          </div>
-          <div class="mod-dish-decription">
-          <div class="decription">Тут будет описание...</div> 
-          
-          </div>
-          `;
-
-          document.querySelector("body").insertAdjacentHTML("beforeend", div);
-
-          var exit = document.getElementById(
-            "overflow3" + adittionalDish.getAttribute("data-id")
-          );
-          exit.addEventListener("click", () => {
-            x = document.getElementById(
-              "overflow3" + adittionalDish.getAttribute("data-id")
-            );
-            y = document.getElementById(
-              "modWind3" + adittionalDish.getAttribute("data-id")
-            );
-            x.classList.add("hidden");
-            y.classList.add("hidden");
-          });
-        }
-        adittionalDish.addEventListener("click", () => {
-          adittionalDish.classList.add("active");
-          x = document.getElementById(
-            "overflow3" + adittionalDish.getAttribute("data-id")
-          );
-          y = document.getElementById(
-            "modWind3" + adittionalDish.getAttribute("data-id")
-          );
-
-          x.classList.remove("hidden");
-          y.classList.remove("hidden");
-
-          // my_client = document.querySelector(`.my_client[data-id="${client_imges[i].}"]`)
-        });
+        // adittionalDish.addEventListener("click", handleDishImgClick);
 
         var additionalDishesSignBtn = document.querySelector(
           `.clear-additional-btn[data-id="${data["client_id"]}"]`
@@ -932,107 +786,10 @@ function RecievedBanquetData(data) {
     temp.innerHTML += adittionalDish;
     additional_dishes.append(temp);
 
-    var adittionalDish = document.querySelector(
-      `.client-img[data-client-id="${client_id2}"][data-id="${dish_id}"]`
-    );
-
-    var is_mod = document.getElementById(
-      `overflow3${adittionalDish.getAttribute("data-id")}`
-    );
-    if (!is_mod) {
-      var x, y;
-      var div = `<div class = "overflow3 hidden" id="${
-        "overflow3" + adittionalDish.getAttribute("data-id")
-      }"></div>
-            <div class="modWind3 hidden" id="${
-              "modWind3" + adittionalDish.getAttribute("data-id")
-            }">
-              <div class="flex-mod-dish"><img class="dish-img-mod"
-              src="http://localhost:8000${dish_image_decoded}"
-              </div>
-              <div class="mod-dish-info3">
-                <div class="name">${adittionalDish.getAttribute(
-                  "data-name"
-                )}</div>
-                <div class="grams">${adittionalDish.getAttribute(
-                  "data-weight"
-                )} гр</div>
-                <div class="price">${adittionalDish.getAttribute(
-                  "data-price"
-                )} руб</div>
-                <div class="sostav">${adittionalDish.getAttribute(
-                  "data-sostav"
-                )}</div>
-              </div>
-          </div>
-          <div class="mod-dish-decription">
-          <div class="decription">Тут будет описание...</div> 
-          
-          </div>
-          `;
-
-      document.querySelector("body").insertAdjacentHTML("beforeend", div);
-
-      adittionalDish.addEventListener("click", () => {
-        adittionalDish.classList.add("active");
-        x = document.getElementById(
-          "overflow3" + adittionalDish.getAttribute("data-id")
-        );
-        y = document.getElementById(
-          "modWind3" + adittionalDish.getAttribute("data-id")
-        );
-
-        x.classList.remove("hidden");
-        y.classList.remove("hidden");
-
-        // my_client = document.querySelector(`.my_client[data-id="${client_imges[i].}"]`)
-      });
-
-      var exit = document.getElementById(
-        "overflow3" + adittionalDish.getAttribute("data-id")
-      );
-
-      exit.addEventListener("click", () => {
-        x = document.getElementById(
-          "overflow3" + adittionalDish.getAttribute("data-id")
-        );
-        y = document.getElementById(
-          "modWind3" + adittionalDish.getAttribute("data-id")
-        );
-        x.classList.add("hidden");
-        y.classList.add("hidden");
-      });
-    } else {
-      adittionalDish.addEventListener("click", () => {
-        adittionalDish.classList.add("active");
-        x = document.getElementById(
-          "overflow3" + adittionalDish.getAttribute("data-id")
-        );
-        y = document.getElementById(
-          "modWind3" + adittionalDish.getAttribute("data-id")
-        );
-
-        x.classList.remove("hidden");
-        y.classList.remove("hidden");
-
-        // my_client = document.querySelector(`.my_client[data-id="${client_imges[i].}"]`)
-      });
-    }
-
-    adittionalDish.addEventListener("click", () => {
-      adittionalDish.classList.add("active");
-      x = document.getElementById(
-        "overflow3" + adittionalDish.getAttribute("data-id")
-      );
-      y = document.getElementById(
-        "modWind3" + adittionalDish.getAttribute("data-id")
-      );
-
-      x.classList.remove("hidden");
-      y.classList.remove("hidden");
-
-      // my_client = document.querySelector(`.my_client[data-id="${client_imges[i].}"]`)
-    });
+    // var adittionalDish = document.querySelector(
+    //   `.client-img[data-client-id="${client_id2}"][data-id="${dish_id}"]`
+    // );
+    // adittionalDish.addEventListener("click", handleDishImgClick);
 
     var additionalDishesSignBtn2 = document.querySelector(
       `.clear-additional-btn-additional[data-id="${current_banquet_id}"]`
@@ -1198,75 +955,10 @@ function RecievedBanquetData(data) {
     temp.innerHTML += adittionalDish;
     additional_dishes.append(temp);
 
-    var adittionalDish = document.querySelector(
-      `.client-img[data-client-id="${client_id2}"][data-id="${dish_id}"].additional`
-    );
-
-    var is_mod = document.getElementById(
-      `overflow3${adittionalDish.getAttribute("data-id")}`
-    );
-    if (!is_mod) {
-      var x, y;
-      var div = `<div class = "overflow3 hidden" id="${
-        "overflow3" + adittionalDish.getAttribute("data-id")
-      }"></div>
-            <div class="modWind3 hidden" id="${
-              "modWind3" + adittionalDish.getAttribute("data-id")
-            }">
-              <div class="flex-mod-dish"><img class="dish-img-mod"
-              src="http://localhost:8000${dish_image_decoded}"
-              </div>
-              <div class="mod-dish-info3">
-                <div class="name">${adittionalDish.getAttribute(
-                  "data-name"
-                )}</div>
-                <div class="grams">${adittionalDish.getAttribute(
-                  "data-weight"
-                )} гр</div>
-                <div class="price">${adittionalDish.getAttribute(
-                  "data-price"
-                )} руб</div>
-                <div class="sostav">${adittionalDish.getAttribute(
-                  "data-sostav"
-                )}</div>
-              </div>
-          </div>
-          <div class="mod-dish-decription">
-          <div class="decription">Тут будет описание...</div> 
-          
-          </div>
-          `;
-
-      document.querySelector("body").insertAdjacentHTML("beforeend", div);
-
-      var exit = document.getElementById(
-        "overflow3" + adittionalDish.getAttribute("data-id")
-      );
-      exit.addEventListener("click", () => {
-        x = document.getElementById(
-          "overflow3" + adittionalDish.getAttribute("data-id")
-        );
-        y = document.getElementById(
-          "modWind3" + adittionalDish.getAttribute("data-id")
-        );
-        x.classList.add("hidden");
-        y.classList.add("hidden");
-      });
-    }
-    adittionalDish.addEventListener("click", () => {
-      adittionalDish.classList.add("active");
-      x = document.getElementById(
-        "overflow3" + adittionalDish.getAttribute("data-id")
-      );
-      y = document.getElementById(
-        "modWind3" + adittionalDish.getAttribute("data-id")
-      );
-
-      x.classList.remove("hidden");
-      y.classList.remove("hidden");
-
-      // my_client = document.querySelector(`.my_client[data-id="${client_imges[i].}"]`)
-    });
+    // var adittionalDish = document.querySelector(
+    //   `.client-img[data-client-id="${client_id2}"][data-id="${dish_id}"].additional`
+    // );
+    // adittionalDish.addEventListener("click", handleDishImgClick);
 
     var additionalDishesSignBtn = document.querySelector(
       `.clear-additional-btn[data-id="${data["client_id"]}"]`

@@ -98,6 +98,7 @@ def LoadMenu(request):
     dish_type = request.GET.get('dish-filter')
     dish_name = request.GET.get('dish-name')
     menu_filter = request.GET.get('menu-filter')
+    sorted_by = request.GET.get('sorted_by')
     if dish_type == "all" or dish_type == "null":
         dish_type = "all"
          
@@ -177,6 +178,12 @@ def LoadMenu(request):
     if current_dishes == None:
         current_dishes = []
     serialized_data = serialize('json', current_dishes)
+    serialized_data_dict = json.loads(serialized_data)
+    
+    if sorted_by != "none" and sorted_by != "":
+        if (dish_type != "samples"):
+            serialized_data_dict = sorted(serialized_data_dict, key=lambda x: (x["fields"][sorted_by]))
+            serialized_data = json.dumps(serialized_data_dict)
 
     if serialized_menu_dishes:
         combined_data = {

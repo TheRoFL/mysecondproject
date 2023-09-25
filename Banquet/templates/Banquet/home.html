@@ -11,8 +11,9 @@
     var current_client_name = "{{current_client.type}}";
     localStorage.setItem("username_id", username_id_added);
     localStorage.setItem("current_client_id", current_client_id_added);
-    localStorage.setItem("dishFilter", current_client_id_added);
     localStorage.setItem("current_client_name", current_client_name);
+    localStorage.setItem("search-request", "");
+    localStorage.setItem("sorted_by", "none");
     var username_id = localStorage.getItem("username_id");
     var current_client_id = localStorage.getItem("current_client_id");
   </script>
@@ -480,28 +481,6 @@
             id="dish-search"
             placeholder="Введите запрос"
           />
-          {% comment %}
-          <div class="search-svg-wrapper">
-            <svg
-              class="search-svg"
-              enable-background="new 0 0 24 24"
-              height="24"
-              viewBox="0 0 24 24"
-              width="24"
-              focusable="false"
-              style="
-                pointer-events: none;
-                display: block;
-                width: 100%;
-                height: 100%;
-              "
-            >
-              <path
-                d="m20.87 20.17-5.59-5.59C16.35 13.35 17 11.75 17 10c0-3.87-3.13-7-7-7s-7 3.13-7 7 3.13 7 7 7c1.75 0 3.35-.65 4.58-1.71l5.59 5.59.7-.71zM10 16c-3.31 0-6-2.69-6-6s2.69-6 6-6 6 2.69 6 6-2.69 6-6 6z"
-              ></path>
-            </svg>
-          </div>
-          {% endcomment %}
         </div>
 
         <div class="menu-filters hidden">
@@ -515,6 +494,11 @@
             День рождения
           </button>
         </div>
+      </div>
+      <div class="filters-menu">
+        <h1>Сортировка по:</h1>
+        <button class="filter-btn" data-filter="name">По имени</button>
+        <button class="filter-btn" data-filter="price">По цене</button>
       </div>
       {% if dish_type != 'samples' %}
       <div class="grid-container">
@@ -541,42 +525,41 @@
       {% else %}
       <!-- prettier-ignore -->
       <div class="grid-container">
-      {% for menu_sample in current_dishes %}
+        {% for menu_sample in current_dishes %}
 
-      <h1>{{menu_sample}} текст чтобы  </h1>
-      <h2>
-        <button
-          class="order-button"
-          data-id="{{menu_sample.id}}"
-          data-name="{{menu_sample.type}}"
-        >
-          {% if current_client %} Добавить для "<span
-            class="client-name-2"
-            data-id="{{client.id}}"
-            >{{current_client.type}}</span
-          >" {%else%} Выберите клиента {% endif %}
-        </button>
-      </h2>
-       {% for dish in menu_sample.dishes.all %}
-        <div class="grid-item dishes"    
-          data-tittle="{{dish.product.create_tittle2}}"
-          data-name="{{dish.product.name}}"
-          data-weight="{{dish.product.weight}}"
-          data-price="{{dish.product.price}}"
-          data-sostav="{{dish.product.ingredients}}"
-          data-type="{{dish.product.type}}"
-        >
-          <img
-            src="http://localhost:8000/media/menu_images/{{dish.product.type}}/{{dish.product.create_tittle2}}.png"
-        />
-          <h3>{{dish.product.name}} / {{dish.product.weight}} гр. / {{dish.product.price}} ₽</h3>
-        </div>
-      {% endfor %}
-      <div class="dotted-line"></div>
-      
-      {% endfor %}
-    </div>
-
+        <h1>{{menu_sample}}</h1>
+        <h2>
+          <button
+            class="order-button"
+            data-id="{{menu_sample.id}}"
+            data-name="{{menu_sample.type}}"
+          >
+            {% if current_client %} Добавить для "<span
+              class="client-name-2"
+              data-id="{{client.id}}"
+              >{{current_client.type}}</span
+            >" {%else%} Выберите клиента {% endif %}
+          </button>
+        </h2>
+        {% for dish in menu_sample.dishes.all %}
+          <div class="grid-item dishes"    
+            data-tittle="{{dish.product.create_tittle2}}"
+            data-name="{{dish.product.name}}"
+            data-weight="{{dish.product.weight}}"
+            data-price="{{dish.product.price}}"
+            data-sostav="{{dish.product.ingredients}}"
+            data-type="{{dish.product.type}}"
+          >
+            <img
+              src="http://localhost:8000/media/menu_images/{{dish.product.type}}/{{dish.product.create_tittle2}}.png"
+          />
+            <h3>{{dish.product.name}} / {{dish.product.weight}} гр. / {{dish.product.price}} ₽</h3>
+          </div>
+        {% endfor %}
+        <div class="dotted-line"></div>
+        
+        {% endfor %}
+      </div>
       {% endif %}
     </div>
     <div class="ordering-window-overflow hidden"></div>
@@ -644,7 +627,7 @@
       </div>
       <div class="map-and-addres">
         <script
-          src="https://api-maps.yandex.ru/2.1/?apikey=7b0f4d61-5672-4275-903c-8235206c10c7&lang=ru_RU"
+          src="https://api-maps.yandex.ru/2.1/?lang=ru_RU&apikey=7b0f4d61-5672-4275-903c-8235206c10c7&suggest_apikey=1bde2764-8f11-4747-980b-81552c66b6e2"
           type="text/javascript"
         ></script>
 
@@ -652,7 +635,7 @@
 
         <div id="map" class="map"></div>
         <div class="addres-details">
-          Адрес мероприятия:
+          Адрес мероприятия
           <input
             class="addres-input"
             type="text"

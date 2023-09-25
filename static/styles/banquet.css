@@ -268,7 +268,7 @@ input[type="submit"]:active {
 .clear-additional-btn,
 .clear-additional-btn-additional,
 .delete-btn {
-  transition: transform 0.15s ease-in-out; /* Добавляем плавную анимацию */
+  transition: transform 0.15s ease-in-out;
 }
 
 .increase-btn:hover,
@@ -279,9 +279,10 @@ input[type="submit"]:active {
 .clear-additional-btn:hover,
 .clear-additional-btn-additional:hover,
 .delete-btn:hover {
-  transform: scale(1.1); /* Увеличиваем элемент при наведении */
+  transform: scale(1.3);
 }
 
+.filter-btn:active,
 .delete-menu-btn:active,
 .delete-btn:active,
 .order-button-mod:active,
@@ -299,7 +300,7 @@ input[type="submit"]:active {
 .increase-btn-additional:active,
 .decrease-btn:active,
 .decrease-btn-additional:active {
-  transform: scale(0.85);
+  transform: scale(0.8);
 }
 /*----------------------------------------------------------------*/
 .body {
@@ -411,6 +412,15 @@ input[type="submit"]:active {
 .musorka-additional {
   width: 17px;
   margin-bottom: 5px;
+  transition: transform 0.15s ease;
+}
+
+.musorka-additional:hover {
+  transform: scale(1.2);
+}
+
+.musorka-additional:active {
+  transform: scale(0.8);
 }
 
 .menu-client-btn.active {
@@ -419,17 +429,17 @@ input[type="submit"]:active {
 }
 
 .menuu {
-  /* Ваш текущий CSS стиль, оставьте его без изменений */
   display: flex;
+  gap: 10px;
   flex-direction: column;
   color: black;
   background-color: #fff;
-  position: fixed; /* фиксированное положение */
+  position: fixed;
   top: 50%;
   left: 50%;
   z-index: 10;
-  width: 1200px; /* Убираем явное задание ширины */
-  height: 80%; /* Убираем явное задание высоты */
+  width: 1200px;
+  height: 80%;
   max-width: 90%;
   max-height: 100%;
   min-width: 720px;
@@ -441,7 +451,7 @@ input[type="submit"]:active {
   scrollbar-width: none;
   -ms-overflow-style: none;
   animation: fadeIn 0.25s ease-in-out forwards;
-  justify-content: flex-start; /* Исходное значение justify-content */
+  justify-content: flex-start;
 }
 
 .menuu::-webkit-scrollbar {
@@ -466,6 +476,19 @@ input[type="submit"]:active {
 
 .menu-filter,
 .dish-filter {
+  background-color: #fff;
+  color: #4a644b;
+  border-radius: 10px;
+  border: 1.5px solid #4a644b;
+  cursor: pointer;
+  padding: 5px;
+  margin: 0 10px;
+  font-size: 20px;
+  transition: background-color 0.3s ease,
+    transform 0.3s cubic-bezier(0.59, 0.3, 0.17, 1.47); /* Add a transition effect on hover */
+}
+
+.filter-btn {
   background-color: #fff;
   color: #4a644b;
   border-radius: 10px;
@@ -618,6 +641,7 @@ input[type="submit"]:active {
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
 }
 
+.filter-btn.highlighted,
 .menu-filter.highlighted,
 .dish-filter.highlighted {
   background-color: #4a644b; /* Зеленый цвет фона */
@@ -718,6 +742,7 @@ input[type="submit"]:active {
   }
 }
 
+.filter-btn:hover,
 .menu-filter:hover,
 .dish-filter:hover {
   transform: scale(1.1);
@@ -1167,6 +1192,10 @@ input[type="submit"]:active {
   display: flex;
 }
 
+.filters-menu {
+  display: flex;
+}
+
 .ordering-window {
   display: flex;
   flex-direction: row;
@@ -1360,8 +1389,13 @@ input[type="submit"]:active {
 
 .addres-input {
   display: inline-block;
-  width: 500px;
+  width: 630px;
+  min-width: 100px;
+  height: 40px;
+  border: solid 1px #d2d0cc;
+  border-radius: 16px;
   font-size: 16px;
+  margin-top: 10px;
 }
 
 .addres-details {
@@ -1369,6 +1403,7 @@ input[type="submit"]:active {
   color: #21201f;
   font-weight: 700;
   font-size: 24px;
+  margin-left: 5px;
 }
 
 .ymaps-2-1-79-controls__control,

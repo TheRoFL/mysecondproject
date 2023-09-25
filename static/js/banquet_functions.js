@@ -266,9 +266,13 @@ function CreateQuantityStatusButton(
   }
 }
 
-function LoadMenu(filter = null, name = null, menu_filter = null) {
-  localStorage.setItem("dish-filter", filter);
+function LoadMenu() {
+  var filter = localStorage.getItem("dish-filter");
+  var menu_filter = localStorage.getItem("menu-filter");
+  var name = localStorage.getItem("search-request");
   const menu_filters = document.querySelector(`.menu-filters`);
+  var sorted_by = localStorage.getItem("sorted_by");
+
   if (filter != "samples") {
     setTimeout(function () {
       menu_filters.classList.add("hidden");
@@ -284,6 +288,10 @@ function LoadMenu(filter = null, name = null, menu_filter = null) {
   };
   if (menu_filter) {
     requestParams["menu-filter"] = menu_filter;
+  }
+
+  if (sorted_by) {
+    requestParams["sorted_by"] = sorted_by;
   }
   $.ajax({
     url: "http://127.0.0.1:8000/api/LoadMenu/",

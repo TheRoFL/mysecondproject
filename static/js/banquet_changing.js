@@ -95,36 +95,7 @@ orderButtons.forEach((button) => {
   const dishId = button.dataset.id;
   const dishTittle = button.dataset.name;
   if (client_id != "") {
-    button.addEventListener("click", function () {
-      var username_id = localStorage.getItem("username_id");
-      var client_id = localStorage.getItem("current_client_id");
-      const data_to_send = {
-        action: "added_dish",
-        message: `Заказ "${dishTittle}" добавлен`,
-        current_dish_id: dishId,
-        current_user_id: username_id,
-        current_client_id: client_id,
-      };
-      var currentUrl = window.location.href;
-      const urlObject = new URL(currentUrl);
-      dish_filter = urlObject.searchParams.get("dish-filter");
-      var is_menu = false;
-      if (dish_filter == "samples") {
-        is_menu = true;
-      }
-      if (is_menu) {
-        const new_data_to_send = {
-          action: "menu_add",
-          message: `Заказ "${button.dataset.name}" добавлен`,
-          current_menu_id: button.dataset.id,
-          current_user_id: username_id,
-          current_client_id: client_id,
-        };
-        socket.send(JSON.stringify(new_data_to_send));
-      } else {
-        socket.send(JSON.stringify(data_to_send));
-      }
-    });
+    button.addEventListener("click", handleButtonClick);
   }
 });
 
@@ -201,78 +172,78 @@ decreaseButtons.forEach((button) => {
   });
 });
 
-const client_imges = document.querySelectorAll(".client-img");
-var x, y;
-for (let i = 0; i < client_imges.length; i++) {
-  var div = `<div class = "overflow3 hidden" id="${
-    "overflow3" + client_imges[i].getAttribute("data-id")
-  }"></div>
-      <div class="modWind3 hidden" id="${
-        "modWind3" + client_imges[i].getAttribute("data-id")
-      }">
-        <div class="flex-mod-dish"><img class="dish-img-mod"
-        src="http://localhost:8000/media/menu_images/${client_imges[
-          i
-        ].getAttribute("data-type")}/${client_imges[i].getAttribute(
-    "data-tittle"
-  )}.png"
-        </div>
-        <div class="mod-dish-info3">
-          <div class="name">${client_imges[i].getAttribute("data-name")}</div>
-          <div class="grams">${client_imges[i].getAttribute(
-            "data-weight"
-          )} гр</div>
-          <div class="price">${client_imges[i].getAttribute(
-            "data-price"
-          )} руб</div>
-          <div class="sostav">${client_imges[i].getAttribute(
-            "data-sostav"
-          )}</div>
-        </div>
-    </div>
-    <div class="mod-dish-decription">
-    <div class="decription">Тут будет описание...</div> 
-    
-    </div>
-    `;
+// const client_imges = document.querySelectorAll(".client-img");
+// var x, y;
+// for (let i = 0; i < client_imges.length; i++) {
+//   var div = `<div class = "overflow3 hidden" id="${
+//     "overflow3" + client_imges[i].getAttribute("data-id")
+//   }"></div>
+//       <div class="modWind3 hidden" id="${
+//         "modWind3" + client_imges[i].getAttribute("data-id")
+//       }">
+//         <div class="flex-mod-dish"><img class="dish-img-mod"
+//         src="http://localhost:8000/media/menu_images/${client_imges[
+//           i
+//         ].getAttribute("data-type")}/${client_imges[i].getAttribute(
+//     "data-tittle"
+//   )}.png"
+//         </div>
+//         <div class="mod-dish-info3">
+//           <div class="name">${client_imges[i].getAttribute("data-name")}</div>
+//           <div class="grams">${client_imges[i].getAttribute(
+//             "data-weight"
+//           )} гр</div>
+//           <div class="price">${client_imges[i].getAttribute(
+//             "data-price"
+//           )} руб</div>
+//           <div class="sostav">${client_imges[i].getAttribute(
+//             "data-sostav"
+//           )}</div>
+//         </div>
+//     </div>
+//     <div class="mod-dish-decription">
+//     <div class="decription">Тут будет описание...</div>
 
-  document.querySelector("body").insertAdjacentHTML("beforeend", div);
+//     </div>
+//     `;
 
-  client_imges[i].addEventListener("click", () => {
-    client_imges[i].classList.add("active");
-    x = document.getElementById(
-      "overflow3" + client_imges[i].getAttribute("data-id")
-    );
-    y = document.getElementById(
-      "modWind3" + client_imges[i].getAttribute("data-id")
-    );
+//   document.querySelector("body").insertAdjacentHTML("beforeend", div);
 
-    x.classList.remove("hidden");
-    y.classList.remove("hidden");
+//   client_imges[i].addEventListener("click", () => {
+//     client_imges[i].classList.add("active");
+//     x = document.getElementById(
+//       "overflow3" + client_imges[i].getAttribute("data-id")
+//     );
+//     y = document.getElementById(
+//       "modWind3" + client_imges[i].getAttribute("data-id")
+//     );
 
-    // my_client = document.querySelector(`.my_client[data-id="${client_imges[i].}"]`)
-  });
+//     x.classList.remove("hidden");
+//     y.classList.remove("hidden");
 
-  var exit = document.getElementById(
-    "overflow3" + client_imges[i].getAttribute("data-id")
-  );
+//     // my_client = document.querySelector(`.my_client[data-id="${client_imges[i].}"]`)
+//   });
 
-  exit.addEventListener("click", () => {
-    const current_dish = document.querySelector(`.client-img.active`);
-    if (current_dish) {
-      current_dish.classList.remove("active");
-    }
+//   var exit = document.getElementById(
+//     "overflow3" + client_imges[i].getAttribute("data-id")
+//   );
 
-    x = document.getElementById(
-      "overflow3" + client_imges[i].getAttribute("data-id")
-    );
-    y = document.getElementById(
-      "modWind3" + client_imges[i].getAttribute("data-id")
-    );
-    x.classList.add("hidden");
-    y.classList.add("hidden");
-  });
-}
+//   exit.addEventListener("click", () => {
+//     const current_dish = document.querySelector(`.client-img.active`);
+//     if (current_dish) {
+//       current_dish.classList.remove("active");
+//     }
+
+//     x = document.getElementById(
+//       "overflow3" + client_imges[i].getAttribute("data-id")
+//     );
+//     y = document.getElementById(
+//       "modWind3" + client_imges[i].getAttribute("data-id")
+//     );
+//     x.classList.add("hidden");
+//     y.classList.add("hidden");
+//   });
+// }
 
 const dish_search = document.getElementById(`dish-search`);
 
@@ -282,12 +253,12 @@ if (dish_search) {
 
     if (currentValue.length > 25) {
       $(this).val(currentValue.slice(0, 25));
+      currentValue = $(this).val(currentValue.slice(0, 25));
     }
 
     var name = $(this).val();
-    var dish_filter = localStorage.getItem("dish-filter");
-    var menu_filter = localStorage.getItem("menu-filter");
-    LoadMenu(dish_filter, name, menu_filter);
+    localStorage.setItem("search-request", currentValue);
+    LoadMenu();
   });
 }
 
@@ -480,7 +451,7 @@ detailsButtons.forEach((button) => {
     localStorage.setItem("is_additional", false);
     localStorage.setItem("current_client_id", button.dataset.id);
     localStorage.setItem("current_client_name", button.dataset.name);
-    LoadMenu("all");
+    LoadMenu();
     menuButtons.forEach((button) => {
       var current_client_id = localStorage.getItem("current_client_id");
       var my_client_form = document.querySelector(
@@ -500,7 +471,8 @@ const detailsButtonAdditional_ = document.querySelector(
   ".details-button-additional"
 );
 detailsButtonAdditional_.addEventListener("click", function () {
-  LoadMenu("all", null, true);
+  localStorage.setItem("dish-filter", "all");
+  LoadMenu();
   localStorage.setItem("is_additional", true);
   localStorage.setItem("current_client_name", "Дополнительные блюда");
   x1.classList.remove("hidden2");
@@ -553,15 +525,21 @@ confirmOrderModalBtn.addEventListener("click", function () {
   confirmOrderModal.classList.remove("hidden");
   orderingWindowOverflow.classList.remove("hidden");
 });
-// if (
-//   /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
-//     navigator.userAgent
-//   )
-// ) {
-//   console.log("С телефона");
-// } else {
-//   console.log("С пк");
-// }
+
+var sorted_bys = document.querySelectorAll(`.filter-btn`);
+sorted_bys.forEach(function (sorted_by) {
+  sorted_by.addEventListener("click", function () {
+    const buttonToUnHighlight = document.querySelectorAll(".filter-btn");
+    buttonToUnHighlight.forEach((button) => {
+      button.classList.remove("highlighted");
+    });
+    sorted_by.classList.add("highlighted");
+    var filter = sorted_by.dataset.filter;
+    localStorage.setItem("sorted_by", filter);
+
+    LoadMenu();
+  });
+});
 
 const surname_input = document.querySelector(`.surname-ordering-input`);
 const name_input = document.querySelector(`.name-ordering-input`);
