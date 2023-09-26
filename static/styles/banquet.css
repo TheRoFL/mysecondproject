@@ -1422,3 +1422,7 @@ input[type="submit"]:active {
   line-height: 31px;
   letter-spacing: -0.015em;
 }
+
+.comment-input {
+  background-color: #0000004c;
+}

@@ -20,7 +20,7 @@ class ClientSampleDishOrder(models.Model):
         return f"{self.product.name} x {self.quantity} шт. = {self.quantity * self.product.price} руб."
 
     def price_count(self):
-        return int(self.product.price) * self.quantity
+        return float(self.product.price) * self.quantity
     
 class MenuSample(models.Model):
     dishes = models.ManyToManyField(ClientSampleDishOrder)
@@ -47,12 +47,12 @@ class MenuSample(models.Model):
     def __str__(self):
         return "Меню " + "''" + str(self.name) + "''" 
     
-    total = 0
+    total = 0.0
     #стоимость меню
     def all_dishes_price(self):
-        self.total = 0
+        self.total = 0.0
         for dish in self.dishes.all():
-            self.total += int(dish.price_count())
+            self.total += float(dish.price_count())
         return self.total
     
     # def all_dishes_price(self):
@@ -68,11 +68,11 @@ class Client(models.Model):
     def __str__(self):
         return "Шаблон " + "''" + str(self.type) + "''" + " на " + str(self.quantity) + " человек"
     
-    total = 0
+    total = 0.0
     #цена для 1 клиента без меню
     def price_count(self):
         for dish in self.dishes.all():
-            self.total += int(dish.price_count())
+            self.total += float(dish.price_count())
         return self.total
     
     #цена для 1 клиента c меню
@@ -84,14 +84,14 @@ class Client(models.Model):
     
     #цена для всех клиентов без меню
     def total_price_count(self):
-        self.total = 0
+        self.total = 0.0
         self.price_count()
         return self.total * self.quantity
     
     
     #цена для всех клиентов с меню
     def menu_and_orders_price_count(self):
-        menu_price = 0
+        menu_price = 0.0
         if self.menu:
             menu_price = self.menu.all_dishes_price()
         return self.total_price_count() + menu_price * self.quantity
@@ -123,14 +123,14 @@ class Banquet(models.Model):
         
 
     def total_price_additional(self):
-        total_additional = 0
+        total_additional = 0.0
         for dish in self.additional.all():
             total_additional += dish.price_count()
         return total_additional 
     
     
     def total_price(self):
-        total = 0
+        total = 0.0
         for client in self.clients.all():
             total += client.menu_and_orders_price_count()
         total += self.total_price_additional()

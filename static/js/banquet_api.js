@@ -441,7 +441,9 @@ function RecievedBanquetData(data) {
     </div>
     <div class="adittional-dish-item">
     ${dish_tittle} x 1<div class="client-order-price">
-        <span class="client_order_price" data-id="${client_id2}">${dish_price}</span>.00 ₽ ·
+        <span class="client_order_price" data-id="${client_id2}">${formatInteger(
+        parseInt(dish_price)
+      )}</span>.00 ₽ ·
         <span class="dish-weight">${dish_weight} гр.</span>
       </div>
     </div>
@@ -601,7 +603,9 @@ function RecievedBanquetData(data) {
     <div class="adittional-dish-item">
     ${dish_tittle}
       <div class="client-order-price">
-        <span class="client_order_price" data-id="${client_id2}" data-order-id="${order_id}" id="${order_id}">${dish_price}</span>.00 ₽ ·
+        <span class="client_order_price" data-id="${client_id2}" data-order-id="${order_id}" id="${order_id}">${formatInteger(
+          parseInt(dish_price)
+        )}</span>.00 ₽ ·
         <span class="dish-weight">${dish_weight} гр.</span>
       </div>
     </div>
@@ -756,7 +760,7 @@ function RecievedBanquetData(data) {
     ${dish_tittle}
       <div class="client-order-price">
         <span class="client_order_price" data-id="${client_id2}" data-order-id="${order_id}" id="${order_id}">${formatInteger(
-      dish_price
+      parseInt(dish_price)
     )}</span>.00 ₽ ·
         <span class="dish-weight">${dish_weight} гр.</span>
       </div>
@@ -878,7 +882,7 @@ function RecievedBanquetData(data) {
     }
 
     var AddPrice = document.querySelector(`.order-price-count-additional`);
-    AddPrice.textContent = formatInteger(data["additional_price"]);
+    AddPrice.textContent = formatInteger(parseInt(data["additional_price"]));
   } else if (action == "new_dish_added") {
     var dish_data = data["current_dish_data"];
     dish_data = JSON.parse(dish_data);
@@ -927,7 +931,9 @@ function RecievedBanquetData(data) {
     <div class="adittional-dish-item">
     ${dish_tittle}
       <div class="client-order-price">
-        <span class="client_order_price" data-id="${client_id2}" data-order-id="${order_id}" id="${order_id}">${dish_price}</span>.00 ₽ ·
+        <span class="client_order_price" data-id="${client_id2}" data-order-id="${order_id}" id="${order_id}">${formatInteger(
+      parseInt(dish_price)
+    )}</span>.00 ₽ ·
         <span class="dish-weight">${dish_weight} гр.</span>
       </div>
     </div>
@@ -1213,7 +1219,6 @@ function RecievedBanquetData(data) {
     banquet_total.textContent =
       formatInteger(parseInt(data.total_banquet_price)) + ".00 ₽";
   }
-
   if (
     action == "dish_added" ||
     action == "new_dish_added" ||

@@ -21,7 +21,7 @@ class DishOrder(models.Model):
         await self.asave()
 
     def price_count(self):
-        return int(self.product.price) * self.quantity
+        return float(self.product.price) * self.quantity
     
     
 class Order(models.Model):

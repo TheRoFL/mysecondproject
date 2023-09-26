@@ -1,7 +1,7 @@
 $("button.dish-filter").on("click", function () {
   var filter = $(this).data("filter");
   localStorage.setItem("dish-filter", filter);
-
+  localStorage.setItem("menu-filter", "");
   LoadMenu(filter);
 });
 
@@ -10,7 +10,7 @@ $("button.menu-filter").on("click", function () {
   var menu_filter = $(this).data("filter");
   localStorage.setItem("dish-filter", filter);
   localStorage.setItem("menu-filter", menu_filter);
-  LoadMenu(filter, null, menu_filter);
+  LoadMenu();
 });
 
 var to_delete = document.querySelector(`.dish-filter[data-filter="samples"]`);

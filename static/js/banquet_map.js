@@ -21,6 +21,7 @@ ymaps.ready(function () {
   suggestView.events.add("select", function (e) {
     var selectedItem = e.get("item");
     var address = selectedItem.displayName;
+
     localStorage.setItem("address", address);
 
     if (previousPlacemark) {
@@ -54,6 +55,7 @@ ymaps.ready(function () {
       );
 
       addressPlacemark = myPlacemark;
+      previousPlacemark = addressPlacemark;
       myMap.geoObjects.add(myPlacemark);
 
       myPlacemark.events.add("drag", function (e) {

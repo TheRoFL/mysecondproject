@@ -632,3 +632,8 @@ phone_input.addEventListener("input", function () {
     phone: phone,
   });
 });
+
+const all_client_totals = document.querySelectorAll(`.order-price-count`);
+all_client_totals.forEach(function (total) {
+  total.textContent = formatInteger(parseInt(total.textContent));
+});
