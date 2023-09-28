@@ -471,7 +471,7 @@ function RecievedBanquetData(data) {
       'span.order-price-count[data-id="' + data.client_id + '"]'
     );
     if (client_menu_total_price) {
-      client_menu_total_price.textContent = totalCost;
+      client_menu_total_price.textContent = parseInt(totalCost);
     }
 
     var client_price_count = document.querySelector(
