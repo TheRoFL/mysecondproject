@@ -1,7 +1,7 @@
 /* Простой стиль для красивого отображения формы */
 body {
   font-family: YSText, sans-serif;
-  background-color: #fddada;
+  background-color: #fff;
   color: #4a644b;
 }
 
@@ -708,11 +708,6 @@ input[type="submit"]:active {
   margin: -250px 0 0 -300px;
 }
 
-.modWindAdditonal img,
-.modWind img,
-.modWind3 img {
-  width: 300px;
-}
 .overflow3,
 .overflow {
   position: fixed;
@@ -1429,4 +1424,61 @@ input[type="submit"]:active {
 
 .comment-input {
   background-color: #0000004c;
+}
+
+.flex-mod-dish {
+  height: 70%;
+}
+
+.flex-mod-dish-data {
+  height: 100%;
+}
+
+.modWindAdditonal {
+  max-height: 400px;
+}
+
+.flex-mod-img-and-btn {
+  width: 70%;
+  height: 100%;
+  padding: 0;
+  margin: 0;
+}
+
+.dish-img-mod {
+  height: 100%;
+  width: 100%;
+}
+
+.order-btn-container2 {
+  padding: 0;
+  margin: 0;
+}
+
+.flex-mod-dish {
+  justify-content: left;
+  padding: 15px;
+  column-gap: 0px;
+}
+
+.mod-dish-info {
+  padding-left: 15px;
+  width: 29.5%;
+  line-height: 15px;
+}
+
+.decription {
+  display: none;
+}
+
+.name,
+.price {
+  font-size: 20px;
+  font-weight: 400;
+}
+
+.grams,
+.sostav {
+  font-size: 12px;
+  font-weight: 500;
 }
